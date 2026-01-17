@@ -7,7 +7,6 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import {
   Alert,
@@ -17,10 +16,12 @@ import {
 import {
   CheckCircle2,
   Loader2,
-  Search,
   Camera,
   XCircle,
   AlertCircle,
+  UploadCloud,
+  ShieldCheck,
+  UserCheck,
 } from 'lucide-react';
 import { useFirestore } from '@/firebase';
 import { collectionGroup, query, where, getDocs } from 'firebase/firestore';
@@ -28,20 +29,28 @@ import type { IDCard } from '@/lib/types';
 import { IdCardDisplay } from './id-card-display';
 import { useToast } from '@/hooks/use-toast';
 import { faceMatch, type FaceMatchOutput } from '@/ai/flows/face-match-flow';
+import { extractIdDetails } from '@/ai/flows/extract-id-details';
+import { extractFraudIndicators, type ExtractFraudIndicatorsOutput } from '@/ai/flows/extract-fraud-indicators';
 import { cn } from '@/lib/utils';
 import { Progress } from './ui/progress';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
 
-type VerificationStep = 'idle' | 'fetching' | 'id_found' | 'capturing' | 'verifying' | 'result';
+type VerificationStep = 'scan' | 'analyzing' | 'fetching' | 'id_found' | 'capturing' | 'verifying' | 'result';
+
+type AnalysisResults = {
+  fraud?: ExtractFraudIndicatorsOutput | null;
+  face?: FaceMatchOutput | null;
+}
 
 export function IdVerification() {
-  const [idNumber, setIdNumber] = useState('');
-  const [step, setStep] = useState<VerificationStep>('idle');
+  const [step, setStep] = useState<VerificationStep>('scan');
   const [error, setError] = useState<string | null>(null);
   const [foundCard, setFoundCard] = useState<IDCard | null>(null);
-  const [matchResult, setMatchResult] = useState<FaceMatchOutput | null>(null);
-  
+  const [analysisResults, setAnalysisResults] = useState<AnalysisResults>({});
+  const [scannedIdImage, setScannedIdImage] = useState<string | null>(null);
+  const [isDragging, setIsDragging] = useState(false);
+
   const [hasCameraPermission, setHasCameraPermission] = useState<boolean | null>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -50,6 +59,7 @@ export function IdVerification() {
   const { toast } = useToast();
 
   useEffect(() => {
+    // Camera effect
     if (step === 'capturing') {
       const getCameraPermission = async () => {
         try {
@@ -67,7 +77,6 @@ export function IdVerification() {
       getCameraPermission();
 
       return () => {
-        // Stop camera stream when component unmounts or step changes
         if (videoRef.current && videoRef.current.srcObject) {
           const stream = videoRef.current.srcObject as MediaStream;
           stream.getTracks().forEach(track => track.stop());
@@ -75,46 +84,94 @@ export function IdVerification() {
       };
     }
   }, [step]);
-
-  const handleSearch = () => {
-    if (!idNumber.trim()) {
-      setError('Please enter an ID number.');
-      return;
-    }
-    setStep('fetching');
+  
+  const resetVerification = (backToScan = true) => {
     setError(null);
     setFoundCard(null);
+    setAnalysisResults({});
+    setScannedIdImage(null);
+    if (backToScan) {
+      setStep('scan');
+    }
+  };
 
-    // Use a collectionGroup query to search across all 'idCards' collections.
-    const q = query(collectionGroup(firestore, 'idCards'), where('idNumber', '==', idNumber.trim()));
+  const handleFileChange = (file: File | null) => {
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) { // 5MB limit
+        setError('File size must be less than 5MB.');
+        return;
+      }
+      if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
+        setError('Invalid file type. Please upload a JPG, PNG, or WEBP image.');
+        return;
+      }
+      setError(null);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const imageDataUri = reader.result as string;
+        setScannedIdImage(imageDataUri);
+        handleImageScan(imageDataUri);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleImageScan = async (imageDataUri: string) => {
+    resetVerification(false);
+    setStep('analyzing');
+
+    try {
+      const [idResult, fraudResult] = await Promise.all([
+        extractIdDetails({ imageDataUri }),
+        extractFraudIndicators({ imageDataUri }),
+      ]);
       
-    getDocs(q)
-      .then((querySnapshot) => {
-        if (querySnapshot.empty) {
-          setError(`No ID card found with number: ${idNumber}`);
-          setStep('idle');
-        } else {
-          const cardDoc = querySnapshot.docs[0];
-          const cardData = {
-              ...cardDoc.data(),
-              id: cardDoc.id,
-              createdAt: cardDoc.data().createdAt.toDate()
-          } as IDCard;
-          setFoundCard(cardData);
-          setStep('id_found');
-        }
-      })
-      .catch((e) => {
-        // Use the global error emitter for permission errors.
-        const permissionError = new FirestorePermissionError({
+      setAnalysisResults({ fraud: fraudResult });
+
+      if (!idResult?.idNumber) {
+        setError('Could not read the ID Number from the card. Please try again with a clearer image.');
+        setStep('scan');
+        setScannedIdImage(null);
+        return;
+      }
+      
+      setStep('fetching');
+      const idNumber = idResult.idNumber;
+      const q = query(collectionGroup(firestore, 'idCards'), where('idNumber', '==', idNumber.trim()));
+      
+      const querySnapshot = await getDocs(q);
+
+      if (querySnapshot.empty) {
+        setError(`No ID card found in the system with number: ${idNumber}`);
+        setStep('scan');
+        setScannedIdImage(null);
+      } else {
+        const cardDoc = querySnapshot.docs[0];
+        const cardData = {
+          ...cardDoc.data(),
+          id: cardDoc.id,
+          createdAt: cardDoc.data().createdAt.toDate()
+        } as IDCard;
+        setFoundCard(cardData);
+        setStep('id_found');
+      }
+
+    } catch (e: any) {
+      console.error("ID Scan/Fetch Error:", e);
+      if (e.name === 'FirebaseError') {
+         const permissionError = new FirestorePermissionError({
             path: 'idCards (collection group)',
             operation: 'list',
         });
         errorEmitter.emit('permission-error', permissionError);
         setError('An error occurred while fetching the ID card. Check permissions.');
-        setStep('idle');
-      });
-  };
+      } else {
+        setError('An AI service error occurred. Please try again.');
+      }
+      setStep('scan');
+      setScannedIdImage(null);
+    }
+  }
 
   const capturePhoto = (): string | null => {
     if (videoRef.current && canvasRef.current) {
@@ -131,7 +188,7 @@ export function IdVerification() {
     return null;
   };
 
-  const handleVerify = async () => {
+  const handleFaceVerify = async () => {
     const liveUserPhoto = capturePhoto();
     if (!liveUserPhoto || !foundCard) {
       toast({
@@ -143,14 +200,13 @@ export function IdVerification() {
     }
 
     setStep('verifying');
-    setMatchResult(null);
 
     try {
       const result = await faceMatch({
         idCardPhoto: foundCard.photoDataUri,
         liveUserPhoto,
       });
-      setMatchResult(result);
+      setAnalysisResults(prev => ({...prev, face: result}));
       setStep('result');
     } catch (e) {
       console.error('Face match error:', e);
@@ -158,56 +214,92 @@ export function IdVerification() {
       setStep('id_found'); // Go back to the previous step
     }
   };
-  
-  const resetVerification = () => {
-    setIdNumber('');
-    setStep('idle');
-    setError(null);
-    setFoundCard(null);
-    setMatchResult(null);
-  }
+
+  // Drag and drop handlers
+  const handleDragEnter = (e: React.DragEvent<HTMLLabelElement>) => { e.preventDefault(); e.stopPropagation(); setIsDragging(true); };
+  const handleDragLeave = (e: React.DragEvent<HTMLLabelElement>) => { e.preventDefault(); e.stopPropagation(); setIsDragging(false); };
+  const handleDragOver = (e: React.DragEvent<HTMLLabelElement>) => { e.preventDefault(); e.stopPropagation(); };
+  const handleDrop = (e: React.DragEvent<HTMLLabelElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+    const file = e.dataTransfer.files?.[0];
+    if (file) {
+      handleFileChange(file);
+    }
+  };
 
   const renderStepContent = () => {
     switch (step) {
-      case 'idle':
-      case 'fetching':
+      case 'scan':
         return (
-          <div className="flex flex-col gap-2">
-            <p className="text-sm text-muted-foreground">Enter the ID Number to begin verification.</p>
-            <div className="flex gap-2">
-              <Input
-                placeholder="IDC-XXXXXX"
-                value={idNumber}
-                onChange={e => setIdNumber(e.target.value)}
-                disabled={step === 'fetching'}
-              />
-              <Button onClick={handleSearch} disabled={step === 'fetching'}>
-                {step === 'fetching' ? (
-                  <Loader2 className="animate-spin" />
-                ) : (
-                  <Search />
+          <div className="space-y-4">
+            <p className="text-sm text-muted-foreground text-center">
+              Upload or drag-and-drop an image of an ID card to begin the AI verification process.
+            </p>
+             <label
+                htmlFor="id-card-upload"
+                onDragEnter={handleDragEnter} onDragLeave={handleDragLeave} onDragOver={handleDragOver} onDrop={handleDrop}
+                className={cn(
+                  'flex flex-col items-center justify-center w-full h-48 border-2 border-dashed rounded-lg cursor-pointer bg-muted/50 hover:bg-muted/80 transition-colors',
+                  isDragging && 'border-primary bg-primary/10'
                 )}
-                <span className="ml-2">Find ID</span>
-              </Button>
-            </div>
-            {error && <p className="text-sm text-destructive mt-2">{error}</p>}
+              >
+                <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                  <UploadCloud className="w-10 h-10 mb-3 text-muted-foreground" />
+                  <p className="mb-2 text-sm text-muted-foreground">
+                    <span className="font-semibold">Click to upload</span> or drag and drop
+                  </p>
+                  <p className="text-xs text-muted-foreground">JPG, PNG, or WEBP (MAX. 5MB)</p>
+                </div>
+                <input id="id-card-upload" type="file" className="hidden" accept="image/png, image/jpeg, image/webp" onChange={(e) => handleFileChange(e.target.files?.[0] || null)} />
+              </label>
+              {error && (
+                 <Alert variant="destructive">
+                  <AlertDescription>{error}</AlertDescription>
+                </Alert>
+              )}
           </div>
         );
+      
+      case 'analyzing':
+      case 'fetching':
+         return (
+           <div className="flex flex-col items-center justify-center gap-4 p-8 text-center min-h-[200px]">
+             <Loader2 className="h-12 w-12 animate-spin text-primary" />
+             <h3 className="text-xl font-bold mt-2">AI Analyzing...</h3>
+             <p className="text-sm text-muted-foreground">
+                {step === 'analyzing' ? 'Extracting ID details and checking for forgery...' : 'Fetching official record from database...'}
+             </p>
+           </div>
+        )
+      
       case 'id_found':
+        const fraudCheck = analysisResults.fraud;
+        const hasIndicators = fraudCheck && fraudCheck.fraudIndicators.toLowerCase().trim() !== 'no fraud indicators found.' && fraudCheck.fraudIndicators.trim() !== '';
+        
         return (
           foundCard && (
-            <div className="space-y-4 text-center">
-              <p className="font-semibold">ID Card Found. Ready to verify.</p>
+            <div className="space-y-6 text-center">
+               <Alert variant={hasIndicators ? 'destructive' : 'default'}>
+                    {hasIndicators ? <AlertCircle className="h-4 w-4" /> : <ShieldCheck className="h-4 w-4 text-accent"/>}
+                    <AlertTitle>{hasIndicators ? 'Potential Fraud Indicators Found' : 'Image Analysis Passed'}</AlertTitle>
+                    <AlertDescription>
+                       {fraudCheck?.fraudIndicators}
+                    </AlertDescription>
+                </Alert>
+
               <div className="flex justify-center">
                 <IdCardDisplay card={foundCard} />
               </div>
               <Button onClick={() => setStep('capturing')} size="lg">
                 <Camera className="mr-2" />
-                Start Camera Verification
+                Proceed to Face Match
               </Button>
             </div>
           )
         );
+
       case 'capturing':
          return (
             <div className="space-y-4">
@@ -218,51 +310,58 @@ export function IdVerification() {
                  {hasCameraPermission === false && (
                      <Alert variant="destructive">
                          <AlertTitle>Camera Access Required</AlertTitle>
-                         <AlertDescription>
-                         Please allow camera access in your browser settings to use this feature.
-                         </AlertDescription>
+                         <AlertDescription>Please allow camera access to use this feature.</AlertDescription>
                      </Alert>
                  )}
                  <div className="flex justify-center gap-4">
-                    <Button onClick={() => setStep('id_found')} variant="outline">Cancel</Button>
-                    <Button onClick={handleVerify} disabled={!hasCameraPermission}>
+                    <Button onClick={() => setStep('id_found')} variant="outline">Back</Button>
+                    <Button onClick={handleFaceVerify} disabled={!hasCameraPermission}>
                         <Camera className="mr-2" />
-                        Capture & Verify
+                        Capture & Verify Face
                     </Button>
                  </div>
             </div>
          );
+
       case 'verifying':
         return (
-           <div className="flex flex-col items-center justify-center gap-4 p-8 text-center">
+           <div className="flex flex-col items-center justify-center gap-4 p-8 text-center min-h-[200px]">
              <Loader2 className="h-12 w-12 animate-spin text-primary" />
-             <h3 className="text-xl font-bold mt-2">AI Analyzing...</h3>
+             <h3 className="text-xl font-bold mt-2">AI Verifying Face...</h3>
              <p className="text-sm text-muted-foreground">Comparing facial features. Please wait.</p>
            </div>
         )
+
       case 'result':
-        if (!matchResult) return null;
-        const isMatch = matchResult.isMatch && matchResult.confidence > 0.7;
+        if (!analysisResults.face) return null;
+        const isMatch = analysisResults.face.isMatch && analysisResults.face.confidence > 0.7;
         const ResultIcon = isMatch ? CheckCircle2 : XCircle;
         const iconColor = isMatch ? 'text-green-500' : 'text-destructive';
         
         return (
-            <div className="space-y-4">
+            <div className="space-y-6">
                 <div className={cn("flex flex-col items-center justify-center gap-2 p-6 text-center rounded-lg", isMatch ? 'bg-green-500/10' : 'bg-destructive/10')}>
                     <ResultIcon className={cn("h-12 w-12", iconColor)} />
                     <h3 className="text-2xl font-bold mt-2">{isMatch ? 'Verification Successful' : 'Verification Failed'}</h3>
                     <p className={cn("font-semibold", iconColor)}>
-                        Face Match Confidence: { (matchResult.confidence * 100).toFixed(1) }%
+                        Face Match Confidence: { (analysisResults.face.confidence * 100).toFixed(1) }%
                     </p>
-                    <Progress value={matchResult.confidence * 100} className="w-full max-w-sm h-3" />
+                    <Progress value={analysisResults.face.confidence * 100} className="w-full max-w-sm h-3" />
                 </div>
-                <Alert variant={isMatch ? 'default' : 'destructive'} className="bg-background">
-                    <AlertCircle className="h-4 w-4" />
-                    <AlertTitle>AI Analysis</AlertTitle>
-                    <AlertDescription>{matchResult.reasoning}</AlertDescription>
-                </Alert>
+                <div className="grid gap-4 md:grid-cols-2">
+                    <Alert variant={isMatch ? 'default' : 'destructive'} className="bg-background">
+                        <UserCheck className="h-4 w-4" />
+                        <AlertTitle>Face Match AI Analysis</AlertTitle>
+                        <AlertDescription>{analysisResults.face.reasoning}</AlertDescription>
+                    </Alert>
+                     <Alert variant={analysisResults.fraud && analysisResults.fraud.fraudIndicators.toLowerCase().trim() !== 'no fraud indicators found.' && analysisResults.fraud.fraudIndicators.trim() !== '' ? 'destructive' : 'default'} className="bg-background">
+                        <ShieldCheck className="h-4 w-4" />
+                        <AlertTitle>Image Forgery Analysis</AlertTitle>
+                        <AlertDescription>{analysisResults.fraud?.fraudIndicators}</AlertDescription>
+                    </Alert>
+                </div>
                 <div className="text-center">
-                    <Button onClick={resetVerification} variant="outline">Start New Verification</Button>
+                    <Button onClick={() => resetVerification()} variant="outline">Start New Verification</Button>
                 </div>
             </div>
         )
@@ -275,9 +374,9 @@ export function IdVerification() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>ID Card Verification</CardTitle>
+        <CardTitle>AI-Powered ID Verification</CardTitle>
         <CardDescription>
-          Verify an ID card by matching the ID photo with a live camera feed.
+          A multi-step AI process to verify an identity document.
         </CardDescription>
       </CardHeader>
       <CardContent>{renderStepContent()}</CardContent>
