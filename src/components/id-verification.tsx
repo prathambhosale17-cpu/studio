@@ -23,13 +23,15 @@ import {
   AlertCircle,
 } from 'lucide-react';
 import { useFirestore } from '@/firebase';
-import { collection, query, where, getDocs } from 'firebase/firestore';
+import { collectionGroup, query, where, getDocs } from 'firebase/firestore';
 import type { IDCard } from '@/lib/types';
 import { IdCardDisplay } from './id-card-display';
 import { useToast } from '@/hooks/use-toast';
 import { faceMatch, type FaceMatchOutput } from '@/ai/flows/face-match-flow';
 import { cn } from '@/lib/utils';
 import { Progress } from './ui/progress';
+import { errorEmitter } from '@/firebase/error-emitter';
+import { FirestorePermissionError } from '@/firebase/errors';
 
 type VerificationStep = 'idle' | 'fetching' | 'id_found' | 'capturing' | 'verifying' | 'result';
 
@@ -74,7 +76,7 @@ export function IdVerification() {
     }
   }, [step]);
 
-  const handleSearch = async () => {
+  const handleSearch = () => {
     if (!idNumber.trim()) {
       setError('Please enter an ID number.');
       return;
@@ -83,30 +85,35 @@ export function IdVerification() {
     setError(null);
     setFoundCard(null);
 
-    try {
-      // Note: This query is not scalable for large datasets as it queries across all users.
-      // In a real app, this would be an admin-only feature or structured differently.
-      const q = query(collection(firestore, 'idCards'), where('idNumber', '==', idNumber.trim()));
-      const querySnapshot = await getDocs(q);
+    // Use a collectionGroup query to search across all 'idCards' collections.
+    const q = query(collectionGroup(firestore, 'idCards'), where('idNumber', '==', idNumber.trim()));
       
-      if (querySnapshot.empty) {
-        setError(`No ID card found with number: ${idNumber}`);
+    getDocs(q)
+      .then((querySnapshot) => {
+        if (querySnapshot.empty) {
+          setError(`No ID card found with number: ${idNumber}`);
+          setStep('idle');
+        } else {
+          const cardDoc = querySnapshot.docs[0];
+          const cardData = {
+              ...cardDoc.data(),
+              id: cardDoc.id,
+              createdAt: cardDoc.data().createdAt.toDate()
+          } as IDCard;
+          setFoundCard(cardData);
+          setStep('id_found');
+        }
+      })
+      .catch((e) => {
+        // Use the global error emitter for permission errors.
+        const permissionError = new FirestorePermissionError({
+            path: `idCards where idNumber == "${idNumber.trim()}"`,
+            operation: 'list',
+        });
+        errorEmitter.emit('permission-error', permissionError);
+        setError('An error occurred while fetching the ID card. Check permissions.');
         setStep('idle');
-      } else {
-        const cardDoc = querySnapshot.docs[0];
-        const cardData = {
-            ...cardDoc.data(),
-            id: cardDoc.id,
-            createdAt: cardDoc.data().createdAt.toDate()
-        } as IDCard;
-        setFoundCard(cardData);
-        setStep('id_found');
-      }
-    } catch (e) {
-      console.error(e);
-      setError('An error occurred while fetching the ID card.');
-      setStep('idle');
-    }
+      });
   };
 
   const capturePhoto = (): string | null => {
