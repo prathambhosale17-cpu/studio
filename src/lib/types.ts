@@ -8,6 +8,9 @@ export type IDCard = {
   photoDataUri: string;
   idNumber: string; // A unique, human-readable ID number
   createdAt: Date;
+  gender: 'Male' | 'Female' | 'Other';
+  address: string;
+  qrCodeDataUri: string;
 };
 
 export type FirestoreIDCard = Omit<IDCard, 'createdAt'> & {

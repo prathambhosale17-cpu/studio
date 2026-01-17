@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
+import QRCode from 'qrcode';
 import {
   Card,
   CardContent,
@@ -14,6 +15,7 @@ import {
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -25,11 +27,15 @@ import { Loader2, UploadCloud } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import type { IDCard } from '@/lib/types';
 import Image from 'next/image';
+import { RadioGroup, RadioGroupItem } from './ui/radio-group';
+import { Textarea } from './ui/textarea';
 
 const formSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters'),
   dateOfBirth: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Date must be in YYYY-MM-DD format'),
   photo: z.any().refine(file => file instanceof File, 'Photo is required'),
+  gender: z.enum(['Male', 'Female', 'Other'], { required_error: 'Gender is required' }),
+  address: z.string().min(10, 'Address must be at least 10 characters'),
 });
 
 interface IdCardFormProps {
@@ -43,7 +49,7 @@ export function IdCardForm({ onAddCard }: IdCardFormProps) {
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: { name: '', dateOfBirth: '' },
+    defaultValues: { name: '', dateOfBirth: '', address: '' },
   });
 
   const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -61,27 +67,47 @@ export function IdCardForm({ onAddCard }: IdCardFormProps) {
 
     const reader = new FileReader();
     reader.readAsDataURL(values.photo);
-    reader.onloadend = () => {
-      const photoDataUri = reader.result as string;
-      const id = `${Date.now()}`;
-      const idNumber = `IDC-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
+    reader.onloadend = async () => {
+      try {
+        const photoDataUri = reader.result as string;
+        const id = `${Date.now()}`;
+        const idNumber = `IDC-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
+        
+        const qrCodeContent = JSON.stringify({
+            name: values.name,
+            dob: values.dateOfBirth,
+            id: idNumber,
+        });
+        const qrCodeDataUri = await QRCode.toDataURL(qrCodeContent);
 
-      const newCard: Omit<IDCard, 'userId' | 'createdAt'> = {
-        id,
-        idNumber,
-        name: values.name,
-        dateOfBirth: values.dateOfBirth,
-        photoDataUri,
-      };
+        const newCard: Omit<IDCard, 'userId' | 'createdAt'> = {
+          id,
+          idNumber,
+          name: values.name,
+          dateOfBirth: values.dateOfBirth,
+          photoDataUri,
+          gender: values.gender,
+          address: values.address,
+          qrCodeDataUri,
+        };
 
-      onAddCard(newCard);
-      toast({
-        title: 'ID Card Created',
-        description: `${values.name}'s ID card has been added.`,
-      });
-      form.reset();
-      setPhotoPreview(null);
-      setIsSubmitting(false);
+        onAddCard(newCard);
+        toast({
+          title: 'ID Card Created',
+          description: `${values.name}'s ID card has been added.`,
+        });
+        form.reset();
+        setPhotoPreview(null);
+      } catch (err) {
+        console.error("Failed to generate QR code or create card", err);
+        toast({
+          variant: "destructive",
+          title: 'Error',
+          description: 'Failed to generate QR code.',
+        });
+      } finally {
+        setIsSubmitting(false);
+      }
     };
     reader.onerror = () => {
        toast({
@@ -128,10 +154,63 @@ export function IdCardForm({ onAddCard }: IdCardFormProps) {
                 </FormItem>
               )}
             />
+             <FormField
+              control={form.control}
+              name="gender"
+              render={({ field }) => (
+                <FormItem className="space-y-3">
+                  <FormLabel>Gender</FormLabel>
+                  <FormControl>
+                    <RadioGroup
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                      className="flex space-x-4"
+                    >
+                      <FormItem className="flex items-center space-x-2 space-y-0">
+                        <FormControl>
+                          <RadioGroupItem value="Male" />
+                        </FormControl>
+                        <FormLabel className="font-normal">Male</FormLabel>
+                      </FormItem>
+                      <FormItem className="flex items-center space-x-2 space-y-0">
+                        <FormControl>
+                          <RadioGroupItem value="Female" />
+                        </FormControl>
+                        <FormLabel className="font-normal">Female</FormLabel>
+                      </FormItem>
+                      <FormItem className="flex items-center space-x-2 space-y-0">
+                        <FormControl>
+                          <RadioGroupItem value="Other" />
+                        </FormControl>
+                        <FormLabel className="font-normal">Other</FormLabel>
+                      </FormItem>
+                    </RadioGroup>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+             <FormField
+              control={form.control}
+              name="address"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Address</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      placeholder="123 Main St, Anytown, USA"
+                      className="resize-none"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
             <FormField
               control={form.control}
               name="photo"
-              render={({ field }) => (
+              render={() => (
                 <FormItem>
                   <FormLabel>Photo</FormLabel>
                    {photoPreview ? (
@@ -154,7 +233,7 @@ export function IdCardForm({ onAddCard }: IdCardFormProps) {
               )}
             />
           </CardContent>
-          <CardFooter>
+          <CardFooter className="flex-col items-start gap-4">
             <Button type="submit" disabled={isSubmitting}>
               {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               Generate ID Card

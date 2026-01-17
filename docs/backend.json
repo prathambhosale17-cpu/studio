@@ -35,6 +35,18 @@
         "photoDataUri": {
           "type": "string",
           "description": "The data URI of the user's photo."
+        },
+        "gender": {
+          "type": "string",
+          "description": "The gender of the person on the card."
+        },
+        "address": {
+          "type": "string",
+          "description": "The address of the person on the card."
+        },
+        "qrCodeDataUri": {
+          "type": "string",
+          "description": "A data URI for the QR code image."
         }
       },
       "required": [
@@ -44,7 +56,10 @@
         "idNumber",
         "name",
         "dateOfBirth",
-        "photoDataUri"
+        "photoDataUri",
+        "gender",
+        "address",
+        "qrCodeDataUri"
       ]
     }
   },
