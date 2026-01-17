@@ -17,6 +17,7 @@ import {
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import type { VerificationResult, VerificationStatus } from '@/lib/types';
+import Image from 'next/image';
 
 interface VerificationResultProps {
   result: VerificationResult | null;
@@ -37,7 +38,7 @@ const statusConfig: Record<
   idle: {
     Icon: HelpCircle,
     title: 'Ready to Verify',
-    description: 'Submit Aadhaar data to begin the verification process.',
+    description: 'Submit an Aadhaar image to begin the verification process.',
     badgeVariant: 'secondary',
     badgeText: 'Idle',
     iconColor: 'text-muted-foreground',
@@ -45,7 +46,7 @@ const statusConfig: Record<
   pending: {
     Icon: Loader2,
     title: 'Verifying...',
-    description: 'AI is analyzing the provided Aadhaar data. Please wait.',
+    description: 'AI is analyzing the provided Aadhaar image. Please wait.',
     badgeVariant: 'outline',
     badgeText: 'Pending',
     iconColor: 'text-primary animate-spin',
@@ -53,7 +54,7 @@ const statusConfig: Record<
   verified: {
     Icon: CheckCircle2,
     title: 'Verified Successfully',
-    description: 'No fraud indicators were found in the Aadhaar data.',
+    description: 'No fraud indicators were found in the Aadhaar image.',
     badgeVariant: 'default',
     badgeText: 'Verified',
     iconColor: 'text-accent',
@@ -92,6 +93,18 @@ export function VerificationResult({ result, isVerifying }: VerificationResultPr
         </div>
       </CardHeader>
       <CardContent className="flex flex-col gap-4">
+        {result?.imageDataUri && (
+          <div className="relative rounded-md overflow-hidden border">
+            <Image
+              src={result.imageDataUri}
+              alt="Analyzed Aadhaar card"
+              width={400}
+              height={250}
+              className="w-full h-auto object-contain bg-muted/20"
+            />
+          </div>
+        )}
+
         <div className="flex flex-col items-center justify-center gap-2 p-6 text-center bg-muted/50 rounded-lg">
           <config.Icon className={`h-12 w-12 ${config.iconColor}`} />
           <h3 className="text-xl font-bold mt-2">{config.title}</h3>

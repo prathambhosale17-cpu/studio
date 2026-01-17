@@ -4,6 +4,6 @@ export type VerificationResult = {
   id: string;
   timestamp: Date;
   status: VerificationStatus;
-  aadhaarData: string;
+  imageDataUri: string | null;
   indicators: string | null;
 };

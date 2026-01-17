@@ -18,6 +18,7 @@ import {
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { Badge } from './ui/badge';
+import Image from 'next/image';
 
 interface VerificationHistoryProps {
   history: VerificationResult[];
@@ -86,12 +87,15 @@ export function VerificationHistory({
                       >
                         <div className="flex items-start justify-between gap-4">
                           <div className="flex items-center gap-3">
-                            <Icon
-                              className={cn(
-                                'h-5 w-5 shrink-0',
-                                statusColors[item.status]
-                              )}
-                            />
+                            {item.imageDataUri ? (
+                                <div className="relative w-12 h-8 rounded-md overflow-hidden border bg-muted shrink-0">
+                                    <Image src={item.imageDataUri} alt="History item thumbnail" fill className="object-cover" />
+                                </div>
+                            ) : (
+                                <div className="w-12 h-8 flex items-center justify-center rounded-md border bg-muted shrink-0">
+                                    <Icon className={cn('h-5 w-5', statusColors[item.status])} />
+                                </div>
+                            )}
                             <div className="flex flex-col">
                               <span className="text-sm font-medium text-foreground">
                                 {format(item.timestamp, 'MMM d, yyyy')}

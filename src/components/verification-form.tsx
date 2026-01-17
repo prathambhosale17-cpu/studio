@@ -1,21 +1,10 @@
 'use client';
 
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
-import { Loader2 } from 'lucide-react';
+import { useState } from 'react';
+import { Loader2, UploadCloud, X } from 'lucide-react';
+import Image from 'next/image';
 
 import { Button } from '@/components/ui/button';
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form';
-import { Textarea } from '@/components/ui/textarea';
 import {
   Card,
   CardContent,
@@ -24,25 +13,14 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import { extractFraudIndicators } from '@/ai/flows/extract-fraud-indicators';
 import type { VerificationResult } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
-
-const formSchema = z.object({
-  aadhaarData: z.string().min(10, {
-    message: 'Aadhaar data must be at least 10 characters.',
-  }),
-});
-
-const sampleData = {
-  clean:
-    'Name: Ramesh Kumar, DOB: 15/08/1985, Gender: Male, Address: 123, Bapu Nagar, Jaipur, Rajasthan, 302015. Biometric hash matches photo hash. Document checksum verified.',
-  fraud:
-    'Name: Suresh Mehta, DOB: 01/01/1990, Gender: Male, Address: 456, Malviya Nagar, New Delhi, 110017. Critical Alert: Mismatched photo hash and biometric data. Address appears on known fraudulent list. Document issue date seems tampered.',
-};
+import { cn } from '@/lib/utils';
 
 interface VerificationFormProps {
-  onVerificationStart: () => void;
+  onVerificationStart: (imageDataUri: string) => void;
   onVerificationComplete: (result: VerificationResult) => void;
   isVerifying: boolean;
 }
@@ -53,23 +31,73 @@ export function VerificationForm({
   isVerifying,
 }: VerificationFormProps) {
   const { toast } = useToast();
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      aadhaarData: '',
-    },
-  });
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [isDragging, setIsDragging] = useState(false);
 
-  async function onSubmit(values: z.infer<typeof formSchema>) {
-    onVerificationStart();
+  const handleFileChange = (file: File | null) => {
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) { // 5MB limit
+        setError('File size must be less than 5MB.');
+        return;
+      }
+      if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
+        setError('Invalid file type. Please upload a JPG, PNG, or WEBP image.');
+        return;
+      }
+      setError(null);
+      setImageFile(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleDragEnter = (e: React.DragEvent<HTMLLabelElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent<HTMLLabelElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+  };
+
+  const handleDragOver = (e: React.DragEvent<HTMLLabelElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+  };
+
+  const handleDrop = (e: React.DragEvent<HTMLLabelElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+    const file = e.dataTransfer.files?.[0];
+    if (file) {
+      handleFileChange(file);
+    }
+  };
+
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    if (!imageFile || !imagePreview) {
+      setError('Please upload an image of the Aadhaar card.');
+      return;
+    }
+    onVerificationStart(imagePreview);
     try {
-      const aiResult = await extractFraudIndicators({ aadhaarData: values.aadhaarData });
+      const aiResult = await extractFraudIndicators({ imageDataUri: imagePreview });
       const hasIndicators = aiResult.fraudIndicators && aiResult.fraudIndicators.toLowerCase().trim() !== 'no fraud indicators found.' && aiResult.fraudIndicators.trim() !== '';
 
       const result: VerificationResult = {
         id: new Date().toISOString(),
         timestamp: new Date(),
-        aadhaarData: values.aadhaarData,
+        imageDataUri: imagePreview,
         status: hasIndicators ? 'failed' : 'verified',
         indicators: hasIndicators ? aiResult.fraudIndicators : null,
       };
@@ -79,7 +107,7 @@ export function VerificationForm({
       const errorResult: VerificationResult = {
         id: new Date().toISOString(),
         timestamp: new Date(),
-        aadhaarData: values.aadhaarData,
+        imageDataUri: imagePreview,
         status: 'error',
         indicators: 'An unexpected error occurred during AI analysis.',
       };
@@ -92,56 +120,83 @@ export function VerificationForm({
     }
   }
 
-  const handleSampleData = (type: 'clean' | 'fraud') => {
-    form.setValue('aadhaarData', sampleData[type], { shouldValidate: true });
-  };
+  const clearImage = () => {
+    setImageFile(null);
+    setImagePreview(null);
+    setError(null);
+    const input = document.getElementById('aadhaar-image-upload') as HTMLInputElement;
+    if (input) {
+      input.value = '';
+    }
+  }
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Aadhaar Verification</CardTitle>
+        <CardTitle>Aadhaar Image Verification</CardTitle>
         <CardDescription>
-          Simulate an Aadhaar scan by pasting the document text below. Use the
-          sample buttons for a quick demo.
+          Upload or drag-and-drop an image of an Aadhaar card to check for signs of forgery.
         </CardDescription>
       </CardHeader>
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)}>
-          <CardContent className="space-y-4">
-            <FormField
-              control={form.control}
-              name="aadhaarData"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="sr-only">Aadhaar Data</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      placeholder="e.g., Name: John Doe, DOB: 01/01/1990, Address: 123 Main St..."
-                      className="min-h-[150px] resize-y"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <div className="flex flex-wrap gap-2">
-              <Button type="button" variant="outline" size="sm" onClick={() => handleSampleData('clean')}>
-                Use Clean Sample
-              </Button>
-              <Button type="button" variant="outline" size="sm" onClick={() => handleSampleData('fraud')}>
-                Use Fraudulent Sample
+      <form onSubmit={handleSubmit}>
+        <CardContent className="space-y-4">
+          {imagePreview ? (
+            <div className="relative group">
+              <Image
+                src={imagePreview}
+                alt="Aadhaar card preview"
+                width={400}
+                height={250}
+                className="w-full h-auto rounded-md object-contain border"
+              />
+              <Button
+                type="button"
+                variant="destructive"
+                size="icon"
+                className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity"
+                onClick={clearImage}
+              >
+                <X className="h-4 w-4" />
+                <span className="sr-only">Remove image</span>
               </Button>
             </div>
-          </CardContent>
-          <CardFooter>
-            <Button type="submit" disabled={isVerifying} className="w-full sm:w-auto">
-              {isVerifying && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              Verify Aadhaar
-            </Button>
-          </CardFooter>
-        </form>
-      </Form>
+          ) : (
+            <div className="space-y-2">
+              <label
+                htmlFor="aadhaar-image-upload"
+                onDragEnter={handleDragEnter}
+                onDragLeave={handleDragLeave}
+                onDragOver={handleDragOver}
+                onDrop={handleDrop}
+                className={cn(
+                  'flex flex-col items-center justify-center w-full h-48 border-2 border-dashed rounded-lg cursor-pointer bg-muted/50 hover:bg-muted/80 transition-colors',
+                  isDragging && 'border-primary bg-primary/10'
+                )}
+              >
+                <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                  <UploadCloud className="w-10 h-10 mb-3 text-muted-foreground" />
+                  <p className="mb-2 text-sm text-muted-foreground">
+                    <span className="font-semibold">Click to upload</span> or drag and drop
+                  </p>
+                  <p className="text-xs text-muted-foreground">JPG, PNG, or WEBP (MAX. 5MB)</p>
+                </div>
+                <input id="aadhaar-image-upload" type="file" className="hidden" accept="image/png, image/jpeg, image/webp" onChange={(e) => handleFileChange(e.target.files?.[0] || null)} />
+              </label>
+              {error && (
+                <Alert variant="destructive">
+                  <AlertDescription>{error}</AlertDescription>
+                </Alert>
+              )}
+            </div>
+          )}
+        </CardContent>
+        <CardFooter>
+          <Button type="submit" disabled={isVerifying || !imageFile} className="w-full sm:w-auto">
+            {isVerifying && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            Verify Aadhaar Image
+          </Button>
+        </CardFooter>
+      </form>
     </Card>
   );
 }

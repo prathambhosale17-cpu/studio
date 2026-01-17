@@ -8,26 +8,23 @@ import { VerificationResult as VerificationResultDisplay } from '@/components/ve
 import { VerificationHistory } from '@/components/verification-history';
 
 export default function Home() {
-  const [currentResult, setCurrentResult] = useState<VerificationResult | null>(null);
   const [history, setHistory] = useState<VerificationResult[]>([]);
   const [isVerifying, setIsVerifying] = useState(false);
   const [viewedResult, setViewedResult] = useState<VerificationResult | null>(null);
 
-  const handleVerificationStart = () => {
+  const handleVerificationStart = (imageDataUri: string) => {
     setIsVerifying(true);
     const pendingResult: VerificationResult = {
       id: `pending-${Date.now()}`,
       timestamp: new Date(),
       status: 'pending',
-      aadhaarData: '', // This will be filled in by the form's data upon completion
+      imageDataUri: imageDataUri,
       indicators: null,
     };
-    setCurrentResult(pendingResult);
     setViewedResult(pendingResult);
   };
 
   const handleVerificationComplete = (result: VerificationResult) => {
-    setCurrentResult(result);
     setViewedResult(result);
     setHistory(prev => [result, ...prev]);
     setIsVerifying(false);
