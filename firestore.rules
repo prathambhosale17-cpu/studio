@@ -12,20 +12,14 @@ service cloud.firestore {
     }
 
     match /users/{userId}/idCards/{cardId} {
-      // Allow GET if you are any signed-in user.
-      // This is needed for the collection group query's result checking.
-      // It allows any signed-in user to fetch a card if they know its full path,
-      // which they can only find by querying for a known ID number.
+      // Allow READ, WRITE only if you are the owner.
+      allow read, write: if isOwner(userId);
+
+      // Allow GET if you are any signed-in user. This is crucial.
+      // A collection group query first runs a 'list' and then 'get's the results.
+      // The 'list' is handled by the collection group rule below.
+      // This 'get' rule allows the client to read the documents returned by the query.
       allow get: if isSignedIn();
-
-      // Allow LIST only if you are the owner. This prevents one user from listing all cards of another.
-      allow list: if isOwner(userId);
-
-      allow create: if isOwner(userId)
-                      && request.resource.data.id == cardId
-                      && request.resource.data.userId == userId;
-
-      allow update, delete: if isOwner(userId);
     }
 
     match /users/{userId}/aadhaarVerifications/{verificationId} {
@@ -35,9 +29,9 @@ service cloud.firestore {
     // This rule allows the ID verification feature to search all ID cards
     // across all users by using a collection group query.
     match /{path=**}/idCards/{cardId} {
-      // A query requires 'list' permission, and reading the documents in the result
-      // requires 'get' permission. 'read' covers both.
-      allow read: if isSignedIn();
+      // A query requires 'list' permission. This rule grants it to any signed-in
+      // user for the 'idCards' collection group.
+      allow list: if isSignedIn();
     }
   }
 }
