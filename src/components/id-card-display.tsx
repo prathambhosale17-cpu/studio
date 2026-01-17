@@ -43,20 +43,28 @@ export function IdCardDisplay({ card }: IdCardDisplayProps) {
             <p className="text-xs text-primary/80">Issued by ID Card Pro</p>
           </div>
         </div>
-        <div className="p-5">
-          <div className="flex items-start gap-5">
-            {/* Left side */}
-            <div className="flex flex-col gap-4">
-              <div className="relative w-28 h-28 rounded-md overflow-hidden border-2 border-muted shrink-0">
-                <Image src={card.photoDataUri} alt={card.name} fill className="object-cover" />
-              </div>
+        <div className="p-5 grid grid-cols-3 gap-5 items-start">
+          {/* Left Column: Photo & QR */}
+          <div className="col-span-1 flex flex-col items-center gap-4 pt-2">
+            <div className="relative w-28 h-32 rounded-md overflow-hidden border-2 border-muted shrink-0">
+              <Image src={card.photoDataUri} alt={card.name} fill className="object-cover" />
             </div>
-            {/* Right side */}
-            <div className="space-y-2.5 text-sm flex-1">
-              <div>
-                <p className="text-muted-foreground text-xs">Name</p>
-                <p className="font-semibold text-base">{card.name}</p>
-              </div>
+            <div className="relative w-24 h-24">
+              <Image src={card.qrCodeDataUri} alt="QR Code" fill />
+            </div>
+          </div>
+
+          {/* Right Column: Details */}
+          <div className="col-span-2 space-y-3.5 text-sm">
+            <div>
+              <p className="text-muted-foreground text-xs">Name</p>
+              <p className="font-semibold text-lg">{card.name}</p>
+            </div>
+            <div>
+              <p className="text-muted-foreground text-xs">ID Number (UID)</p>
+              <p className="font-mono text-primary font-bold text-base">{card.idNumber}</p>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
               <div>
                 <p className="text-muted-foreground text-xs">Date of Birth</p>
                 <p className="font-medium">{card.dateOfBirth}</p>
@@ -65,18 +73,11 @@ export function IdCardDisplay({ card }: IdCardDisplayProps) {
                 <p className="text-muted-foreground text-xs">Gender</p>
                 <p className="font-medium">{card.gender}</p>
               </div>
-              <div>
-                <p className="text-muted-foreground text-xs">ID Number (UID)</p>
-                <p className="font-mono text-primary font-bold text-base">{card.idNumber}</p>
-              </div>
             </div>
-             <div className="relative w-24 h-24 shrink-0">
-                <Image src={card.qrCodeDataUri} alt="QR Code" fill />
-              </div>
-          </div>
-          <div className="mt-4">
-             <p className="text-muted-foreground text-xs">Address</p>
-             <p className="font-medium text-sm">{card.address}</p>
+            <div>
+              <p className="text-muted-foreground text-xs">Address</p>
+              <p className="font-medium text-sm leading-snug">{card.address}</p>
+            </div>
           </div>
         </div>
         <div className="bg-muted/50 px-5 py-2 text-xs text-muted-foreground flex justify-between">
