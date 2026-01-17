@@ -35,7 +35,9 @@ service cloud.firestore {
     // This rule allows the ID verification feature to search all ID cards
     // across all users by using a collection group query.
     match /{path=**}/idCards/{cardId} {
-      allow list: if isSignedIn();
+      // A query requires 'list' permission, and reading the documents in the result
+      // requires 'get' permission. 'read' covers both.
+      allow read: if isSignedIn();
     }
   }
 }
