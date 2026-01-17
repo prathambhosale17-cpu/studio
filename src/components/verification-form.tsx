@@ -102,11 +102,11 @@ export function VerificationForm({
         imageDataUri: imagePreview,
         status: hasIndicators ? 'failed' : 'verified',
         indicators: hasIndicators ? aiResult.fraudIndicators : null,
-        name: aiResult.name,
-        dateOfBirth: aiResult.dateOfBirth,
-        gender: aiResult.gender,
-        address: aiResult.address,
-        aadhaarNumber: aiResult.aadhaarNumber,
+        name: aiResult.name ?? null,
+        dateOfBirth: aiResult.dateOfBirth ?? null,
+        gender: aiResult.gender ?? null,
+        address: aiResult.address ?? null,
+        aadhaarNumber: aiResult.aadhaarNumber ?? null,
       };
       onVerificationComplete(result);
     } catch (error) {

@@ -26,9 +26,9 @@ export type VerificationResult = {
   imageDataUri: string;
   status: VerificationStatus;
   indicators: string | null;
-  name?: string;
-  dateOfBirth?: string;
-  gender?: string;
-  address?: string;
-  aadhaarNumber?: string;
+  name?: string | null;
+  dateOfBirth?: string | null;
+  gender?: string | null;
+  address?: string | null;
+  aadhaarNumber?: string | null;
 };

@@ -103,23 +103,38 @@
           "description": "A summary of fraud indicators found, or null if none."
         },
         "name": {
-          "type": "string",
+          "type": [
+            "string",
+            "null"
+          ],
           "description": "Name extracted from the card."
         },
         "dateOfBirth": {
-          "type": "string",
+          "type": [
+            "string",
+            "null"
+          ],
           "description": "DOB extracted from the card."
         },
         "gender": {
-          "type": "string",
+          "type": [
+            "string",
+            "null"
+          ],
           "description": "Gender extracted from the card."
         },
         "address": {
-          "type": "string",
+          "type": [
+            "string",
+            "null"
+          ],
           "description": "Address extracted from the card."
         },
         "aadhaarNumber": {
-          "type": "string",
+          "type": [
+            "string",
+            "null"
+          ],
           "description": "Aadhaar number extracted from the card."
         }
       },
