@@ -71,7 +71,7 @@ export function IdCardForm({ onAddCard }: IdCardFormProps) {
       try {
         const photoDataUri = reader.result as string;
         const id = `${Date.now()}`;
-        const idNumber = `IDC-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
+        const idNumber = `IDC-${Math.random().toString().slice(2, 14)}`;
         
         const qrCodeContent = JSON.stringify({
             name: values.name,
