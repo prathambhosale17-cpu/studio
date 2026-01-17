@@ -12,7 +12,14 @@ service cloud.firestore {
     }
 
     match /users/{userId}/idCards/{cardId} {
-      allow read: if isOwner(userId);
+      // Allow GET if you are any signed-in user.
+      // This is needed for the collection group query's result checking.
+      // It allows any signed-in user to fetch a card if they know its full path,
+      // which they can only find by querying for a known ID number.
+      allow get: if isSignedIn();
+
+      // Allow LIST only if you are the owner. This prevents one user from listing all cards of another.
+      allow list: if isOwner(userId);
 
       allow create: if isOwner(userId)
                       && request.resource.data.id == cardId
@@ -24,7 +31,7 @@ service cloud.firestore {
     // This rule allows the ID verification feature to search all ID cards
     // across all users by using a collection group query.
     match /{path=**}/idCards/{cardId} {
-      allow read: if isSignedIn();
+      allow list: if isSignedIn();
     }
   }
 }
