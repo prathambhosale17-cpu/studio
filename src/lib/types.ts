@@ -1,19 +1,15 @@
-export type VerificationStatus = 'pending' | 'verified' | 'failed' | 'error' | 'idle';
+import type { Timestamp } from "firebase/firestore";
 
-export type VerificationResult = {
-  id: string;
-  timestamp: Date;
-  status: VerificationStatus;
-  imageDataUri: string | null;
-  indicators: string | null;
+export type IDCard = {
+  id: string; // The document ID in Firestore
+  userId: string;
+  name: string;
+  dateOfBirth: string;
+  photoDataUri: string;
+  idNumber: string; // A unique, human-readable ID number
+  createdAt: Date;
+};
 
-  // Extracted data from AI
-  aadhaarNumber?: string;
-  name?: string;
-  dateOfBirth?: string;
-  gender?: string;
-  address?: string;
-
-  // Firestore specific
-  userId?: string;
+export type FirestoreIDCard = Omit<IDCard, 'createdAt'> & {
+  createdAt: Timestamp;
 };

@@ -5,8 +5,8 @@ import { FirebaseClientProvider } from '@/firebase/client-provider';
 import { AuthProvider } from '@/firebase/auth/auth-provider';
 
 export const metadata: Metadata = {
-  title: 'AadhaarVerify AI',
-  description: 'A secure verification demo app for AI-powered Aadhaar fraud detection.',
+  title: 'ID Card Pro',
+  description: 'Create and verify digital ID cards with AI-powered face matching.',
 };
 
 export default function RootLayout({

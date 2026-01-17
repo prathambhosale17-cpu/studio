@@ -1,65 +1,50 @@
 {
   "entities": {
-    "AadhaarVerification": {
+    "IDCard": {
       "$schema": "http://json-schema.org/draft-07/schema#",
-      "title": "AadhaarVerification",
+      "title": "IDCard",
       "type": "object",
-      "description": "Represents a single Aadhaar verification attempt.",
+      "description": "Represents a single user-created ID card.",
       "properties": {
         "id": {
           "type": "string",
-          "description": "Unique identifier for the Aadhaar verification attempt."
+          "description": "Unique identifier for the ID Card, matches the Firestore document ID."
         },
         "userId": {
-            "type": "string",
-            "description": "The ID of the user who performed the verification."
-        },
-        "timestamp": {
           "type": "string",
-          "description": "The date and time when the verification was performed.",
+          "description": "The ID of the user who created the card."
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "The date and time when the card was created.",
           "format": "date-time"
         },
-        "status": {
+        "idNumber": {
           "type": "string",
-          "description": "The status of the verification attempt (e.g., 'verified', 'failed', 'error').",
-          "enum": ["verified", "failed", "error", "pending", "idle"]
-        },
-        "imageDataUri": {
-            "type": "string",
-            "description": "The data URI of the uploaded Aadhaar card image."
-        },
-        "indicators": {
-          "type": "string",
-          "description": "A summary of fraud indicators found, or null if none."
-        },
-        "aadhaarNumber": {
-          "type": "string",
-          "description": "The Aadhaar number extracted from the document."
+          "description": "A unique, human-readable ID number for the card."
         },
         "name": {
           "type": "string",
-          "description": "The name extracted from the Aadhaar document."
+          "description": "The name of the person on the ID card."
         },
         "dateOfBirth": {
           "type": "string",
-          "description": "The date of birth extracted from the Aadhaar document.",
+          "description": "The date of birth on the ID card.",
           "format": "date"
         },
-        "gender": {
+        "photoDataUri": {
           "type": "string",
-          "description": "The gender extracted from the Aadhaar document."
-        },
-        "address": {
-          "type": "string",
-          "description": "The address extracted from the Aadhaar document."
+          "description": "The data URI of the user's photo."
         }
       },
       "required": [
         "id",
         "userId",
-        "timestamp",
-        "status",
-        "imageDataUri"
+        "createdAt",
+        "idNumber",
+        "name",
+        "dateOfBirth",
+        "photoDataUri"
       ]
     }
   },
@@ -69,10 +54,11 @@
     ]
   },
   "firestore": {
-      "collection": "/users/{userId}/aadhaarVerifications",
+    "/users/{userId}/idCards/{cardId}": {
       "schema": {
-        "$ref": "#/entities/AadhaarVerification"
+        "$ref": "#/entities/IDCard"
       },
-      "description": "Stores Aadhaar verification attempts for a specific user."
+      "description": "Stores ID cards created by a specific user."
+    }
   }
 }

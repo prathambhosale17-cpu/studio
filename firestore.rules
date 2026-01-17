@@ -3,41 +3,22 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // Helper function to check if a user is authenticated.
     function isSignedIn() {
       return request.auth != null;
     }
 
-    // Helper function to check if the user ID in the path matches the authenticated user's UID.
-    // This is the core of our ownership-based security model.
     function isOwner(userId) {
       return isSignedIn() && request.auth.uid == userId;
     }
 
-    // Rules for the 'aadhaarVerifications' subcollection nested under each user.
-    // This structure ensures that a user's data is isolated and they can only access their own records.
-    match /users/{userId}/aadhaarVerifications/{verificationId} {
-
-      /**
-       * Allow read (`get`, `list`) operations only if the requesting user is the owner of the records.
-       * This prevents any user from seeing another user's verification history.
-       */
+    match /users/{userId}/idCards/{cardId} {
       allow read: if isOwner(userId);
 
-      /**
-       * Allow create operation if the user is the owner.
-       * We also enforce that the incoming document's `userId` and `id` fields match the path,
-       * ensuring data consistency.
-       */
       allow create: if isOwner(userId)
-                      && request.resource.data.id == verificationId
+                      && request.resource.data.id == cardId
                       && request.resource.data.userId == userId;
 
-      /**
-       * Allow update and delete operations only if the user is the owner of the document.
-       * This prevents unauthorized modification or deletion of verification records.
-       */
-      allow write: if isOwner(userId);
+      allow update, delete: if isOwner(userId);
     }
   }
 }

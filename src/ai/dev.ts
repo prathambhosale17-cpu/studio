@@ -1,4 +1,4 @@
 import { config } from 'dotenv';
 config();
 
-import '@/ai/flows/extract-fraud-indicators.ts';
+import '@/ai/flows/face-match-flow.ts';
