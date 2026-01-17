@@ -334,7 +334,7 @@ export function IdVerification() {
 
       case 'result':
         if (!analysisResults.face) return null;
-        const isMatch = analysisResults.face.isMatch && analysisResults.face.confidence > 0.7;
+        const isMatch = analysisResults.face.isMatch;
         const ResultIcon = isMatch ? CheckCircle2 : XCircle;
         const iconColor = isMatch ? 'text-green-500' : 'text-destructive';
         
