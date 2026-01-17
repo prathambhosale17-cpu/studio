@@ -9,7 +9,7 @@ import {
 } from '@/firebase';
 import { collection, query, orderBy, doc, Timestamp } from 'firebase/firestore';
 import type { IDCard, FirestoreIDCard } from '@/lib/types';
-import { setDocumentNonBlocking } from '@/firebase/non-blocking-updates';
+import { setDocumentNonBlocking, deleteDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 
 /**
  * A custom hook to manage the ID card history for the current user.
@@ -67,5 +67,14 @@ export function useIdCards() {
     setDocumentNonBlocking(docRef, newRecord, { merge: false });
   };
 
-  return { cards, isLoading, error, addIdCard };
+  const deleteIdCard = (cardId: string) => {
+    if (!user) {
+        console.error('Cannot delete ID card: user not authenticated.');
+        return;
+    }
+    const docRef = doc(firestore, 'users', user.uid, 'idCards', cardId);
+    deleteDocumentNonBlocking(docRef);
+  };
+
+  return { cards, isLoading, error, addIdCard, deleteIdCard };
 }

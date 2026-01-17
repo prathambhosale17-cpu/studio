@@ -5,7 +5,7 @@ import { Header } from '@/components/header';
 import { useIdCards } from '@/hooks/use-id-cards';
 
 export default function Home() {
-  const { cards, isLoading, addIdCard } = useIdCards();
+  const { cards, isLoading, addIdCard, deleteIdCard } = useIdCards();
 
   return (
     <div className="flex min-h-screen w-full flex-col bg-background">
@@ -16,7 +16,7 @@ export default function Home() {
             <IdCardForm onAddCard={addIdCard} />
           </div>
           <div className="grid auto-rows-max items-start gap-6 lg:col-span-2">
-            <IdCardList cards={cards} isLoading={isLoading} />
+            <IdCardList cards={cards} isLoading={isLoading} deleteIdCard={deleteIdCard} />
           </div>
         </div>
       </main>

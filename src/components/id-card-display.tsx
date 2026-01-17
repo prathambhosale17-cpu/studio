@@ -3,16 +3,30 @@
 import { useRef } from 'react';
 import type { IDCard } from '@/lib/types';
 import Image from 'next/image';
-import { Download, UserSquare } from 'lucide-react';
+import { Download, Trash2, UserSquare } from 'lucide-react';
 import { toPng } from 'html-to-image';
 import { Button } from './ui/button';
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
+import { useToast } from '@/hooks/use-toast';
 
 interface IdCardDisplayProps {
   card: IDCard;
+  onDelete: (cardId: string) => void;
 }
 
-export function IdCardDisplay({ card }: IdCardDisplayProps) {
+export function IdCardDisplay({ card, onDelete }: IdCardDisplayProps) {
   const cardRef = useRef<HTMLDivElement>(null);
+  const { toast } = useToast();
 
   const handleDownload = () => {
     if (cardRef.current === null) {
@@ -27,6 +41,11 @@ export function IdCardDisplay({ card }: IdCardDisplayProps) {
       })
       .catch(err => {
         console.error('Failed to download ID card image', err);
+        toast({
+            variant: "destructive",
+            title: "Download failed",
+            description: "Could not generate image for download."
+        })
       });
   };
 
@@ -85,10 +104,32 @@ export function IdCardDisplay({ card }: IdCardDisplayProps) {
           <span>Not a government-issued ID</span>
         </div>
       </div>
-      <Button onClick={handleDownload} variant="outline" size="sm">
-        <Download className="mr-2 h-4 w-4" />
-        Download Card
-      </Button>
+      <div className="flex items-center gap-2">
+        <Button onClick={handleDownload} variant="outline" size="sm">
+            <Download className="mr-2 h-4 w-4" />
+            Download Card
+        </Button>
+        <AlertDialog>
+            <AlertDialogTrigger asChild>
+                <Button variant="destructive" size="sm">
+                    <Trash2 className="mr-2 h-4 w-4" />
+                    Delete Card
+                </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+                <AlertDialogHeader>
+                    <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                        This action cannot be undone. This will permanently delete the ID card for {card.name}.
+                    </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction onClick={() => onDelete(card.id)}>Delete</AlertDialogAction>
+                </AlertDialogFooter>
+            </AlertDialogContent>
+        </AlertDialog>
+      </div>
     </div>
   );
 }

@@ -13,9 +13,10 @@ import { IdCardDisplay } from './id-card-display';
 interface IdCardListProps {
   cards: IDCard[];
   isLoading: boolean;
+  deleteIdCard: (cardId: string) => void;
 }
 
-export function IdCardList({ cards, isLoading }: IdCardListProps) {
+export function IdCardList({ cards, isLoading, deleteIdCard }: IdCardListProps) {
   return (
     <Card>
       <CardHeader>
@@ -35,7 +36,7 @@ export function IdCardList({ cards, isLoading }: IdCardListProps) {
         ) : (
           <div className="grid gap-6 md:grid-cols-1 lg:grid-cols-2">
             {cards.map(card => (
-              <IdCardDisplay key={card.id} card={card} />
+              <IdCardDisplay key={card.id} card={card} onDelete={deleteIdCard} />
             ))}
           </div>
         )}
