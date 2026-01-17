@@ -28,11 +28,11 @@ const ExtractFraudIndicatorsOutputSchema = z.object({
     .describe(
       'A concise summary of potential fraud indicators identified in the Aadhaar image. If no fraud is detected, it should return "No fraud indicators found."'
     ),
-  name: z.string().optional().describe('The name extracted from the Aadhaar card.'),
-  dateOfBirth: z.string().optional().describe('The date of birth extracted from the Aadhaar card in DD/MM/YYYY format.'),
-  gender: z.string().optional().describe('The gender extracted from the Aadhaar card.'),
-  address: z.string().optional().describe('The full address extracted from the Aadhaar card.'),
-  aadhaarNumber: z.string().optional().describe('The 12-digit Aadhaar number extracted from the card, formatted as XXXX XXXX XXXX.'),
+  name: z.string().nullable().describe('The name extracted from the Aadhaar card.'),
+  dateOfBirth: z.string().nullable().describe('The date of birth extracted from the Aadhaar card in DD/MM/YYYY format.'),
+  gender: z.string().nullable().describe('The gender extracted from the Aadhaar card.'),
+  address: z.string().nullable().describe('The full address extracted from the Aadhaar card.'),
+  aadhaarNumber: z.string().nullable().describe('The 12-digit Aadhaar number extracted from the card, formatted as XXXX XXXX XXXX.'),
 });
 export type ExtractFraudIndicatorsOutput = z.infer<
   typeof ExtractFraudIndicatorsOutputSchema
@@ -48,28 +48,28 @@ const prompt = ai.definePrompt({
   name: 'extractFraudIndicatorsPrompt',
   input: {schema: ExtractFraudIndicatorsInputSchema},
   output: {schema: ExtractFraudIndicatorsOutputSchema},
-  prompt: `You are an expert AI system specializing in the forensic analysis of identity documents, with a focus on Indian Aadhaar cards. Your primary task is to identify signs of digital forgery or tampering in the provided image.
+  prompt: `You are an expert AI system specializing in the forensic analysis of identity documents. Your primary task is to identify signs of **digital forgery or tampering** in the provided image.
 
-**ASSUME the document is intended to be an Aadhaar card and focus on identifying inconsistencies.**
+**Analysis Focus:**
+Your goal is to identify visual evidence of digital manipulation. You should **NOT** report issues just because the document is not an official government-issued ID (like an Aadhaar card). The image could be a custom-made ID. Your job is to determine if THAT specific image has been tampered with.
 
-**Process:**
-1.  **OCR Data Extraction:** First, perform Optical Character Recognition (OCR) on the image to extract the following fields if they are present:
-    *   Name
-    *   Date of Birth
-    *   Gender
-    *   Address
-    *   Aadhaar Number
+Focus on these indicators of forgery:
+*   **Font & Alignment:** Look for inconsistent fonts, varied character spacing, or text that is misaligned.
+*   **Digital Artifacts:** Scrutinize the image for pixelation around text, blurry patches, unnatural shadows, or inconsistent background textures that suggest cloning or erasing.
+*   **Screenshot Indicators:** Detect non-document elements like phone status bars, application windows, or unusual cropping.
 
-2.  **Visual Forensic Analysis:** This is your main priority. Carefully analyze the image for visual evidence of digital manipulation:
-    *   **Font & Alignment:** Look for inconsistent fonts, varied character spacing, or text that is misaligned with other fields. These are common signs of text being digitally inserted.
-    *   **Digital Artifacts:** Scrutinize the image for artifacts from editing software, such as pixelation around text, blurry patches, unnatural shadows, or inconsistent background textures that could indicate cloning or erasing.
-    *   **Ghosting or Overlays:** Check for faint outlines of previous text or images beneath the current content.
-    *   **Screenshot Indicators:** Detect any non-document elements like phone status bars, application windows, or unusual cropping that suggest the image is a screenshot rather than a direct scan.
+**Data Extraction:**
+While analyzing, also perform Optical Character Recognition (OCR) to extract these fields if present:
+*   Name
+*   Date of Birth
+*   Gender
+*   Address
+*   Aadhaar Number (or any ID number present)
 
 **Output Rules:**
--   Populate all the extracted data fields you can find (name, dateOfBirth, gender, address, aadhaarNumber). If a field is not present, omit it.
--   For the \`fraudIndicators\` field, provide a concise, bulleted list of any suspicious findings from your Visual Forensic Analysis.
--   **If no visual tampering or major inconsistencies are found**, respond with "No fraud indicators found." for the \`fraudIndicators' field. Do not report issues just because the document is not a government-issued Aadhaar card; focus on signs of active tampering.
+*   Populate the extracted data fields. If a field is not present, return null for it.
+*   For the \`fraudIndicators\` field, provide a concise, bulleted list of any suspicious findings from your visual analysis.
+*   **Crucially, if you find no evidence of digital tampering, you MUST respond with "No fraud indicators found." for the \`fraudIndicators\` field.** This is true even if the document is not a government ID, has non-standard formatting, or contains text like "Not a government-issued ID".
 
 Image: {{media url=imageDataUri}}
   `,
