@@ -43,14 +43,21 @@ const prompt = ai.definePrompt({
   name: 'extractFraudIndicatorsPrompt',
   input: {schema: ExtractFraudIndicatorsInputSchema},
   output: {schema: ExtractFraudIndicatorsOutputSchema},
-  prompt: `You are an expert AI specializing in forensic analysis of identity documents, particularly Indian Aadhaar cards. Your task is to detect signs of digital forgery or tampering in the provided image.
+  prompt: `You are an expert AI system designed for forensic analysis of Indian Aadhaar cards. Your task is to act as an OCR and Rule Engine to detect signs of digital forgery or tampering.
 
-Analyze the Aadhaar card image below for any indicators of fraud. Look for:
-- **Digital Editing:** Signs of Photoshop, inconsistent fonts, pixelation around text fields, or misaligned text.
-- **Screenshot Artifacts:** Presence of UI elements, unusual cropping, or digital watermarks that suggest it's a screenshot of a digital document rather than a scan of a physical one.
-- **Text Replacement:** Check for discrepancies in typography, spacing, or color in names, dates of birth, addresses, or the Aadhaar number itself.
+**Process:**
+1.  **OCR Extraction:** First, perform Optical Character Recognition (OCR) on the provided image to extract all visible text content.
+2.  **Rule-Based Validation:** Analyze the extracted text against the following rules:
+    *   **Aadhaar Number:** Must be in the format \`XXXX XXXX XXXX\`. Report any format violations.
+    *   **Date of Birth (DOB):** Must be in a valid \`DD/MM/YYYY\` format. Report any invalid formats.
+    *   **Gender:** Must be a standard value (e.g., Male, Female, Transgender). Report any anomalies.
+3.  **Visual Forensic Analysis:** Concurrently, analyze the image for visual signs of tampering:
+    *   **Font & Alignment:** Look for inconsistent fonts, character spacing, or text fields that are not perfectly aligned. These are strong indicators of digital text replacement.
+    *   **Digital Editing:** Identify any artifacts from editing software like Photoshop, such as blurry areas, pixelation around text, or inconsistent background textures.
+    *   **Screenshot Artifacts:** Detect any non-document elements like phone status bars, application windows, or unusual cropping that indicate the image is a screenshot.
 
-Based on your analysis, provide a concise summary of all fraud indicators you find. If the image appears authentic and unaltered, respond with "No fraud indicators found."
+**Output:**
+Provide a concise summary of all fraud indicators found. If the analysis passes all checks (both text and visual), respond *only* with "No fraud indicators found."
 
 Image: {{media url=imageDataUri}}
   `,
