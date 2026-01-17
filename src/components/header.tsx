@@ -30,7 +30,7 @@ export function Header() {
           href="/verify"
           className={cn(
             'text-sm font-medium transition-colors hover:text-primary',
-            pathname === '/verify' ? 'text-primary' : 'text-muted-foreground'
+            pathname.startsWith('/verify') ? 'text-primary' : 'text-muted-foreground'
           )}
         >
           Verify ID

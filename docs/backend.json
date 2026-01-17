@@ -61,6 +61,75 @@
         "address",
         "qrCodeDataUri"
       ]
+    },
+    "AadhaarVerification": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "AadhaarVerification",
+      "type": "object",
+      "description": "Represents the result of a single Aadhaar card verification attempt.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the verification record."
+        },
+        "userId": {
+          "type": "string",
+          "description": "The ID of the user who performed the verification."
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time",
+          "description": "When the verification was performed."
+        },
+        "imageDataUri": {
+          "type": "string",
+          "description": "The data URI of the scanned Aadhaar card image."
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "pending",
+            "verified",
+            "failed",
+            "error"
+          ],
+          "description": "The final status of the verification."
+        },
+        "indicators": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "A summary of fraud indicators found, or null if none."
+        },
+        "name": {
+          "type": "string",
+          "description": "Name extracted from the card."
+        },
+        "dateOfBirth": {
+          "type": "string",
+          "description": "DOB extracted from the card."
+        },
+        "gender": {
+          "type": "string",
+          "description": "Gender extracted from the card."
+        },
+        "address": {
+          "type": "string",
+          "description": "Address extracted from the card."
+        },
+        "aadhaarNumber": {
+          "type": "string",
+          "description": "Aadhaar number extracted from the card."
+        }
+      },
+      "required": [
+        "id",
+        "userId",
+        "timestamp",
+        "imageDataUri",
+        "status"
+      ]
     }
   },
   "auth": {
@@ -74,6 +143,12 @@
         "$ref": "#/entities/IDCard"
       },
       "description": "Stores ID cards created by a specific user."
+    },
+    "/users/{userId}/aadhaarVerifications/{verificationId}": {
+      "schema": {
+        "$ref": "#/entities/AadhaarVerification"
+      },
+      "description": "Stores Aadhaar verification history for a user."
     }
   }
 }

@@ -16,3 +16,19 @@ export type IDCard = {
 export type FirestoreIDCard = Omit<IDCard, 'createdAt'> & {
   createdAt: Timestamp;
 };
+
+export type VerificationStatus = 'idle' | 'pending' | 'verified' | 'failed' | 'error';
+
+export type VerificationResult = {
+  id: string;
+  userId?: string;
+  timestamp: Date;
+  imageDataUri: string;
+  status: VerificationStatus;
+  indicators: string | null;
+  name?: string;
+  dateOfBirth?: string;
+  gender?: string;
+  address?: string;
+  aadhaarNumber?: string;
+};
