@@ -3,28 +3,17 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    function isSignedIn() {
-      return request.auth != null;
+    // Rule 1: Users can read and write any document within their own
+    // user-specific folder (e.g., /users/their-own-id/...).
+    match /users/{userId}/{documents=**} {
+      allow read, write: if request.auth.uid == userId;
     }
 
-    function isOwner(userId) {
-      return isSignedIn() && request.auth.uid == userId;
-    }
-
-    // This is a general rule for a user's own data.
-    // It allows owners to read and write anything in their own user directory.
-    match /users/{userId}/{collection}/{docId} {
-        allow read, write: if isOwner(userId);
-    }
-
-    // This rule allows the ID verification feature to search all ID cards
-    // across all users by using a collection group query.
+    // Rule 2: To allow the ID verification search to work, any authenticated
+    // user needs permission to query the 'idCards' collection group.
+    // 'read' permission includes 'list' (for the query) and 'get' (for the results).
     match /{path=**}/idCards/{cardId} {
-      // A query requires 'list' permission. This rule grants it to any signed-in
-      // user for the 'idCards' collection group. The results of the query then
-      // need 'get' permission on the individual documents. 'read' permission
-      // grants both 'list' and 'get', so we use that here for simplicity.
-      allow read: if isSignedIn();
+      allow read: if request.auth != null;
     }
   }
 }
