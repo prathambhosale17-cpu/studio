@@ -1,0 +1,90 @@
+{
+  "entities": {
+    "AadhaarVerification": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "AadhaarVerification",
+      "type": "object",
+      "description": "Represents a single Aadhaar verification attempt.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Aadhaar verification attempt."
+        },
+        "aadhaarNumber": {
+          "type": "string",
+          "description": "The Aadhaar number that was submitted for verification."
+        },
+        "verificationTimestamp": {
+          "type": "string",
+          "description": "The date and time when the verification was performed.",
+          "format": "date-time"
+        },
+        "verificationStatus": {
+          "type": "string",
+          "description": "The status of the verification attempt (e.g., 'success', 'failure', 'pending')."
+        },
+        "fraudIndicators": {
+          "type": "array",
+          "description": "An array of fraud indicators identified during the verification process.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "name": {
+          "type": "string",
+          "description": "The name extracted from the Aadhaar document."
+        },
+        "dateOfBirth": {
+          "type": "string",
+          "description": "The date of birth extracted from the Aadhaar document.",
+          "format": "date"
+        },
+        "gender": {
+          "type": "string",
+          "description": "The gender extracted from the Aadhaar document."
+        },
+        "address": {
+          "type": "string",
+          "description": "The address extracted from the Aadhaar document."
+        }
+      },
+      "required": [
+        "id",
+        "aadhaarNumber",
+        "verificationTimestamp",
+        "verificationStatus"
+      ]
+    }
+  },
+  "auth": {
+    "providers": [
+      "password",
+      "anonymous"
+    ]
+  },
+  "firestore": {
+    "structure": [
+      {
+        "path": "/users/{userId}/aadhaarVerifications/{verificationId}",
+        "definition": {
+          "entityName": "AadhaarVerification",
+          "schema": {
+            "$ref": "#/backend/entities/AadhaarVerification"
+          },
+          "description": "Stores Aadhaar verification attempts for a specific user. Includes denormalized 'userId' via path-based ownership for authorization independence.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The unique identifier of the user."
+            },
+            {
+              "name": "verificationId",
+              "description": "The unique identifier for the Aadhaar verification attempt."
+            }
+          ]
+        }
+      }
+    ],
+    "reasoning": "The Firestore data structure is designed to securely store Aadhaar verification attempts for individual users. Each user has a dedicated collection of verification records, enabling path-based ownership and simplified security rules. This design ensures that users can only access their own verification data. The `AadhaarVerification` documents store all relevant verification details, including the Aadhaar number (consider encrypting sensitive data), verification status, timestamps, fraud indicators, and extracted personal information. This data structure ensures Authorization Independence, as all data required to authorize a request is contained within the document itself. The structure supports QAPs since listing operations are scoped to the user's collection, ensuring that only authorized data is returned."
+  }
+}

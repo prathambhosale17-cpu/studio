@@ -1,0 +1,84 @@
+/**
+ * Core Philosophy: This ruleset enforces a strict user-ownership model. All data is considered private and is
+ * exclusively accessible by the user who owns it. The security model is designed to be highly secure and private
+ * by default.
+ *
+ * Data Structure: The data is organized hierarchically under a top-level `users` collection. Each user's data,
+ * specifically their Aadhaar verification records, is stored in a subcollection (`aadhaarVerifications`) nested
+ * under their unique user document path (`/users/{userId}`). This structure naturally isolates each user's data.
+ *
+ * Key Security Decisions:
+ * - Strict Ownership: A user can only access (`read`, `write`, `delete`) documents within their own data tree
+ *   (i.e., under `/users/{their-own-userId}`). Cross-user access is explicitly forbidden.
+ * - No Public Data: There are no publicly readable collections. All access requires authentication.
+ * - User Listing Disabled: The rules do not provide a way to list documents in the top-level `users` collection,
+ *   preventing enumeration of all users in the system.
+ *
+ * Denormalization for Authorization: The rules rely on path-based security. The `userId` in the document path
+ * (`/users/{userId}/...`) is the sole source of truth for ownership, which avoids costly `get()` calls to other
+ * documents for authorization checks, making the rules fast and efficient.
+ *
+ * Structural Segregation: This pattern is not required in this model as all data is private. There is no mix of
+ * public and private content within the same collection.
+ */
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper functions to improve readability and maintainability.
+
+    /**
+     * Checks if the user is authenticated.
+     */
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    /**
+     * Checks if the currently authenticated user's UID matches the provided userId.
+     * This is the primary function for enforcing data ownership.
+     */
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    /**
+     * For update and delete operations, confirms the document exists and the user is the owner.
+     * This prevents unauthorized writes to non-existent paths and ensures idempotency.
+     */
+    function isExistingOwner(userId) {
+      return isOwner(userId) && resource != null;
+    }
+
+    /**
+     * On create, validates that the document's internal `id` field matches the document's ID
+     * from the path. This enforces relational integrity between the path and the data.
+     */
+    function isConsistentCreate(verificationId) {
+      return request.resource.data.id == verificationId;
+    }
+
+    /**
+     * On update, ensures that the document's internal `id` field is immutable.
+     * This prevents changing the fundamental identifier of the record post-creation.
+     */
+    function isImmutableOnUpdate() {
+      return request.resource.data.id == resource.data.id;
+    }
+
+    /**
+     * @description Rules for a user's private Aadhaar verification records.
+     * @path /users/{userId}/aadhaarVerifications/{verificationId}
+     * @allow (create) A signed-in user ('user123') can create a new verification record in their own subcollection.
+     * @deny (get) A different signed-in user ('user456') cannot read a verification record belonging to 'user123'.
+     * @principle Restricts access to a user's own data tree, enforcing strict data privacy and ownership.
+     */
+    match /users/{userId}/aadhaarVerifications/{verificationId} {
+      allow get: if isOwner(userId);
+      allow list: if isOwner(userId);
+      allow create: if isOwner(userId) && isConsistentCreate(verificationId);
+      allow update: if isExistingOwner(userId) && isImmutableOnUpdate();
+      allow delete: if isExistingOwner(userId);
+    }
+  }
+}
