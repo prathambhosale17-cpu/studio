@@ -48,22 +48,28 @@ const prompt = ai.definePrompt({
   name: 'extractFraudIndicatorsPrompt',
   input: {schema: ExtractFraudIndicatorsInputSchema},
   output: {schema: ExtractFraudIndicatorsOutputSchema},
-  prompt: `You are an expert AI system designed for forensic analysis of Indian Aadhaar cards. Your task is to act as an OCR and Rule Engine to detect signs of digital forgery or tampering.
+  prompt: `You are an expert AI system specializing in the forensic analysis of identity documents, with a focus on Indian Aadhaar cards. Your primary task is to identify signs of digital forgery or tampering in the provided image.
+
+**ASSUME the document is intended to be an Aadhaar card and focus on identifying inconsistencies.**
 
 **Process:**
-1.  **OCR Extraction:** First, perform Optical Character Recognition (OCR) on the provided image to extract all visible text content, including Name, Date of Birth, Gender, Address, and the Aadhaar Number.
-2.  **Rule-Based Validation:** Analyze the extracted text against the following rules:
-    *   **Aadhaar Number:** Must be in the format \`XXXX XXXX XXXX\`. Report any format violations.
-    *   **Date of Birth (DOB):** Must be in a valid \`DD/MM/YYYY\` format. Report any invalid formats.
-    *   **Gender:** Must be a standard value (e.g., Male, Female, Transgender). Report any anomalies.
-3.  **Visual Forensic Analysis:** Concurrently, analyze the image for visual signs of tampering:
-    *   **Font & Alignment:** Look for inconsistent fonts, character spacing, or text fields that are not perfectly aligned. These are strong indicators of digital text replacement.
-    *   **Digital Editing:** Identify any artifacts from editing software like Photoshop, such as blurry areas, pixelation around text, or inconsistent background textures.
-    *   **Screenshot Artifacts:** Detect any non-document elements like phone status bars, application windows, or unusual cropping that indicate the image is a screenshot.
+1.  **OCR Data Extraction:** First, perform Optical Character Recognition (OCR) on the image to extract the following fields if they are present:
+    *   Name
+    *   Date of Birth
+    *   Gender
+    *   Address
+    *   Aadhaar Number
 
-**Output:**
--   Populate all extracted fields (name, dateOfBirth, gender, address, aadhaarNumber).
--   Provide a concise summary of all fraud indicators found. If the analysis passes all checks (both text and visual), respond *only* with "No fraud indicators found." for the 'fraudIndicators' field.
+2.  **Visual Forensic Analysis:** This is your main priority. Carefully analyze the image for visual evidence of digital manipulation:
+    *   **Font & Alignment:** Look for inconsistent fonts, varied character spacing, or text that is misaligned with other fields. These are common signs of text being digitally inserted.
+    *   **Digital Artifacts:** Scrutinize the image for artifacts from editing software, such as pixelation around text, blurry patches, unnatural shadows, or inconsistent background textures that could indicate cloning or erasing.
+    *   **Ghosting or Overlays:** Check for faint outlines of previous text or images beneath the current content.
+    *   **Screenshot Indicators:** Detect any non-document elements like phone status bars, application windows, or unusual cropping that suggest the image is a screenshot rather than a direct scan.
+
+**Output Rules:**
+-   Populate all the extracted data fields you can find (name, dateOfBirth, gender, address, aadhaarNumber). If a field is not present, omit it.
+-   For the \`fraudIndicators\` field, provide a concise, bulleted list of any suspicious findings from your Visual Forensic Analysis.
+-   **If no visual tampering or major inconsistencies are found**, respond with "No fraud indicators found." for the \`fraudIndicators' field. Do not report issues just because the document is not a government-issued Aadhaar card; focus on signs of active tampering.
 
 Image: {{media url=imageDataUri}}
   `,
