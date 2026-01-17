@@ -107,7 +107,7 @@ export function IdVerification() {
       .catch((e) => {
         // Use the global error emitter for permission errors.
         const permissionError = new FirestorePermissionError({
-            path: `idCards where idNumber == "${idNumber.trim()}"`,
+            path: 'idCards/{cardId}',
             operation: 'list',
         });
         errorEmitter.emit('permission-error', permissionError);
