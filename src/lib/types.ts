@@ -6,4 +6,14 @@ export type VerificationResult = {
   status: VerificationStatus;
   imageDataUri: string | null;
   indicators: string | null;
+
+  // Extracted data from AI
+  aadhaarNumber?: string;
+  name?: string;
+  dateOfBirth?: string;
+  gender?: string;
+  address?: string;
+
+  // Firestore specific
+  userId?: string;
 };

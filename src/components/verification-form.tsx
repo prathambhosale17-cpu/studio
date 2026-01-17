@@ -90,22 +90,29 @@ export function VerificationForm({
       return;
     }
     onVerificationStart(imagePreview);
+    const resultId = `${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
+
     try {
       const aiResult = await extractFraudIndicators({ imageDataUri: imagePreview });
       const hasIndicators = aiResult.fraudIndicators && aiResult.fraudIndicators.toLowerCase().trim() !== 'no fraud indicators found.' && aiResult.fraudIndicators.trim() !== '';
 
       const result: VerificationResult = {
-        id: new Date().toISOString(),
+        id: resultId,
         timestamp: new Date(),
         imageDataUri: imagePreview,
         status: hasIndicators ? 'failed' : 'verified',
         indicators: hasIndicators ? aiResult.fraudIndicators : null,
+        name: aiResult.name,
+        dateOfBirth: aiResult.dateOfBirth,
+        gender: aiResult.gender,
+        address: aiResult.address,
+        aadhaarNumber: aiResult.aadhaarNumber,
       };
       onVerificationComplete(result);
     } catch (error) {
       console.error('Verification Error:', error);
       const errorResult: VerificationResult = {
-        id: new Date().toISOString(),
+        id: resultId,
         timestamp: new Date(),
         imageDataUri: imagePreview,
         status: 'error',

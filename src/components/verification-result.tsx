@@ -18,6 +18,8 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import type { VerificationResult, VerificationStatus } from '@/lib/types';
 import Image from 'next/image';
+import { cn } from '@/lib/utils';
+import { Separator } from './ui/separator';
 
 interface VerificationResultProps {
   result: VerificationResult | null;
@@ -77,9 +79,20 @@ const statusConfig: Record<
   },
 };
 
+const DataItem = ({ label, value, isFullWidth = false }: { label: string, value?: string, isFullWidth?: boolean }) => {
+    if (!value) return null;
+    return (
+        <div className={cn("grid grid-cols-2", isFullWidth ? "col-span-2" : "col-span-1")}>
+            <p className="font-medium text-muted-foreground">{label}</p>
+            <p className="text-foreground text-right">{value}</p>
+        </div>
+    )
+}
+
 export function VerificationResult({ result, isVerifying }: VerificationResultProps) {
   const status = isVerifying ? 'pending' : result?.status ?? 'idle';
   const config = statusConfig[status];
+  const showExtractedData = result && (status === 'verified' || status === 'failed');
 
   return (
     <Card className="min-h-[300px]">
@@ -110,6 +123,27 @@ export function VerificationResult({ result, isVerifying }: VerificationResultPr
           <h3 className="text-xl font-bold mt-2">{config.title}</h3>
           <p className="text-sm text-muted-foreground">{config.description}</p>
         </div>
+
+        {showExtractedData && (
+          <div className="space-y-4 rounded-lg border bg-card p-4">
+            <h4 className="font-semibold text-foreground">Extracted Information</h4>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-3 text-sm">
+                <DataItem label="Name" value={result.name} />
+                <DataItem label="Date of Birth" value={result.dateOfBirth} />
+                <DataItem label="Gender" value={result.gender} />
+                <DataItem label="Aadhaar No." value={result.aadhaarNumber} />
+                {result.address && <>
+                    <div className="md:col-span-2 -my-1">
+                        <Separator/>
+                    </div>
+                    <div className="md:col-span-2">
+                        <p className="font-medium text-muted-foreground mb-1">Address</p>
+                        <p className="text-foreground text-sm">{result.address}</p>
+                    </div>
+                </>}
+            </div>
+          </div>
+        )}
 
         {(status === 'failed' || status === 'error') && result?.indicators && (
           <div className="space-y-2">

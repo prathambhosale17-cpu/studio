@@ -19,11 +19,13 @@ import {
 import { format } from 'date-fns';
 import { Badge } from './ui/badge';
 import Image from 'next/image';
+import { Skeleton } from './ui/skeleton';
 
 interface VerificationHistoryProps {
   history: VerificationResult[];
   onSelectHistoryItem: (item: VerificationResult) => void;
   selectedId?: string | null;
+  isLoading: boolean;
 }
 
 const statusIcons: Record<VerificationStatus, React.ElementType> = {
@@ -32,14 +34,6 @@ const statusIcons: Record<VerificationStatus, React.ElementType> = {
   error: AlertCircle,
   pending: Loader2,
   idle: CheckCircle2,
-};
-
-const statusColors: Record<VerificationStatus, string> = {
-  verified: 'text-accent',
-  failed: 'text-destructive',
-  error: 'text-destructive',
-  pending: 'text-primary animate-spin',
-  idle: 'text-muted-foreground',
 };
 
 const statusBadges: Record<VerificationStatus, React.ReactNode> = {
@@ -54,6 +48,7 @@ export function VerificationHistory({
   history,
   onSelectHistoryItem,
   selectedId,
+  isLoading,
 }: VerificationHistoryProps) {
   return (
     <Card>
@@ -64,7 +59,19 @@ export function VerificationHistory({
       <CardContent className="p-0">
         <ScrollArea className="h-[550px]">
           <div className="p-4 pt-0">
-            {history.length === 0 ? (
+            {isLoading ? (
+              <div className="space-y-2">
+                {[...Array(5)].map((_, i) => (
+                    <div key={i} className="flex items-center space-x-3 p-3">
+                        <Skeleton className="h-8 w-12 rounded-md" />
+                        <div className="space-y-1.5">
+                            <Skeleton className="h-4 w-28" />
+                            <Skeleton className="h-3 w-20" />
+                        </div>
+                    </div>
+                ))}
+              </div>
+            ) : history.length === 0 ? (
               <div className="flex h-[400px] items-center justify-center">
                 <p className="text-sm text-muted-foreground">
                   No verification history yet.
@@ -73,7 +80,6 @@ export function VerificationHistory({
             ) : (
               <ul className="space-y-2">
                 {history.map((item) => {
-                  const Icon = statusIcons[item.status];
                   return (
                     <li key={item.id}>
                       <button
@@ -93,7 +99,7 @@ export function VerificationHistory({
                                 </div>
                             ) : (
                                 <div className="w-12 h-8 flex items-center justify-center rounded-md border bg-muted shrink-0">
-                                    <Icon className={cn('h-5 w-5', statusColors[item.status])} />
+                                    <AlertCircle className={cn('h-5 w-5', 'text-muted-foreground')} />
                                 </div>
                             )}
                             <div className="flex flex-col">

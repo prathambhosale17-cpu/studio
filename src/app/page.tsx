@@ -1,16 +1,24 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import type { VerificationResult } from '@/lib/types';
 import { Header } from '@/components/header';
 import { VerificationForm } from '@/components/verification-form';
 import { VerificationResult as VerificationResultDisplay } from '@/components/verification-result';
 import { VerificationHistory } from '@/components/verification-history';
+import { useAadhaarHistory } from '@/hooks/use-aadhaar-history';
 
 export default function Home() {
-  const [history, setHistory] = useState<VerificationResult[]>([]);
+  const { history, addVerification, isLoading: isHistoryLoading } = useAadhaarHistory();
   const [isVerifying, setIsVerifying] = useState(false);
   const [viewedResult, setViewedResult] = useState<VerificationResult | null>(null);
+
+  useEffect(() => {
+    // When history loads, if no result is being viewed, select the most recent one.
+    if (!viewedResult && !isHistoryLoading && history.length > 0) {
+      setViewedResult(history[0]);
+    }
+  }, [history, isHistoryLoading, viewedResult]);
 
   const handleVerificationStart = (imageDataUri: string) => {
     setIsVerifying(true);
@@ -25,8 +33,8 @@ export default function Home() {
   };
 
   const handleVerificationComplete = (result: VerificationResult) => {
+    addVerification(result); // This will save to Firestore
     setViewedResult(result);
-    setHistory(prev => [result, ...prev]);
     setIsVerifying(false);
   };
 
@@ -52,6 +60,7 @@ export default function Home() {
               history={history}
               onSelectHistoryItem={handleSelectHistoryItem}
               selectedId={viewedResult?.id}
+              isLoading={isHistoryLoading}
             />
           </div>
         </div>

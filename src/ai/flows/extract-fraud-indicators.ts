@@ -1,9 +1,9 @@
 'use server';
 
 /**
- * @fileOverview AI flow to extract fraud indicators from a scanned Aadhaar card image.
+ * @fileOverview AI flow to extract text and fraud indicators from a scanned Aadhaar card image.
  *
- * - extractFraudIndicators - Extracts fraud indicators from an Aadhaar image.
+ * - extractFraudIndicators - Extracts data and fraud indicators from an Aadhaar image.
  * - ExtractFraudIndicatorsInput - The input type for the extractFraudIndicators function.
  * - ExtractFraudIndicatorsOutput - The return type for the extractFraudIndicators function.
  */
@@ -28,6 +28,11 @@ const ExtractFraudIndicatorsOutputSchema = z.object({
     .describe(
       'A concise summary of potential fraud indicators identified in the Aadhaar image. If no fraud is detected, it should return "No fraud indicators found."'
     ),
+  name: z.string().optional().describe('The name extracted from the Aadhaar card.'),
+  dateOfBirth: z.string().optional().describe('The date of birth extracted from the Aadhaar card in DD/MM/YYYY format.'),
+  gender: z.string().optional().describe('The gender extracted from the Aadhaar card.'),
+  address: z.string().optional().describe('The full address extracted from the Aadhaar card.'),
+  aadhaarNumber: z.string().optional().describe('The 12-digit Aadhaar number extracted from the card, formatted as XXXX XXXX XXXX.'),
 });
 export type ExtractFraudIndicatorsOutput = z.infer<
   typeof ExtractFraudIndicatorsOutputSchema
@@ -46,7 +51,7 @@ const prompt = ai.definePrompt({
   prompt: `You are an expert AI system designed for forensic analysis of Indian Aadhaar cards. Your task is to act as an OCR and Rule Engine to detect signs of digital forgery or tampering.
 
 **Process:**
-1.  **OCR Extraction:** First, perform Optical Character Recognition (OCR) on the provided image to extract all visible text content.
+1.  **OCR Extraction:** First, perform Optical Character Recognition (OCR) on the provided image to extract all visible text content, including Name, Date of Birth, Gender, Address, and the Aadhaar Number.
 2.  **Rule-Based Validation:** Analyze the extracted text against the following rules:
     *   **Aadhaar Number:** Must be in the format \`XXXX XXXX XXXX\`. Report any format violations.
     *   **Date of Birth (DOB):** Must be in a valid \`DD/MM/YYYY\` format. Report any invalid formats.
@@ -57,7 +62,8 @@ const prompt = ai.definePrompt({
     *   **Screenshot Artifacts:** Detect any non-document elements like phone status bars, application windows, or unusual cropping that indicate the image is a screenshot.
 
 **Output:**
-Provide a concise summary of all fraud indicators found. If the analysis passes all checks (both text and visual), respond *only* with "No fraud indicators found."
+-   Populate all extracted fields (name, dateOfBirth, gender, address, aadhaarNumber).
+-   Provide a concise summary of all fraud indicators found. If the analysis passes all checks (both text and visual), respond *only* with "No fraud indicators found." for the 'fraudIndicators' field.
 
 Image: {{media url=imageDataUri}}
   `,
