@@ -260,13 +260,13 @@ export default function YojanaMitraPage() {
 
     return (
         <div id="yojana-mitra-page">
-             <header className="sticky top-0 z-30 backdrop-blur bg-white/80 border-b border-emerald-100">
+             <header className="sticky top-0 z-30 backdrop-blur bg-background/80 border-b border-border">
                 <div className="mx-auto container-narrow px-4 py-3 flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 grid place-items-center rounded-xl bg-emerald-100 text-emerald-700 font-bold">🌾</div>
+                        <div className="w-10 h-10 grid place-items-center rounded-xl bg-primary/10 text-primary font-bold">🌾</div>
                         <div>
-                            <h1 className="text-lg font-bold text-emerald-900">{t('siteTitle')}</h1>
-                            <p className="text-xs text-emerald-700">{t('siteTag')}</p>
+                            <h1 className="text-lg font-bold text-foreground">{t('siteTitle')}</h1>
+                            <p className="text-xs text-muted-foreground">{t('siteTag')}</p>
                         </div>
                     </div>
                     <div className="flex items-center gap-2">
@@ -282,7 +282,7 @@ export default function YojanaMitraPage() {
                     <div className="card p-5 md:col-span-2">
                         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
                             <div>
-                                <h2 className="text-2xl font-bold text-emerald-900">{t('heroTitle')}</h2>
+                                <h2 className="text-2xl font-bold text-foreground">{t('heroTitle')}</h2>
                                 <p className="text-slate-600">{t('heroSub')}</p>
                             </div>
                             <div className="flex gap-3">
@@ -302,7 +302,7 @@ export default function YojanaMitraPage() {
                 </section>
 
                 <section id="finder" className="card p-6">
-                    <h3 className="text-xl font-bold text-emerald-900 mb-4">{t('finderTitle')}</h3>
+                    <h3 className="text-xl font-bold text-foreground mb-4">{t('finderTitle')}</h3>
                     <form onSubmit={handleFinderSubmit} className="grid md:grid-cols-3 gap-4">
                         <div>
                             <label className="font-semibold text-slate-700">{t('labelDistrict')}</label>
@@ -357,7 +357,7 @@ export default function YojanaMitraPage() {
                             <article key={s.id} className="p-4 card flex flex-col justify-between h-full">
                                 <div>
                                     <div className="flex items-center justify-between gap-2">
-                                        <h4 className="font-semibold text-emerald-900">{s.title[lang]}</h4>
+                                        <h4 className="font-semibold text-foreground">{s.title[lang]}</h4>
                                         <span className="badge">{s.level}</span>
                                     </div>
                                     <p className="text-sm text-slate-600 mt-2">{s.what[lang]}</p>
@@ -374,7 +374,7 @@ export default function YojanaMitraPage() {
 
                 <section id="qa" className="card p-6">
                     <div className="flex items-center justify-between gap-3">
-                        <h3 className="text-xl font-bold text-emerald-900">{t('qaTitle')}</h3>
+                        <h3 className="text-xl font-bold text-foreground">{t('qaTitle')}</h3>
                         <div className="flex gap-2">
                             <select value={qaFilters.district} onChange={e => setQaFilters(f => ({...f, district: e.target.value}))} className="input">
                                  <option value="">All Districts</option>
@@ -424,7 +424,7 @@ export default function YojanaMitraPage() {
                         {filteredQaPosts.length > 0 ? filteredQaPosts.map(p => (
                              <article key={p.id} className="py-4 flex flex-col gap-2">
                                 <div className="flex items-center justify-between">
-                                    <h4 className="font-semibold text-emerald-900">{p.title}</h4>
+                                    <h4 className="font-semibold text-foreground">{p.title}</h4>
                                     <div className="flex items-center gap-2 text-sm">
                                     <span className="badge">{p.district}</span><span className="badge">{p.category}</span>{p.solved ? <span className="chip">Solved</span> : ''}
                                     </div>
@@ -469,9 +469,9 @@ export default function YojanaMitraPage() {
                                 </div>
                             </div>
                             <aside className="md:sticky md:top-4 h-max">
-                                <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-4">
-                                    <h5 className="font-semibold text-emerald-900">{t('docsYouNeed')}</h5>
-                                    <ul className="mt-2 list-disc pl-6 space-y-1 text-emerald-900">
+                                <div className="rounded-xl border border-primary/20 bg-primary/5 p-4">
+                                    <h5 className="font-semibold text-primary">{t('docsYouNeed')}</h5>
+                                    <ul className="mt-2 list-disc pl-6 space-y-1 text-primary/90">
                                         {(selectedScheme.docs[lang] || []).map((d,i) => <li key={i}>{d}</li>)}
                                     </ul>
                                     <div className="mt-3 flex flex-wrap gap-2">
