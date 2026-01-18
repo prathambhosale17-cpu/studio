@@ -44,15 +44,14 @@ export function Header() {
         >
           {t('Verify ID')}
         </Link>
-        <Link
-          href="/download"
-          className={cn(
-            'text-sm font-medium transition-colors hover:text-primary',
-            pathname.startsWith('/download') ? 'text-primary' : 'text-muted-foreground'
-          )}
+        <a
+          href="https://myaadhaar.uidai.gov.in/"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-sm font-medium transition-colors hover:text-primary text-muted-foreground"
         >
           {t('Download Card')}
-        </Link>
+        </a>
         <Link
           href="/yojana-mitra"
           className={cn(
