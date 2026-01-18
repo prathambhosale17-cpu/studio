@@ -5,6 +5,7 @@ export type GovernmentScheme = {
   benefits: string[];
   link: string;
   category: string;
+  state?: string;
 };
 
 export const governmentSchemes: GovernmentScheme[] = [
@@ -23,6 +24,7 @@ export const governmentSchemes: GovernmentScheme[] = [
     ],
     link: 'https://pmjdy.gov.in/',
     category: 'Financial Inclusion',
+    state: 'Central Government',
   },
   {
     name: 'Pradhan Mantri Kisan Samman Nidhi (PM-KISAN)',
@@ -37,6 +39,7 @@ export const governmentSchemes: GovernmentScheme[] = [
     ],
     link: 'https://pmkisan.gov.in/',
     category: 'Agriculture',
+    state: 'Central Government',
   },
   {
     name: 'Atal Pension Yojana (APY)',
@@ -51,6 +54,16 @@ export const governmentSchemes: GovernmentScheme[] = [
     ],
     link: 'https://www.npscra.nsdl.co.in/atal-pension-yojana.php',
     category: 'Social Security',
+    state: 'Central Government',
+  },
+    {
+    name: 'Mukhymantri Chiranjeevi Swasthya Bima Yojana',
+    description: 'A universal health insurance scheme providing cashless medical insurance to every family in Rajasthan.',
+    eligibility: ['All permanent resident families of Rajasthan.'],
+    benefits: ['Cashless health insurance up to ₹25 lakhs.', 'Covers a wide range of diseases and treatments.'],
+    link: 'https://chiranjeevi.rajasthan.gov.in/',
+    category: 'Health & Sanitation',
+    state: 'Rajasthan',
   },
   {
     name: 'Beti Bachao, Beti Padhao (BBBP)',
@@ -66,6 +79,7 @@ export const governmentSchemes: GovernmentScheme[] = [
     ],
     link: 'https://wcd.nic.in/bbbp-schemes',
     category: 'Women & Child Development',
+    state: 'Central Government',
   },
   {
     name: 'Swachh Bharat Mission (SBM)',
@@ -80,5 +94,33 @@ export const governmentSchemes: GovernmentScheme[] = [
     ],
     link: 'https://swachhbharatmission.gov.in/sbmcms/index.htm',
     category: 'Health & Sanitation',
-  }
+    state: 'Central Government',
+  },
+    {
+    name: 'Rythu Bandhu Scheme',
+    description: 'Telangana\'s Farmer\'s Investment Support Scheme provides financial assistance to farmers for the two major crop seasons.',
+    eligibility: ['All farmers in Telangana owning patta land.', 'Excludes farmers cultivating forest land.'],
+    benefits: ['Financial aid of ₹5,000 per acre per season.', 'Covers both Rabi and Kharif seasons.'],
+    link: 'https://rythubandhu.telangana.gov.in/',
+    category: 'Agriculture',
+    state: 'Telangana',
+  },
+  {
+    name: 'Laadli Laxmi Yojana',
+    description: 'A scheme to improve the health and educational status of girls and change the negative mindset towards the girl child.',
+    eligibility: ['Girls born after January 1, 2006, in non-income tax paying families.', 'Parents should be residents of Madhya Pradesh.'],
+    benefits: ['Financial assistance at different stages of education.', 'A lump sum of ₹1 lakh on attaining the age of 21 years.'],
+    link: 'https://ladlilaxmi.mp.gov.in/',
+    category: 'Women & Child Development',
+    state: 'Madhya Pradesh',
+  },
+    {
+    name: 'KALIA Scheme',
+    description: 'Krushak Assistance for Livelihood and Income Augmentation (KALIA) is a support package for farmers and landless agricultural households.',
+    eligibility: ['Small and marginal farmers.', 'Landless agricultural households.', 'Vulnerable agricultural households.'],
+    benefits: ['Financial support of ₹12,500 over three installments for cultivators.', 'Livelihood support of ₹12,500 for landless households.', 'Life insurance cover.'],
+    link: 'https://kalia.odisha.gov.in/',
+    category: 'Agriculture',
+    state: 'Odisha',
+  },
 ];

@@ -48,7 +48,10 @@ function SchemeCard({ scheme }: { scheme: GovernmentScheme }) {
                 </div>
             </CardContent>
             <CardFooter className="flex-col items-start gap-4 border-t pt-6">
-                <Badge variant="secondary">{scheme.category}</Badge>
+                 <div className="flex flex-wrap gap-2">
+                    <Badge variant="secondary">{scheme.category}</Badge>
+                    {scheme.state && <Badge variant="outline">{scheme.state}</Badge>}
+                </div>
                 <Button asChild className="w-full">
                     <Link href={scheme.link} target="_blank">
                         Learn More
@@ -67,11 +70,11 @@ export default function SchemesPage() {
       <main className="flex-1 p-4 md:p-6 lg:p-8">
         <div className="mx-auto max-w-7xl space-y-8">
             <div className="text-center">
-                <h1 className="text-3xl font-bold tracking-tight">Indian Government Schemes</h1>
+                <h1 className="text-3xl font-bold tracking-tight">Government Schemes</h1>
                 <p className="text-muted-foreground mt-2">Explore various welfare schemes available for citizens across India.</p>
             </div>
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                {governmentSchemes.map((scheme, index) => (
+                {governmentSchemes.sort((a, b) => (a.state || '').localeCompare(b.state || '') || a.name.localeCompare(b.name)).map((scheme, index) => (
                     <SchemeCard key={index} scheme={scheme} />
                 ))}
             </div>
