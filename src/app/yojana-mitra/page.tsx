@@ -4,9 +4,10 @@ import { useState, useEffect, useRef } from 'react';
 import { jsPDF } from 'jspdf';
 import { SCHEMES, DISTRICTS } from '@/lib/yojana-mitra-data';
 import './styles.css';
+import { supportedLanguages } from '@/context/language-context';
 
 type Scheme = typeof SCHEMES[0];
-type Lang = 'en' | 'mr';
+type Lang = typeof supportedLanguages[number]['code'];
 
 const i18nMap = {
     en: {
@@ -111,12 +112,12 @@ export default function YojanaMitraPage() {
     const [selectedScheme, setSelectedScheme] = useState<Scheme | null>(null);
     const dialogRef = useRef<HTMLDialogElement>(null);
 
-    const t = (key: keyof typeof i18nMap['en']) => i18nMap[lang][key] || i18nMap['en'][key];
+    const t = (key: keyof typeof i18nMap['en']) => (i18nMap as any)[lang]?.[key] || i18nMap['en'][key];
 
     useEffect(() => {
         const savedLang = localStorage.getItem('lang');
-        if (savedLang === 'en' || savedLang === 'mr') {
-            setLang(savedLang);
+        if (savedLang && supportedLanguages.some(l => l.code === savedLang)) {
+            setLang(savedLang as Lang);
         }
         const savedPosts = localStorage.getItem('qa_posts_v1');
         if (savedPosts) {
@@ -179,10 +180,11 @@ export default function YojanaMitraPage() {
         doc.text(t('docsYouNeed'), margin, y); y += 26;
         
         doc.setFont('helvetica', 'normal'); doc.setFontSize(12);
-        doc.text(`${t('siteTag')}: ${scheme.title[lang]}`, margin, y); y += 20;
+        const schemeTitle = (scheme.title as any)[lang] || scheme.title.en;
+        doc.text(`${t('siteTag')}: ${schemeTitle}`, margin, y); y += 20;
 
-        const docs = scheme.docs?.[lang] || [];
-        (docs.length ? docs : ['—']).forEach(item => {
+        const docs = (scheme.docs as any)?.[lang] || scheme.docs?.en || [];
+        (docs.length ? docs : ['—']).forEach((item:string) => {
             const wrapped = doc.splitTextToSize('• ' + item, doc.internal.pageSize.getWidth() - margin * 2);
             wrapped.forEach((ln: string) => {
                 if (y > doc.internal.pageSize.getHeight() - margin) { doc.addPage(); y = margin; }
@@ -269,10 +271,11 @@ export default function YojanaMitraPage() {
                             <p className="text-xs text-muted-foreground">{t('siteTag')}</p>
                         </div>
                     </div>
-                    <div className="flex items-center gap-2">
-                        <span className="text-sm text-slate-500">Language</span>
-                        <button className="btn btn-ghost" onClick={() => handleLangChange('en')}>EN</button>
-                        <button className="btn btn-ghost" onClick={() => handleLangChange('mr')}>MR</button>
+                    <div className="flex items-center gap-2 flex-wrap">
+                        <span className="text-sm text-slate-500">Language:</span>
+                        {supportedLanguages.map(l => (
+                             <button key={l.code} className={`btn btn-ghost text-xs p-2 ${lang === l.code ? 'font-bold text-primary bg-primary/10' : ''}`} onClick={() => handleLangChange(l.code as Lang)}>{l.name}</button>
+                        ))}
                     </div>
                 </div>
             </header>
@@ -353,21 +356,24 @@ export default function YojanaMitraPage() {
                         </div>
                     </form>
                     <div id="results" className="mt-6 grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                        {results.map(s => (
+                        {results.map(s => {
+                            const title = (s.title as any)[lang] || s.title.en;
+                            const what = (s.what as any)[lang] || s.what.en;
+                            return (
                             <article key={s.id} className="p-4 card flex flex-col justify-between h-full">
                                 <div>
                                     <div className="flex items-center justify-between gap-2">
-                                        <h4 className="font-semibold text-foreground">{s.title[lang]}</h4>
+                                        <h4 className="font-semibold text-foreground">{title}</h4>
                                         <span className="badge">{s.level}</span>
                                     </div>
-                                    <p className="text-sm text-slate-600 mt-2">{s.what[lang]}</p>
+                                    <p className="text-sm text-slate-600 mt-2">{what}</p>
                                 </div>
                                 <div className="mt-4 flex gap-2">
                                     <button className="btn btn-muted" onClick={() => setSelectedScheme(s)}>{t('details')}</button>
                                     <a className="btn btn-primary" href={s.apply} target="_blank" rel="noopener noreferrer">{t('apply')}</a>
                                 </div>
                             </article>
-                        ))}
+                        )})}
                         {results.length === 0 && <div className="text-slate-600">{t('noSchemes')}</div>}
                     </div>
                 </section>
@@ -445,7 +451,7 @@ export default function YojanaMitraPage() {
                 {selectedScheme && (
                     <div className="p-0 m-0">
                         <div className="p-5 border-b flex items-center justify-between">
-                            <h4 className="text-lg font-bold">{selectedScheme.title[lang]}</h4>
+                            <h4 className="text-lg font-bold">{(selectedScheme.title as any)[lang] || selectedScheme.title.en}</h4>
                             <button className="btn btn-ghost" aria-label="Close" onClick={() => setSelectedScheme(null)}>✕</button>
                         </div>
                         <div className="p-5 grid gap-5 md:grid-cols-3">
@@ -453,18 +459,18 @@ export default function YojanaMitraPage() {
                                 <div className="text-sm text-slate-600">{selectedScheme.dept} • {selectedScheme.level.toUpperCase()}</div>
                                 <div>
                                     <h5 className="font-semibold">{t('whatYouGet')}</h5>
-                                    <p>{selectedScheme.what[lang]}</p>
+                                    <p>{(selectedScheme.what as any)[lang] || selectedScheme.what.en}</p>
                                 </div>
                                 <div>
                                     <h5 className="font-semibold">{t('eligibility')}</h5>
                                     <ul className="list-disc pl-6 space-y-1">
-                                        {(selectedScheme.eligibility[lang] || []).map((e,i) => <li key={i}>{e}</li>)}
+                                        {(((selectedScheme.eligibility as any)[lang] || selectedScheme.eligibility.en) || []).map((e:string,i:number) => <li key={i}>{e}</li>)}
                                     </ul>
                                 </div>
                                 <div>
                                     <h5 className="font-semibold">{t('howToApply')}</h5>
                                     <ol className="list-decimal pl-6 space-y-1">
-                                        {(selectedScheme.steps[lang] || []).map((s,i) => <li key={i}>{s}</li>)}
+                                        {(((selectedScheme.steps as any)[lang] || selectedScheme.steps.en) || []).map((s:string,i:number) => <li key={i}>{s}</li>)}
                                     </ol>
                                 </div>
                             </div>
@@ -472,11 +478,11 @@ export default function YojanaMitraPage() {
                                 <div className="rounded-xl border border-primary/20 bg-primary/5 p-4">
                                     <h5 className="font-semibold text-primary">{t('docsYouNeed')}</h5>
                                     <ul className="mt-2 list-disc pl-6 space-y-1 text-primary/90">
-                                        {(selectedScheme.docs[lang] || []).map((d,i) => <li key={i}>{d}</li>)}
+                                        {(((selectedScheme.docs as any)[lang] || selectedScheme.docs.en) || []).map((d:string,i:number) => <li key={i}>{d}</li>)}
                                     </ul>
                                     <div className="mt-3 flex flex-wrap gap-2">
                                         <button type="button" className="btn btn-muted" onClick={() => {
-                                            const docsText = selectedScheme.docs[lang].join('\n');
+                                            const docsText = ((selectedScheme.docs as any)[lang] || selectedScheme.docs.en).join('\n');
                                             navigator.clipboard.writeText(docsText).then(() => alert(t('copied')));
                                         }}>{t('copy')}</button>
                                         <button type="button" className="btn btn-muted" onClick={() => downloadDocsPDF(selectedScheme)}>{t('downloadPdf')}</button>
