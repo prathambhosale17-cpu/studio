@@ -2,12 +2,13 @@
 import { useState, useMemo } from 'react';
 import { Header } from '@/components/header';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import { buttonVariants } from '@/components/ui/button';
 import Link from 'next/link';
 import { governmentSchemes, GovernmentScheme } from '@/lib/schemes';
 import { Landmark, Tractor, Shield, Baby, Sparkles, ExternalLink } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { cn } from '@/lib/utils';
 
 const categoryIcons: { [key: string]: React.ReactNode } = {
   'Financial Inclusion': <Landmark className="h-6 w-6 text-primary" />,
@@ -54,12 +55,15 @@ function SchemeCard({ scheme }: { scheme: GovernmentScheme }) {
                     <Badge variant="secondary">{scheme.category}</Badge>
                     {scheme.state && <Badge variant="outline">{scheme.state}</Badge>}
                 </div>
-                <Button asChild className="w-full">
-                    <Link href={scheme.link} target="_blank">
-                        Learn More
-                        <ExternalLink className="ml-2 h-4 w-4" />
-                    </Link>
-                </Button>
+                <Link
+                  href={scheme.link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={cn(buttonVariants(), 'w-full')}
+                >
+                  Learn More
+                  <ExternalLink className="ml-2 h-4 w-4" />
+                </Link>
             </CardFooter>
         </Card>
     );
