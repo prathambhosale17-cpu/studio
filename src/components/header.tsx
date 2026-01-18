@@ -1,12 +1,21 @@
 'use client';
 
-import { UserSquare } from 'lucide-react';
+import { Globe, UserSquare } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
+import { useLanguage, supportedLanguages } from '@/context/language-context';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 
 export function Header() {
   const pathname = usePathname();
+  const { language, setLanguage, t } = useLanguage();
 
   return (
     <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b bg-background/80 px-4 backdrop-blur-md sm:px-6">
@@ -24,7 +33,7 @@ export function Header() {
             pathname === '/' ? 'text-primary' : 'text-muted-foreground'
           )}
         >
-          Manage IDs
+          {t('Manage IDs')}
         </Link>
         <Link
           href="/verify"
@@ -33,7 +42,7 @@ export function Header() {
             pathname.startsWith('/verify') ? 'text-primary' : 'text-muted-foreground'
           )}
         >
-          Verify ID
+          {t('Verify ID')}
         </Link>
         <Link
           href="/schemes"
@@ -42,9 +51,22 @@ export function Header() {
             pathname.startsWith('/schemes') ? 'text-primary' : 'text-muted-foreground'
           )}
         >
-          Schemes
+          {t('Schemes')}
         </Link>
       </nav>
+       <Select value={language} onValueChange={(value) => setLanguage(value as any)}>
+        <SelectTrigger className="w-auto gap-2 border-0 bg-transparent text-muted-foreground hover:text-primary focus:ring-0 focus:ring-offset-0">
+          <Globe className="h-4 w-4" />
+          <SelectValue placeholder="Language" />
+        </SelectTrigger>
+        <SelectContent>
+          {supportedLanguages.map((lang) => (
+            <SelectItem key={lang.code} value={lang.code}>
+              {lang.name}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
     </header>
   );
 }

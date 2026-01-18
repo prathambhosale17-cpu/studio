@@ -29,6 +29,7 @@ import type { IDCard } from '@/lib/types';
 import Image from 'next/image';
 import { RadioGroup, RadioGroupItem } from './ui/radio-group';
 import { Textarea } from './ui/textarea';
+import { useLanguage } from '@/context/language-context';
 
 const formSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters'),
@@ -46,6 +47,7 @@ export function IdCardForm({ onAddCard }: IdCardFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
   const { toast } = useToast();
+  const { t } = useLanguage();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -122,8 +124,8 @@ export function IdCardForm({ onAddCard }: IdCardFormProps) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Create New ID Card</CardTitle>
-        <CardDescription>Fill in the details to generate a new digital ID card.</CardDescription>
+        <CardTitle>{t('Create New ID Card')}</CardTitle>
+        <CardDescription>{t('Fill in the details to generate a new digital ID card.')}</CardDescription>
       </CardHeader>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
@@ -133,7 +135,7 @@ export function IdCardForm({ onAddCard }: IdCardFormProps) {
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Full Name</FormLabel>
+                  <FormLabel>{t('Full Name')}</FormLabel>
                   <FormControl>
                     <Input placeholder="John Doe" {...field} />
                   </FormControl>
@@ -146,7 +148,7 @@ export function IdCardForm({ onAddCard }: IdCardFormProps) {
               name="dateOfBirth"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Date of Birth</FormLabel>
+                  <FormLabel>{t('Date of Birth')}</FormLabel>
                   <FormControl>
                     <Input type="date" {...field} />
                   </FormControl>
@@ -159,7 +161,7 @@ export function IdCardForm({ onAddCard }: IdCardFormProps) {
               name="gender"
               render={({ field }) => (
                 <FormItem className="space-y-3">
-                  <FormLabel>Gender</FormLabel>
+                  <FormLabel>{t('Gender')}</FormLabel>
                   <FormControl>
                     <RadioGroup
                       onValueChange={field.onChange}
@@ -170,19 +172,19 @@ export function IdCardForm({ onAddCard }: IdCardFormProps) {
                         <FormControl>
                           <RadioGroupItem value="Male" />
                         </FormControl>
-                        <FormLabel className="font-normal">Male</FormLabel>
+                        <FormLabel className="font-normal">{t('Male')}</FormLabel>
                       </FormItem>
                       <FormItem className="flex items-center space-x-2 space-y-0">
                         <FormControl>
                           <RadioGroupItem value="Female" />
                         </FormControl>
-                        <FormLabel className="font-normal">Female</FormLabel>
+                        <FormLabel className="font-normal">{t('Female')}</FormLabel>
                       </FormItem>
                       <FormItem className="flex items-center space-x-2 space-y-0">
                         <FormControl>
                           <RadioGroupItem value="Other" />
                         </FormControl>
-                        <FormLabel className="font-normal">Other</FormLabel>
+                        <FormLabel className="font-normal">{t('Other')}</FormLabel>
                       </FormItem>
                     </RadioGroup>
                   </FormControl>
@@ -195,7 +197,7 @@ export function IdCardForm({ onAddCard }: IdCardFormProps) {
               name="address"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Address</FormLabel>
+                  <FormLabel>{t('Address')}</FormLabel>
                   <FormControl>
                     <Textarea
                       placeholder="123 Main St, Anytown, USA"
@@ -212,7 +214,7 @@ export function IdCardForm({ onAddCard }: IdCardFormProps) {
               name="photo"
               render={() => (
                 <FormItem>
-                  <FormLabel>Photo</FormLabel>
+                  <FormLabel>{t('Photo')}</FormLabel>
                    {photoPreview ? (
                      <div className="relative w-32 h-32">
                         <Image src={photoPreview} alt="Photo preview" layout="fill" className="rounded-md object-cover"/>
@@ -222,7 +224,7 @@ export function IdCardForm({ onAddCard }: IdCardFormProps) {
                         <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer bg-muted/50 hover:bg-muted/80">
                             <div className="flex flex-col items-center justify-center pt-5 pb-6">
                                 <UploadCloud className="w-8 h-8 mb-2 text-muted-foreground" />
-                                <p className="text-sm text-muted-foreground">Click to upload</p>
+                                <p className="text-sm text-muted-foreground">{t('Click to upload')}</p>
                             </div>
                             <input type="file" className="hidden" accept="image/*" onChange={handlePhotoChange} />
                         </label>
@@ -236,7 +238,7 @@ export function IdCardForm({ onAddCard }: IdCardFormProps) {
           <CardFooter className="flex-col items-start gap-4">
             <Button type="submit" disabled={isSubmitting}>
               {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              Generate ID Card
+              {t('Generate ID Card')}
             </Button>
           </CardFooter>
         </form>

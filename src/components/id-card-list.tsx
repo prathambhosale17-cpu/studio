@@ -9,6 +9,7 @@ import {
 } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { IdCardDisplay } from './id-card-display';
+import { useLanguage } from '@/context/language-context';
 
 interface IdCardListProps {
   cards: IDCard[];
@@ -17,11 +18,12 @@ interface IdCardListProps {
 }
 
 export function IdCardList({ cards, isLoading, deleteIdCard }: IdCardListProps) {
+  const { t } = useLanguage();
   return (
     <Card>
       <CardHeader>
-        <CardTitle>My ID Cards</CardTitle>
-        <CardDescription>A list of all the digital ID cards you have created.</CardDescription>
+        <CardTitle>{t('My ID Cards')}</CardTitle>
+        <CardDescription>{t('A list of all the digital ID cards you have created.')}</CardDescription>
       </CardHeader>
       <CardContent>
         {isLoading ? (
@@ -31,7 +33,7 @@ export function IdCardList({ cards, isLoading, deleteIdCard }: IdCardListProps) 
           </div>
         ) : cards.length === 0 ? (
           <div className="flex items-center justify-center h-40 rounded-lg border-2 border-dashed">
-            <p className="text-muted-foreground">You haven't created any ID cards yet.</p>
+            <p className="text-muted-foreground">{t("You haven't created any ID cards yet.")}</p>
           </div>
         ) : (
           <div className="grid gap-6 md:grid-cols-1 lg:grid-cols-2">
