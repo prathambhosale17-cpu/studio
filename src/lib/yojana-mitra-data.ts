@@ -1,4 +1,5 @@
 
+
 export const DISTRICTS = ["Ahmednagar", "Akola", "Amravati", "Beed", "Bhandara", "Buldhana", "Chandrapur", "Chatrapati Sambhajinagar", "Dhule", "Gadchiroli", "Gondia", "Hingoli", "Jalgaon", "Jalna", "Kolhapur", "Latur", "Mumbai City", "Mumbai Suburban", "Nagpur", "Nanded", "Nandurbar", "Nashik", "Osmanabad (Dharashiv)", "Palghar", "Parbhani", "Pune", "Raigad", "Ratnagiri", "Sangli", "Satara", "Sindhudurg", "Solapur", "Thane", "Wardha", "Washim", "Yavatmal"];
 
 const BASE_SCHEMES = [
@@ -678,7 +679,7 @@ const MORE_SCHEMES = [
       }
 ];
 
-const FINAL_SCHEMES = [...BASE_SCHEMES, ...MORE_SCHEMES, 
+const FINAL_SCHEMES = [
       // 1) Rotavator / Cultivator Subsidy
       {
         id: 'rotavator_cultivator_subsidy',
