@@ -45,13 +45,13 @@ export function Header() {
           {t('Verify ID')}
         </Link>
         <Link
-          href="/yojana-mitra"
+          href="/download"
           className={cn(
             'text-sm font-medium transition-colors hover:text-primary',
-            pathname.startsWith('/yojana-mitra') ? 'text-primary' : 'text-muted-foreground'
+            pathname.startsWith('/download') ? 'text-primary' : 'text-muted-foreground'
           )}
         >
-          Yojana Mitra
+          {t('Download Card')}
         </Link>
       </nav>
        <Select value={language} onValueChange={(value) => setLanguage(value as any)}>

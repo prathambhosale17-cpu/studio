@@ -2,6 +2,7 @@
 const en = {
   'Manage IDs': 'Manage IDs',
   'Verify ID': 'Verify ID',
+  'Download Card': 'Download Card',
   'Create New ID Card': 'Create New ID Card',
   'Fill in the details to generate a new digital ID card.': 'Fill in the details to generate a new digital ID card.',
   'Full Name': 'Full Name',
@@ -24,6 +25,7 @@ const en = {
 const hi = {
   'Manage IDs': 'आईडी प्रबंधित करें',
   'Verify ID': 'आईडी सत्यापित करें',
+  'Download Card': 'कार्ड डाउनलोड करें',
   'Create New ID Card': 'नया आईडी कार्ड बनाएं',
   'Fill in the details to generate a new digital ID card.': 'नया डिजिटल आईडी कार्ड बनाने के लिए विवरण भरें।',
   'Full Name': 'पूरा नाम',
@@ -46,6 +48,7 @@ const hi = {
 const bn = {
     'Manage IDs': 'আইডি পরিচালনা করুন',
     'Verify ID': 'আইডি যাচাই করুন',
+    'Download Card': 'কার্ড ডাউনলোড করুন',
     'Create New ID Card': 'নতুন আইডি কার্ড তৈরি করুন',
     'Fill in the details to generate a new digital ID card.': 'একটি নতুন ডিজিটাল আইডি কার্ড তৈরি করতে বিবরণ পূরণ করুন।',
     'Full Name': 'পুরো নাম',
@@ -68,6 +71,7 @@ const bn = {
 const te = {
     'Manage IDs': 'IDలను నిర్వహించండి',
     'Verify ID': 'IDని ధృవీకరించండి',
+    'Download Card': 'కార్డును డౌన్‌లోడ్ చేయండి',
     'Create New ID Card': 'కొత్త ID కార్డును సృష్టించండి',
     'Fill in the details to generate a new digital ID card.': 'కొత్త డిజిటల్ ID కార్డును రూపొందించడానికి వివరాలను పూరించండి।',
     'Full Name': 'పూర్తి పేరు',
@@ -90,6 +94,7 @@ const te = {
 const mr = {
     'Manage IDs': 'आयडी व्यवस्थापित करा',
     'Verify ID': 'आयडी सत्यापित करा',
+    'Download Card': 'कार्ड डाउनलोड करा',
     'Create New ID Card': 'नवीन आयडी कार्ड तयार करा',
     'Fill in the details to generate a new digital ID card.': 'नवीन डिजिटल आयडी कार्ड तयार करण्यासाठी तपशील भरा।',
     'Full Name': 'पूर्ण नाव',
@@ -112,6 +117,7 @@ const mr = {
 const ta = {
     'Manage IDs': 'IDகளை நிர்வகிக்கவும்',
     'Verify ID': 'IDஐச் சரிபார்க்கவும்',
+    'Download Card': 'அட்டையைப் பதிவிறக்கவும்',
     'Create New ID Card': 'புதிய அடையாள அட்டையை உருவாக்கவும்',
     'Fill in the details to generate a new digital ID card.': 'புதிய டிஜிட்டல் அடையாள அட்டையை உருவாக்க விவரங்களைப் பூர்த்தி செய்யவும்।',
     'Full Name': 'முழு பெயர்',
@@ -134,6 +140,7 @@ const ta = {
 const gu = {
     'Manage IDs': 'ID મેનેજ કરો',
     'Verify ID': 'ID ચકાસો',
+    'Download Card': 'કાર્ડ ડાઉનલોડ કરો',
     'Create New ID Card': 'નવું ID કાર્ડ બનાવો',
     'Fill in the details to generate a new digital ID card.': 'નવું ડિજિટલ ID કાર્ડ જનરેટ કરવા માટે વિગતો ભરો।',
     'Full Name': 'પૂરું નામ',
@@ -156,6 +163,7 @@ const gu = {
 const kn = {
     'Manage IDs': 'ID ಗಳನ್ನು ನಿರ್ವಹಿಸಿ',
     'Verify ID': 'ID ಯನ್ನು ಪರಿಶೀಲಿಸಿ',
+    'Download Card': 'ಕಾರ್ಡ್ ಡೌನ್‌ಲೋಡ್ ಮಾಡಿ',
     'Create New ID Card': 'ಹೊಸ ID ಕಾರ್ಡ್ ರಚಿಸಿ',
     'Fill in the details to generate a new digital ID card.': 'ಹೊಸ ಡಿಜಿಟಲ್ ID ಕಾರ್ಡ್ ರಚಿಸಲು ವಿವರಗಳನ್ನು ಭರ್ತಿ ಮಾಡಿ।',
     'Full Name': 'ಪೂರ್ಣ ಹೆಸರು',
