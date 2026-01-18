@@ -45,15 +45,6 @@ export function Header() {
           {t('Verify ID')}
         </Link>
         <Link
-          href="/schemes"
-          className={cn(
-            'text-sm font-medium transition-colors hover:text-primary',
-            pathname.startsWith('/schemes') ? 'text-primary' : 'text-muted-foreground'
-          )}
-        >
-          {t('Schemes')}
-        </Link>
-        <Link
           href="/yojana-mitra"
           className={cn(
             'text-sm font-medium transition-colors hover:text-primary',

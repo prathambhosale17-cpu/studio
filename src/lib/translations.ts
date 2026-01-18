@@ -2,7 +2,6 @@
 const en = {
   'Manage IDs': 'Manage IDs',
   'Verify ID': 'Verify ID',
-  'Schemes': 'Schemes',
   'Create New ID Card': 'Create New ID Card',
   'Fill in the details to generate a new digital ID card.': 'Fill in the details to generate a new digital ID card.',
   'Full Name': 'Full Name',
@@ -25,7 +24,6 @@ const en = {
 const hi = {
   'Manage IDs': 'आईडी प्रबंधित करें',
   'Verify ID': 'आईडी सत्यापित करें',
-  'Schemes': 'योजनाएं',
   'Create New ID Card': 'नया आईडी कार्ड बनाएं',
   'Fill in the details to generate a new digital ID card.': 'नया डिजिटल आईडी कार्ड बनाने के लिए विवरण भरें।',
   'Full Name': 'पूरा नाम',
@@ -48,7 +46,6 @@ const hi = {
 const bn = {
     'Manage IDs': 'আইডি পরিচালনা করুন',
     'Verify ID': 'আইডি যাচাই করুন',
-    'Schemes': 'স্কিম',
     'Create New ID Card': 'নতুন আইডি কার্ড তৈরি করুন',
     'Fill in the details to generate a new digital ID card.': 'একটি নতুন ডিজিটাল আইডি কার্ড তৈরি করতে বিবরণ পূরণ করুন।',
     'Full Name': 'পুরো নাম',
@@ -71,9 +68,8 @@ const bn = {
 const te = {
     'Manage IDs': 'IDలను నిర్వహించండి',
     'Verify ID': 'IDని ధృవీకరించండి',
-    'Schemes': 'పథకాలు',
     'Create New ID Card': 'కొత్త ID కార్డును సృష్టించండి',
-    'Fill in the details to generate a new digital ID card.': 'కొత్త డిజిటల్ ID కార్డును రూపొందించడానికి వివరాలను పూరించండి.',
+    'Fill in the details to generate a new digital ID card.': 'కొత్త డిజిటల్ ID కార్డును రూపొందించడానికి వివరాలను పూరించండి।',
     'Full Name': 'పూర్తి పేరు',
     'Date of Birth': 'పుట్టిన తేది',
     'Gender': 'లింగం',
@@ -85,18 +81,17 @@ const te = {
     'Click to upload': 'అప్‌లోడ్ చేయడానికి క్లిక్ చేయండి',
     'Generate ID Card': 'ID కార్డును రూపొందించండి',
     'My ID Cards': 'నా ID కార్డులు',
-    'A list of all the digital ID cards you have created.': 'మీరు సృష్టించిన అన్ని డిజిటల్ ID కార్డుల జాబితా.',
-    "You haven't created any ID cards yet.": "మీరు ఇంకా ఏ ID కార్డులను సృష్టించలేదు.",
+    'A list of all the digital ID cards you have created.': 'మీరు సృష్టించిన అన్ని డిజిటల్ ID కార్డుల జాబితా।',
+    "You haven't created any ID cards yet.": "మీరు ఇంకా ఏ ID కార్డులను సృష్టించలేదు।",
     'Search by ID Number...': 'ఐడి నంబర్ ద్వారా శోధించండి...',
-    'No cards found for your search.': 'మీ శోధనకు కార్డులు ఏవీ కనుగొనబడలేదు.',
+    'No cards found for your search.': 'మీ శోధనకు కార్డులు ఏవీ కనుగొనబడలేదు।',
 };
 
 const mr = {
     'Manage IDs': 'आयडी व्यवस्थापित करा',
     'Verify ID': 'आयडी सत्यापित करा',
-    'Schemes': 'योजना',
     'Create New ID Card': 'नवीन आयडी कार्ड तयार करा',
-    'Fill in the details to generate a new digital ID card.': 'नवीन डिजिटल आयडी कार्ड तयार करण्यासाठी तपशील भरा.',
+    'Fill in the details to generate a new digital ID card.': 'नवीन डिजिटल आयडी कार्ड तयार करण्यासाठी तपशील भरा।',
     'Full Name': 'पूर्ण नाव',
     'Date of Birth': 'जन्म तारीख',
     'Gender': 'लिंग',
@@ -108,18 +103,17 @@ const mr = {
     'Click to upload': 'अपलोड करण्यासाठी क्लिक करा',
     'Generate ID Card': 'आयडी कार्ड तयार करा',
     'My ID Cards': 'माझे आयडी कार्ड',
-    'A list of all the digital ID cards you have created.': 'तुम्ही तयार केलेल्या सर्व डिजिटल आयडी कार्डांची सूची.',
-    "You haven't created any ID cards yet.": "तुम्ही अद्याप कोणतेही आयडी कार्ड तयार केलेले नाही.",
+    'A list of all the digital ID cards you have created.': 'तुम्ही तयार केलेल्या सर्व डिजिटल आयडी कार्डांची सूची।',
+    "You haven't created any ID cards yet.": "तुम्ही अद्याप कोणतेही आयडी कार्ड तयार केलेले नाही।",
     'Search by ID Number...': 'आयडी क्रमांकाद्वारे शोधा...',
-    'No cards found for your search.': 'तुमच्या शोधासाठी कोणतेही कार्ड आढळले नाही.',
+    'No cards found for your search.': 'तुमच्या शोधासाठी कोणतेही कार्ड आढळले नाही।',
 };
 
 const ta = {
     'Manage IDs': 'IDகளை நிர்வகிக்கவும்',
     'Verify ID': 'IDஐச் சரிபார்க்கவும்',
-    'Schemes': 'திட்டங்கள்',
     'Create New ID Card': 'புதிய அடையாள அட்டையை உருவாக்கவும்',
-    'Fill in the details to generate a new digital ID card.': 'புதிய டிஜிட்டல் அடையாள அட்டையை உருவாக்க விவரங்களைப் பூர்த்தி செய்யவும்.',
+    'Fill in the details to generate a new digital ID card.': 'புதிய டிஜிட்டல் அடையாள அட்டையை உருவாக்க விவரங்களைப் பூர்த்தி செய்யவும்।',
     'Full Name': 'முழு பெயர்',
     'Date of Birth': 'பிறந்த தேதி',
     'Gender': 'பாலினம்',
@@ -131,18 +125,17 @@ const ta = {
     'Click to upload': 'பதிவேற்ற கிளிக் செய்யவும்',
     'Generate ID Card': 'அடையாள அட்டையை உருவாக்கவும்',
     'My ID Cards': 'எனது அடையாள அட்டைகள்',
-    'A list of all the digital ID cards you have created.': 'நீங்கள் உருவாக்கிய அனைத்து டிஜிட்டல் அடையாள அட்டைகளின் பட்டியல்.',
-    "You haven't created any ID cards yet.": "நீங்கள் இன்னும் எந்த அடையாள அட்டைகளையும் உருவாக்கவில்லை.",
+    'A list of all the digital ID cards you have created.': 'நீங்கள் உருவாக்கிய அனைத்து டிஜிட்டல் அடையாள அட்டைகளின் பட்டியல்।',
+    "You haven't created any ID cards yet.": "நீங்கள் இன்னும் எந்த அடையாள அட்டைகளையும் உருவாக்கவில்லை।",
     'Search by ID Number...': 'ஐடி எண் மூலம் தேடவும்...',
-    'No cards found for your search.': 'உங்கள் தேடலுக்கு எந்த அட்டைகளும் கிடைக்கவில்லை.',
+    'No cards found for your search.': 'உங்கள் தேடலுக்கு எந்த அட்டைகளும் கிடைக்கவில்லை।',
 };
 
 const gu = {
     'Manage IDs': 'ID મેનેજ કરો',
     'Verify ID': 'ID ચકાસો',
-    'Schemes': 'યોજનાઓ',
     'Create New ID Card': 'નવું ID કાર્ડ બનાવો',
-    'Fill in the details to generate a new digital ID card.': 'નવું ડિજિટલ ID કાર્ડ જનરેટ કરવા માટે વિગતો ભરો.',
+    'Fill in the details to generate a new digital ID card.': 'નવું ડિજિટલ ID કાર્ડ જનરેટ કરવા માટે વિગતો ભરો।',
     'Full Name': 'પૂરું નામ',
     'Date of Birth': 'જન્મ તારીખ',
     'Gender': 'જાતિ',
@@ -154,18 +147,17 @@ const gu = {
     'Click to upload': 'અપલોડ કરવા માટે ક્લિક કરો',
     'Generate ID Card': 'ID કાર્ડ જનરેટ કરો',
     'My ID Cards': 'મારા ID કાર્ડ્સ',
-    'A list of all the digital ID cards you have created.': 'તમે બનાવેલા તમામ ડિજિટલ ID કાર્ડ્સની સૂચિ.',
-    "You haven't created any ID cards yet.": "તમે હજી સુધી કોઈ ID કાર્ડ બનાવ્યું નથી.",
+    'A list of all the digital ID cards you have created.': 'તમે બનાવેલા તમામ ડિજિટલ ID કાર્ડ્સની સૂચિ।',
+    "You haven't created any ID cards yet.": "તમે હજી સુધી કોઈ ID કાર્ડ બનાવ્યું નથી।",
     'Search by ID Number...': 'આઈડી નંબર દ્વારા શોધો...',
-    'No cards found for your search.': 'તમારી શોધ માટે કોઈ કાર્ડ મળ્યાં નથી.',
+    'No cards found for your search.': 'તમારી શોધ માટે કોઈ કાર્ડ મળ્યાં નથી।',
 };
 
 const kn = {
     'Manage IDs': 'ID ಗಳನ್ನು ನಿರ್ವಹಿಸಿ',
     'Verify ID': 'ID ಯನ್ನು ಪರಿಶೀಲಿಸಿ',
-    'Schemes': 'ಯೋಜನೆಗಳು',
     'Create New ID Card': 'ಹೊಸ ID ಕಾರ್ಡ್ ರಚಿಸಿ',
-    'Fill in the details to generate a new digital ID card.': 'ಹೊಸ ಡಿಜಿಟಲ್ ID ಕಾರ್ಡ್ ರಚಿಸಲು ವಿವರಗಳನ್ನು ಭರ್ತಿ ಮಾಡಿ.',
+    'Fill in the details to generate a new digital ID card.': 'ಹೊಸ ಡಿಜಿಟಲ್ ID ಕಾರ್ಡ್ ರಚಿಸಲು ವಿವರಗಳನ್ನು ಭರ್ತಿ ಮಾಡಿ।',
     'Full Name': 'ಪೂರ್ಣ ಹೆಸರು',
     'Date of Birth': 'ಹುಟ್ಟಿದ ದಿನಾಂಕ',
     'Gender': 'ಲಿಂಗ',
@@ -177,10 +169,10 @@ const kn = {
     'Click to upload': 'ಅಪ್‌ಲೋಡ್ ಮಾಡಲು ಕ್ಲಿಕ್ ಮಾಡಿ',
     'Generate ID Card': 'ID ಕಾರ್ಡ್ ರಚಿಸಿ',
     'My ID Cards': 'ನನ್ನ ID ಕಾರ್ಡ್‌ಗಳು',
-    'A list of all the digital ID cards you have created.': 'ನೀವು ರಚಿಸಿದ ಎಲ್ಲಾ ಡಿಜಿಟಲ್ ID ಕಾರ್ಡ್‌ಗಳ ಪಟ್ಟಿ.',
-    "You haven't created any ID cards yet.": "ನೀವು ಇನ್ನೂ ಯಾವುದೇ ID ಕಾರ್ಡ್‌ಗಳನ್ನು ರಚಿಸಿಲ್ಲ.",
+    'A list of all the digital ID cards you have created.': 'ನೀವು ರಚಿಸಿದ ಎಲ್ಲಾ ಡಿಜಿಟಲ್ ID ಕಾರ್ಡ್‌ಗಳ ಪಟ್ಟಿ।',
+    "You haven't created any ID cards yet.": "ನೀವು ಇನ್ನೂ ಯಾವುದೇ ID ಕಾರ್ಡ್‌ಗಳನ್ನು ರಚಿಸಿಲ್ಲ।",
     'Search by ID Number...': 'ಐಡಿ ಸಂಖ್ಯೆಯ ಮೂಲಕ ಹುಡುಕಿ...',
-    'No cards found for your search.': 'ನಿಮ್ಮ ಹುಡುಕಾಟಕ್ಕೆ ಯಾವುದೇ ಕಾರ್ಡ್‌ಗಳು ಕಂಡುಬಂದಿಲ್ಲ.',
+    'No cards found for your search.': 'ನಿಮ್ಮ ಹುಡುಕಾಟಕ್ಕೆ ಯಾವುದೇ ಕಾರ್ಡ್‌ಗಳು ಕಂಡುಬಂದಿಲ್ಲ।',
 };
 
 export const translations = {
