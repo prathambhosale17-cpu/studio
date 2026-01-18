@@ -1,0 +1,176 @@
+:root { 
+    --brand:#166534;
+}
+
+#yojana-mitra-page {
+    background-color:#98ff7f;
+    font-family: 'Times New Roman', Times, serif;
+    color: #000000;
+    font-weight: 100;
+}
+
+#yojana-mitra-page main {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+#yojana-mitra-page .container-narrow {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    padding-top: 1.5rem;
+    padding-bottom: 1.5rem;
+} 
+
+#yojana-mitra-page .card {
+    background: hsl(0, 0%, 100%);
+    border-radius: 1rem;
+    box-shadow: 0 10px 30px rgb(62, 230, 47);
+    padding: 1.5rem;
+}
+
+#yojana-mitra-page .grid {
+    display: grid;
+}
+
+#yojana-mitra-page .gap-4 {
+    gap: 1rem;
+}
+
+#yojana-mitra-page .md\\:grid-cols-3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+#yojana-mitra-page .md\\:col-span-2 {
+    grid-column: span 2 / span 2;
+}
+
+#yojana-mitra-page .md\\:col-span-3 {
+    grid-column: span 3 / span 3;
+}
+
+
+#yojana-mitra-page .flex { display: flex; }
+#yojana-mitra-page .flex-col { flex-direction: column; }
+#yojana-mitra-page .md\\:flex-row {
+    flex-direction: row;
+}
+#yojana-mitra-page .items-center { align-items: center; }
+#yojana-mitra-page .md\\:items-center { align-items: center; }
+#yojana-mitra-page .md\\:justify-between { justify-content: space-between; }
+#yojana-mitra-page .gap-3 { gap: 0.75rem; }
+#yojana-mitra-page .flex-wrap { flex-wrap: wrap; }
+
+
+#yojana-mitra-page .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: .5rem;
+    padding: .6rem 1rem;
+    border-radius: .75rem;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    border: none;
+}
+
+#yojana-mitra-page .btn-primary {
+    background: var(--brand);
+    color: #fffefe;
+    box-shadow: 0 5px 15px rgba(22, 101, 52, 0.4);
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+    
+#yojana-mitra-page .btn-muted {
+    background: #fff3d4;
+    color: #000;
+}
+    
+#yojana-mitra-page .btn-ghost {
+    background: transparent;
+    border: 1px solid #4c4c4d;
+    color: #000;
+}
+    
+#yojana-mitra-page input,
+#yojana-mitra-page select,
+#yojana-mitra-page textarea {
+    padding: .7rem .9rem;
+    border-radius: .7rem;
+    border: 1px solid #3a3a3a;
+    width: 100%;
+    box-sizing: border-box;
+    background-color: white;
+}
+    
+#yojana-mitra-page .badge {
+    padding: .15rem .5rem;
+    border-radius: .5rem;
+    font-size: .7rem;
+    background: #eef2ff;
+    color: #000000;
+    display: inline-block;
+}
+
+#yojana-mitra-page .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: .25rem;
+    padding: .25rem .6rem;
+    border-radius: 999px;
+    background: #ecfdf5;
+    color: #065f46;
+    font-size: .75rem;
+    font-weight: 700;
+}
+
+#yojana-mitra-page .text-2xl { font-size: 1.5rem; line-height: 2rem; }
+#yojana-mitra-page .font-bold { font-weight: 700; }
+#yojana-mitra-page .text-emerald-900 { color: #064e3b; }
+#yojana-mitra-page .mt-3 { margin-top: 0.75rem; }
+#yojana-mitra-page .text-sm { font-size: 0.875rem; line-height: 1.25rem; }
+#yojana-mitra-page .text-xl { font-size: 1.25rem; line-height: 1.75rem; }
+#yojana-mitra-page .mb-4 { margin-bottom: 1rem; }
+#yojana-mitra-page .font-semibold { font-weight: 600; }
+#yojana-mitra-page .pt-2 { padding-top: 0.5rem; }
+#yojana-mitra-page .mt-6 { margin-top: 1.5rem; }
+#yojana-mitra-page .sm\\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+#yojana-mitra-page .lg\\:grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+#yojana-mitra-page .justify-between { justify-content: space-between; }
+#yojana-mitra-page .mb-6 { margin-bottom: 1.5rem; }
+#yojana-mitra-page .pb-6 { padding-bottom: 1.5rem; }
+#yojana-mitra-page .mt-4 { margin-top: 1rem; }
+#yojana-mitra-page .divide-y > :not([hidden]) ~ :not([hidden]) { border-top-width: 1px; border-color: #e5e7eb; }
+#yojana-mitra-page .py-4 { padding-top: 1rem; padding-bottom: 1rem; }
+#yojana-mitra-page .gap-2 { gap: 0.5rem; }
+#yojana-mitra-page .text-center { text-align: center; }
+#yojana-mitra-page .border-t { border-top-width: 1px; }
+
+#yojana-mitra-page dialog {
+    border: 1px solid #ccc;
+    border-radius: 1rem;
+    padding: 0;
+}
+#yojana-mitra-page dialog::backdrop {
+    background-color: rgba(0,0,0,0.5);
+}
+    
+@media print { 
+    body > header,
+    #yojana-mitra-page #actions,
+    #yojana-mitra-page #qa,
+    body > header #langBar {
+        display: none !important;
+    }
+    #yojana-mitra-page .card {
+        box-shadow: none;
+        border: 1px solid #ddd;
+    } 
+    #yojana-mitra-page,
+    body {
+        background: #fff;
+    }
+}
