@@ -18,6 +18,8 @@ const en = {
   'My ID Cards': 'My ID Cards',
   'A list of all the digital ID cards you have created.': 'A list of all the digital ID cards you have created.',
   "You haven't created any ID cards yet.": "You haven't created any ID cards yet.",
+  'Search by ID Number...': 'Search by ID Number...',
+  'No cards found for your search.': 'No cards found for your search.',
 };
 
 const hi = {
@@ -39,6 +41,8 @@ const hi = {
   'My ID Cards': 'मेरे आईडी कार्ड',
   'A list of all the digital ID cards you have created.': 'आपके द्वारा बनाए गए सभी डिजिटल आईडी कार्डों की एक सूची।',
   "You haven't created any ID cards yet.": "आपने अभी तक कोई आईडी कार्ड नहीं बनाया है।",
+  'Search by ID Number...': 'आईडी नंबर से खोजें...',
+  'No cards found for your search.': 'आपकी खोज के लिए कोई कार्ड नहीं मिला।',
 };
 
 const bn = {
@@ -60,6 +64,8 @@ const bn = {
     'My ID Cards': 'আমার আইডি কার্ড',
     'A list of all the digital ID cards you have created.': 'আপনার তৈরি করা সমস্ত ডিজিটাল আইডি কার্ডের একটি তালিকা।',
     "You haven't created any ID cards yet.": "আপনি এখনও কোনো আইডি কার্ড তৈরি করেননি।",
+    'Search by ID Number...': 'আইডি নম্বর দ্বারা অনুসন্ধান করুন...',
+    'No cards found for your search.': 'আপনার অনুসন্ধানের জন্য কোন কার্ড পাওয়া যায়নি।',
 };
 
 const te = {
@@ -81,6 +87,8 @@ const te = {
     'My ID Cards': 'నా ID కార్డులు',
     'A list of all the digital ID cards you have created.': 'మీరు సృష్టించిన అన్ని డిజిటల్ ID కార్డుల జాబితా.',
     "You haven't created any ID cards yet.": "మీరు ఇంకా ఏ ID కార్డులను సృష్టించలేదు.",
+    'Search by ID Number...': 'ఐడి నంబర్ ద్వారా శోధించండి...',
+    'No cards found for your search.': 'మీ శోధనకు కార్డులు ఏవీ కనుగొనబడలేదు.',
 };
 
 const mr = {
@@ -102,6 +110,8 @@ const mr = {
     'My ID Cards': 'माझे आयडी कार्ड',
     'A list of all the digital ID cards you have created.': 'तुम्ही तयार केलेल्या सर्व डिजिटल आयडी कार्डांची सूची.',
     "You haven't created any ID cards yet.": "तुम्ही अद्याप कोणतेही आयडी कार्ड तयार केलेले नाही.",
+    'Search by ID Number...': 'आयडी क्रमांकाद्वारे शोधा...',
+    'No cards found for your search.': 'तुमच्या शोधासाठी कोणतेही कार्ड आढळले नाही.',
 };
 
 const ta = {
@@ -123,6 +133,8 @@ const ta = {
     'My ID Cards': 'எனது அடையாள அட்டைகள்',
     'A list of all the digital ID cards you have created.': 'நீங்கள் உருவாக்கிய அனைத்து டிஜிட்டல் அடையாள அட்டைகளின் பட்டியல்.',
     "You haven't created any ID cards yet.": "நீங்கள் இன்னும் எந்த அடையாள அட்டைகளையும் உருவாக்கவில்லை.",
+    'Search by ID Number...': 'ஐடி எண் மூலம் தேடவும்...',
+    'No cards found for your search.': 'உங்கள் தேடலுக்கு எந்த அட்டைகளும் கிடைக்கவில்லை.',
 };
 
 const gu = {
@@ -144,6 +156,8 @@ const gu = {
     'My ID Cards': 'મારા ID કાર્ડ્સ',
     'A list of all the digital ID cards you have created.': 'તમે બનાવેલા તમામ ડિજિટલ ID કાર્ડ્સની સૂચિ.',
     "You haven't created any ID cards yet.": "તમે હજી સુધી કોઈ ID કાર્ડ બનાવ્યું નથી.",
+    'Search by ID Number...': 'આઈડી નંબર દ્વારા શોધો...',
+    'No cards found for your search.': 'તમારી શોધ માટે કોઈ કાર્ડ મળ્યાં નથી.',
 };
 
 const kn = {
@@ -165,6 +179,8 @@ const kn = {
     'My ID Cards': 'ನನ್ನ ID ಕಾರ್ಡ್‌ಗಳು',
     'A list of all the digital ID cards you have created.': 'ನೀವು ರಚಿಸಿದ ಎಲ್ಲಾ ಡಿಜಿಟಲ್ ID ಕಾರ್ಡ್‌ಗಳ ಪಟ್ಟಿ.',
     "You haven't created any ID cards yet.": "ನೀವು ಇನ್ನೂ ಯಾವುದೇ ID ಕಾರ್ಡ್‌ಗಳನ್ನು ರಚಿಸಿಲ್ಲ.",
+    'Search by ID Number...': 'ಐಡಿ ಸಂಖ್ಯೆಯ ಮೂಲಕ ಹುಡುಕಿ...',
+    'No cards found for your search.': 'ನಿಮ್ಮ ಹುಡುಕಾಟಕ್ಕೆ ಯಾವುದೇ ಕಾರ್ಡ್‌ಗಳು ಕಂಡುಬಂದಿಲ್ಲ.',
 };
 
 export const translations = {
