@@ -35,7 +35,7 @@ export function IdCardDisplay({ card, onDelete }: IdCardDisplayProps) {
     toPng(cardRef.current, { cacheBust: true, pixelRatio: 2 })
       .then(dataUrl => {
         const link = document.createElement('a');
-        link.download = `${card.name.replace(/\s+/g, '_')}-ID-Card.png`;
+        link.download = `${card.idNumber}-ID-Card.png`;
         link.href = dataUrl;
         link.click();
       })
