@@ -4,104 +4,12 @@ import { useState, useEffect, useRef } from 'react';
 import { jsPDF } from 'jspdf';
 import { SCHEMES, DISTRICTS } from '@/lib/yojana-mitra-data';
 import './styles.css';
-import { supportedLanguages } from '@/context/language-context';
+import { useLanguage, supportedLanguages } from '@/context/language-context';
 
 type Scheme = typeof SCHEMES[0];
-type Lang = typeof supportedLanguages[number]['code'];
-
-const i18nMap = {
-    en: {
-        siteTitle: 'Yojana Mitra • Maharashtra',
-        siteTag: 'Schemes & Community Help',
-        heroTitle: 'Find the right scheme in minutes',
-        heroSub: 'Answer a few questions to see schemes you can apply for.',
-        heroNote: 'No login needed. Anonymous posting allowed.',
-        finderTitle: 'Smart Scheme Finder',
-        labelDistrict: 'District',
-        labelCrop: 'Crop',
-        labelLand: 'Land Size',
-        labelIrr: 'Irrigation',
-        labelAge: 'Age',
-        labelKyc: 'KYC & Bank Link',
-        btnShowEligible: 'Show Eligible Schemes',
-        btnClear: 'Clear',
-        btnFindSchemes: 'Find Schemes',
-        btnAsk: 'Ask a Doubt',
-        qaTitle: "Farmers’ Q&A",
-        labelQDistrict: 'District',
-        labelQCat: 'Category',
-        labelQTitle: 'Title',
-        labelQBody: 'Describe your problem',
-        lblUnanswered: 'Unanswered',
-        print: 'Print',
-        apply: 'Apply Online',
-        footerTxt: 'Best-effort information. Verify with official sources.',
-        details: 'Details',
-        noSchemes: 'No matching schemes found. Try changing filters.',
-        noPosts: 'No posts yet.',
-        captcha: 'Captcha:',
-        copy: 'Copy',
-        copied: 'Copied!',
-        downloadPdf: 'Download PDF',
-        close: 'Close',
-        whatYouGet: 'What you get',
-        eligibility: 'Eligibility',
-        howToApply: 'How to apply',
-        docsYouNeed: 'Documents you need',
-        postDoubt: 'Post Doubt',
-        wrongCaptcha: 'Wrong captcha',
-        postReported: 'Reported. Post hidden.',
-        markSolved: 'Mark Solved',
-        report: 'Report',
-    },
-    mr: {
-        siteTitle: 'योजना मित्र • महाराष्ट्र',
-        siteTag: 'योजना व समुदाय मदत',
-        heroTitle: 'योग्य योजना काही मिनिटांत शोधा',
-        heroSub: 'थोडे प्रश्न उत्तर द्या आणि आपल्या पात्र योजना पहा.',
-        heroNote: 'लॉगिनची गरज नाही. गुप्तपणे प्रश्न विचारू शकता.',
-        finderTitle: 'स्मार्ट योजना शोधक',
-        labelDistrict: 'जिल्हा',
-        labelCrop: 'पीक',
-        labelLand: 'शेती क्षेत्र',
-        labelIrr: 'सिंचन',
-        labelAge: 'वय',
-        labelKyc: 'केवायसी व बँक लिंक',
-        btnShowEligible: 'पात्र योजना दाखवा',
-        btnClear: 'रीसेट',
-        btnFindSchemes: 'योजना शोधा',
-        btnAsk: 'शंका विचारा',
-        qaTitle: 'शेतकरी प्रश्नोत्तर',
-        labelQDistrict: 'जिल्हा',
-        labelQCat: 'विभाग',
-        labelQTitle: 'शीर्षक',
-        labelQBody: 'समस्या लिहा',
-        lblUnanswered: 'उत्तर नसलेले',
-        print: 'प्रिंट',
-        apply: 'ऑनलाइन अर्ज',
-        footerTxt: 'माहिती सर्वोत्तम प्रयत्नांवर आधारित. कृपया अधिकृत स्रोत तपासा.',
-        details: 'तपशील',
-        noSchemes: 'जुळणाऱ्या योजना आढळल्या नाहीत. फिल्टर बदलून प्रयत्न करा.',
-        noPosts: 'अद्याप पोस्ट नाहीत.',
-        captcha: 'कॅप्चा:',
-        copy: 'कॉपी',
-        copied: 'कागदपत्रांची यादी कॉपी केली',
-        downloadPdf: 'PDF डाउनलोड करा',
-        close: 'बंद करा',
-        whatYouGet: 'तुम्हाला काय मिळेल',
-        eligibility: 'पात्रता',
-        howToApply: 'अर्ज कसा करावा',
-        docsYouNeed: 'आवश्यक कागदपत्रे',
-        postDoubt: 'शंका पोस्ट करा',
-        wrongCaptcha: 'चुकीचा कॅप्चा',
-        postReported: 'रिपोर्ट केले. पोस्ट लपवली आहे.',
-        markSolved: 'सोडवले म्हणून चिन्हांकित करा',
-        report: 'रिपोर्ट करा',
-    }
-};
 
 export default function YojanaMitraPage() {
-    const [lang, setLang] = useState<Lang>('en');
+    const { language, setLanguage, t } = useLanguage();
     const [finderData, setFinderData] = useState({ district: '', crop: '', land: '', irrig: '', age: '', kyc: '' });
     const [results, setResults] = useState<Scheme[]>(SCHEMES);
     const [qaPosts, setQaPosts] = useState<any[]>([]);
@@ -112,13 +20,7 @@ export default function YojanaMitraPage() {
     const [selectedScheme, setSelectedScheme] = useState<Scheme | null>(null);
     const dialogRef = useRef<HTMLDialogElement>(null);
 
-    const t = (key: keyof typeof i18nMap['en']) => (i18nMap as any)[lang]?.[key] || i18nMap['en'][key];
-
     useEffect(() => {
-        const savedLang = localStorage.getItem('lang');
-        if (savedLang && supportedLanguages.some(l => l.code === savedLang)) {
-            setLang(savedLang as Lang);
-        }
         const savedPosts = localStorage.getItem('qa_posts_v1');
         if (savedPosts) {
             setQaPosts(JSON.parse(savedPosts));
@@ -141,10 +43,6 @@ export default function YojanaMitraPage() {
         }
     }, [selectedScheme]);
     
-    const handleLangChange = (newLang: Lang) => {
-        setLang(newLang);
-        localStorage.setItem('lang', newLang);
-    };
 
     const handleFinderChange = (field: string, value: string) => {
         setFinderData(prev => ({ ...prev, [field]: value }));
@@ -180,10 +78,10 @@ export default function YojanaMitraPage() {
         doc.text(t('docsYouNeed'), margin, y); y += 26;
         
         doc.setFont('helvetica', 'normal'); doc.setFontSize(12);
-        const schemeTitle = (scheme.title as any)[lang] || scheme.title.en;
+        const schemeTitle = (scheme.title as any)[language] || scheme.title.en;
         doc.text(`${t('siteTag')}: ${schemeTitle}`, margin, y); y += 20;
 
-        const docs = (scheme.docs as any)?.[lang] || scheme.docs?.en || [];
+        const docs = (scheme.docs as any)?.[language] || scheme.docs?.en || [];
         (docs.length ? docs : ['—']).forEach((item:string) => {
             const wrapped = doc.splitTextToSize('• ' + item, doc.internal.pageSize.getWidth() - margin * 2);
             wrapped.forEach((ln: string) => {
@@ -274,7 +172,7 @@ export default function YojanaMitraPage() {
                     <div className="flex items-center gap-2 flex-wrap">
                         <span className="text-sm text-slate-500">Language:</span>
                         {supportedLanguages.map(l => (
-                             <button key={l.code} className={`btn btn-ghost text-xs p-2 ${lang === l.code ? 'font-bold text-primary bg-primary/10' : ''}`} onClick={() => handleLangChange(l.code as Lang)}>{l.name}</button>
+                             <button key={l.code} className={`btn btn-ghost text-xs p-2 ${language === l.code ? 'font-bold text-primary bg-primary/10' : ''}`} onClick={() => setLanguage(l.code as any)}>{l.name}</button>
                         ))}
                     </div>
                 </div>
@@ -357,8 +255,8 @@ export default function YojanaMitraPage() {
                     </form>
                     <div id="results" className="mt-6 grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
                         {results.map(s => {
-                            const title = (s.title as any)[lang] || s.title.en;
-                            const what = (s.what as any)[lang] || s.what.en;
+                            const title = (s.title as any)[language] || s.title.en;
+                            const what = (s.what as any)[language] || s.what.en;
                             return (
                             <article key={s.id} className="p-4 card flex flex-col justify-between h-full">
                                 <div>
@@ -451,7 +349,7 @@ export default function YojanaMitraPage() {
                 {selectedScheme && (
                     <div className="p-0 m-0">
                         <div className="p-5 border-b flex items-center justify-between">
-                            <h4 className="text-lg font-bold">{(selectedScheme.title as any)[lang] || selectedScheme.title.en}</h4>
+                            <h4 className="text-lg font-bold">{(selectedScheme.title as any)[language] || selectedScheme.title.en}</h4>
                             <button className="btn btn-ghost" aria-label="Close" onClick={() => setSelectedScheme(null)}>✕</button>
                         </div>
                         <div className="p-5 grid gap-5 md:grid-cols-3">
@@ -459,18 +357,18 @@ export default function YojanaMitraPage() {
                                 <div className="text-sm text-slate-600">{selectedScheme.dept} • {selectedScheme.level.toUpperCase()}</div>
                                 <div>
                                     <h5 className="font-semibold">{t('whatYouGet')}</h5>
-                                    <p>{(selectedScheme.what as any)[lang] || selectedScheme.what.en}</p>
+                                    <p>{(selectedScheme.what as any)[language] || selectedScheme.what.en}</p>
                                 </div>
                                 <div>
                                     <h5 className="font-semibold">{t('eligibility')}</h5>
                                     <ul className="list-disc pl-6 space-y-1">
-                                        {(((selectedScheme.eligibility as any)[lang] || selectedScheme.eligibility.en) || []).map((e:string,i:number) => <li key={i}>{e}</li>)}
+                                        {(((selectedScheme.eligibility as any)[language] || selectedScheme.eligibility.en) || []).map((e:string,i:number) => <li key={i}>{e}</li>)}
                                     </ul>
                                 </div>
                                 <div>
                                     <h5 className="font-semibold">{t('howToApply')}</h5>
                                     <ol className="list-decimal pl-6 space-y-1">
-                                        {(((selectedScheme.steps as any)[lang] || selectedScheme.steps.en) || []).map((s:string,i:number) => <li key={i}>{s}</li>)}
+                                        {(((selectedScheme.steps as any)[language] || selectedScheme.steps.en) || []).map((s:string,i:number) => <li key={i}>{s}</li>)}
                                     </ol>
                                 </div>
                             </div>
@@ -478,11 +376,11 @@ export default function YojanaMitraPage() {
                                 <div className="rounded-xl border border-primary/20 bg-primary/5 p-4">
                                     <h5 className="font-semibold text-primary">{t('docsYouNeed')}</h5>
                                     <ul className="mt-2 list-disc pl-6 space-y-1 text-primary/90">
-                                        {(((selectedScheme.docs as any)[lang] || selectedScheme.docs.en) || []).map((d:string,i:number) => <li key={i}>{d}</li>)}
+                                        {(((selectedScheme.docs as any)[language] || selectedScheme.docs.en) || []).map((d:string,i:number) => <li key={i}>{d}</li>)}
                                     </ul>
                                     <div className="mt-3 flex flex-wrap gap-2">
                                         <button type="button" className="btn btn-muted" onClick={() => {
-                                            const docsText = ((selectedScheme.docs as any)[lang] || selectedScheme.docs.en).join('\n');
+                                            const docsText = ((selectedScheme.docs as any)[language] || selectedScheme.docs.en).join('\n');
                                             navigator.clipboard.writeText(docsText).then(() => alert(t('copied')));
                                         }}>{t('copy')}</button>
                                         <button type="button" className="btn btn-muted" onClick={() => downloadDocsPDF(selectedScheme)}>{t('downloadPdf')}</button>
