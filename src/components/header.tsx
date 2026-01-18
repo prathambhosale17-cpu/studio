@@ -35,6 +35,15 @@ export function Header() {
         >
           Verify ID
         </Link>
+        <Link
+          href="/schemes"
+          className={cn(
+            'text-sm font-medium transition-colors hover:text-primary',
+            pathname.startsWith('/schemes') ? 'text-primary' : 'text-muted-foreground'
+          )}
+        >
+          Schemes
+        </Link>
       </nav>
     </header>
   );
