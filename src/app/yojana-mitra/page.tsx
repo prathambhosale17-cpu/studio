@@ -15,6 +15,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { DISTRICTS, SCHEMES } from '@/lib/yojana-mitra-data';
 import { jsPDF } from 'jspdf';
 import { Separator } from '@/components/ui/separator';
+import { Badge } from '@/components/ui/badge';
 
 
 type Scheme = typeof SCHEMES[0];
@@ -408,5 +409,3 @@ export default function YojanaMitraPage() {
     </div>
   );
 }
-
-    
