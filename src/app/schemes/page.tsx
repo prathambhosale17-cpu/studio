@@ -1,4 +1,5 @@
 'use client';
+import { useState, useMemo } from 'react';
 import { Header } from '@/components/header';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -6,6 +7,7 @@ import Link from 'next/link';
 import { governmentSchemes, GovernmentScheme } from '@/lib/schemes';
 import { Landmark, Tractor, Shield, Baby, Sparkles, ExternalLink } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 const categoryIcons: { [key: string]: React.ReactNode } = {
   'Financial Inclusion': <Landmark className="h-6 w-6 text-primary" />,
@@ -64,17 +66,51 @@ function SchemeCard({ scheme }: { scheme: GovernmentScheme }) {
 }
 
 export default function SchemesPage() {
+  const [selectedState, setSelectedState] = useState('all');
+
+  const states = useMemo(() => {
+    const allStates = governmentSchemes
+      .map(scheme => scheme.state)
+      .filter((state): state is string => !!state && state !== 'Central Government');
+    return ['all', 'Central Government', ...Array.from(new Set(allStates)).sort()];
+  }, []);
+
+  const filteredSchemes = useMemo(() => {
+    const sorted = [...governmentSchemes].sort((a, b) => (a.state || '').localeCompare(b.state || '') || a.name.localeCompare(b.name));
+    if (selectedState === 'all') {
+      return sorted;
+    }
+    return sorted.filter(scheme => scheme.state === selectedState);
+  }, [selectedState]);
+
+
   return (
     <div className="flex min-h-screen w-full flex-col bg-background">
       <Header />
       <main className="flex-1 p-4 md:p-6 lg:p-8">
         <div className="mx-auto max-w-7xl space-y-8">
-            <div className="text-center">
-                <h1 className="text-3xl font-bold tracking-tight">Government Schemes</h1>
-                <p className="text-muted-foreground mt-2">Explore various welfare schemes available for citizens across India.</p>
+            <div className="text-center space-y-6">
+                <div>
+                    <h1 className="text-3xl font-bold tracking-tight">Government Schemes</h1>
+                    <p className="text-muted-foreground mt-2">Explore various welfare schemes available for citizens across India.</p>
+                </div>
+                 <div className="mx-auto max-w-sm">
+                    <Select value={selectedState} onValueChange={setSelectedState}>
+                        <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Filter by state..." />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {states.map(state => (
+                                <SelectItem key={state} value={state}>
+                                    {state === 'all' ? 'All States & Central' : state}
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                </div>
             </div>
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                {governmentSchemes.sort((a, b) => (a.state || '').localeCompare(b.state || '') || a.name.localeCompare(b.name)).map((scheme, index) => (
+                {filteredSchemes.map((scheme, index) => (
                     <SchemeCard key={index} scheme={scheme} />
                 ))}
             </div>
