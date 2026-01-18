@@ -1,3 +1,4 @@
+
 export type GovernmentScheme = {
   name: string;
   description: string;
@@ -137,7 +138,7 @@ export const governmentSchemes: GovernmentScheme[] = [
     description: 'A scheme to provide financial assistance to farmer families, including tenant farmers, across Andhra Pradesh.',
     eligibility: ['Landowner farmer families.', 'Tenant farmers belonging to SC, ST, BC, and Minority categories.'],
     benefits: ['Financial assistance of ₹13,500 per farmer family per year.', 'Includes ₹6,000 from PM-KISAN.', 'Interest-free crop loans.'],
-    link: 'https://ysrrythubharosa.ap.gov.in/',
+    link: 'https://ysrrythubharosa.apcfss.in/',
     category: 'Agriculture',
     state: 'Andhra Pradesh',
   },
