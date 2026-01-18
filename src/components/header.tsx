@@ -53,6 +53,15 @@ export function Header() {
         >
           {t('Download Card')}
         </Link>
+        <Link
+          href="/yojana-mitra"
+          className={cn(
+            'text-sm font-medium transition-colors hover:text-primary',
+            pathname.startsWith('/yojana-mitra') ? 'text-primary' : 'text-muted-foreground'
+          )}
+        >
+          Yojana Mitra
+        </Link>
       </nav>
        <Select value={language} onValueChange={(value) => setLanguage(value as any)}>
         <SelectTrigger className="w-auto gap-2 border-0 bg-transparent text-muted-foreground hover:text-primary focus:ring-0 focus:ring-offset-0">

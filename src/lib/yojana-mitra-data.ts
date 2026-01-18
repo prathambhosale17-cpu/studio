@@ -1,8 +1,7 @@
 
-
 export const DISTRICTS = ["Ahmednagar", "Akola", "Amravati", "Beed", "Bhandara", "Buldhana", "Chandrapur", "Chatrapati Sambhajinagar", "Dhule", "Gadchiroli", "Gondia", "Hingoli", "Jalgaon", "Jalna", "Kolhapur", "Latur", "Mumbai City", "Mumbai Suburban", "Nagpur", "Nanded", "Nandurbar", "Nashik", "Osmanabad (Dharashiv)", "Palghar", "Parbhani", "Pune", "Raigad", "Ratnagiri", "Sangli", "Satara", "Sindhudurg", "Solapur", "Thane", "Wardha", "Washim", "Yavatmal"];
 
-const BASE_SCHEMES = [
+const allSchemes = [
       {
         id: 'pmkisan',
         title: { 
@@ -97,10 +96,7 @@ const BASE_SCHEMES = [
           en: ['Visit bank with documents', 'Fill KCC form', 'Get limit sanctioned'], 
           mr: ['बँकेत कागदपत्रांसह जा', 'KCC फॉर्म भरा', 'मर्यादा मंजूर करून घ्या'] },
         apply: '#'
-      }
-    ];
-
-const MORE_SCHEMES = [
+      },
       {
         id: 'namo_shetkari_mhasamman',
         title: { en: 'Namo Shetkari Maha Samman Nidhi (State Top-Up)', mr: 'नमो शेतकरी महासम्मान निधी (राज्य टॉप-अप)' },
@@ -676,11 +672,7 @@ const MORE_SCHEMES = [
         docs: { en: ['Aadhaar', '7/12', 'Bank passbook'], mr: ['आधार', '७/१२', 'बँक पासबुक'] },
         steps: { en: ['Get vendor estimate', 'Apply at block office'], mr: ['विक्रेत्याकडून अंदाज घ्या', 'ब्लॉक कार्यालयात अर्ज करा'] },
         apply: '#'
-      }
-];
-
-const FINAL_SCHEMES = [
-      // 1) Rotavator / Cultivator Subsidy
+      },
       {
         id: 'rotavator_cultivator_subsidy',
         title: { en: 'Rotavator / Cultivator Subsidy', mr: 'रोटावेटर / कल्टिव्हेटर अनुदान' },
@@ -726,8 +718,6 @@ const FINAL_SCHEMES = [
         apply: 'https://agrimachinery.nic.in',
         tags: { land: ['<2', '2-5'] }
       },
-
-      // 2) Seed Drill / Zero Till Drill Subsidy
       {
         id: 'seed_drill_zero_till_subsidy',
         title: { en: 'Seed Drill / Zero Till Seed Drill Subsidy', mr: 'सीड ड्रिल / झिरो टिल सीड ड्रिल अनुदान' },
@@ -773,8 +763,6 @@ const FINAL_SCHEMES = [
         apply: 'https://agrimachinery.nic.in',
         tags: { land: ['<2', '2-5'] }
       },
-
-      // 3) Mulcher / Shredder Subsidy (Crop Residue)
       {
         id: 'mulcher_shredder_subsidy',
         title: { en: 'Mulcher / Shredder Subsidy (Crop Residue)', mr: 'मल्चर / श्रेडर अनुदान (पीक अवशेष)' },
@@ -818,8 +806,6 @@ const FINAL_SCHEMES = [
         apply: 'https://mahadbt.maharashtra.gov.in',
         tags: { land: ['<2', '2-5'] }
       },
-
-      // 4) Solar Agriculture Sprayer Subsidy
       {
         id: 'solar_sprayer_subsidy',
         title: { en: 'Solar Agriculture Sprayer Subsidy', mr: 'सोलर कृषी स्प्रेयर अनुदान' },
@@ -865,8 +851,6 @@ const FINAL_SCHEMES = [
         apply: 'https://mahadbt.maharashtra.gov.in',
         tags: { land: ['<2', '2-5'] }
       },
-
-      // 5) Drone CHC Usage Support (Service)
       {
         id: 'drone_chc_usage_support',
         title: { en: 'Drone Spray – CHC Usage Support', mr: 'ड्रोन फवारणी – CHC वापर सहाय्य' },
@@ -910,8 +894,6 @@ const FINAL_SCHEMES = [
         apply: 'https://agrimachinery.nic.in',
         tags: { land: ['<2', '2-5'] }
       },
-
-      // 6) Power Weeder / Brush Cutter Subsidy
       {
         id: 'power_weeder_brush_cutter_subsidy',
         title: { en: 'Power Weeder / Brush Cutter Subsidy', mr: 'पॉवर वीडर / ब्रश कटर अनुदान' },
@@ -955,8 +937,6 @@ const FINAL_SCHEMES = [
         apply: 'https://mahadbt.maharashtra.gov.in',
         tags: { land: ['<2', '2-5'] }
       },
-
-      // 7) Pack House (MIDH/NHB)
       {
         id: 'pack_house_midh_nhb',
         title: { en: 'Pack House Assistance (MIDH/NHB)', mr: 'पॅक हाऊस सहाय्य (MIDH/NHB)' },
@@ -1000,8 +980,6 @@ const FINAL_SCHEMES = [
         apply: 'https://nhb.gov.in',
         tags: { land: ['<2', '2-5', '>5'] }
       },
-
-      // 8) Cold Storage / CA Storage (AIF Linked)
       {
         id: 'cold_storage_aif',
         title: { en: 'Cold Storage / CA Storage Assistance (AIF Linked)', mr: 'कोल्ड स्टोरेज / CA स्टोरेज सहाय्य (AIF लिंक)' },
@@ -1045,8 +1023,6 @@ const FINAL_SCHEMES = [
         apply: 'https://www.agriinfra.dac.gov.in',
         tags: { land: ['<2', '2-5', '>5'] }
       },
-
-      // 9) Primary Processing Unit (Sorting/Grading/De-husking)
       {
         id: 'primary_processing_unit',
         title: { en: 'Primary Processing Unit Subsidy', mr: 'प्राथमिक प्रक्रिया युनिट अनुदान' },
@@ -1090,8 +1066,6 @@ const FINAL_SCHEMES = [
         apply: 'https://pmfme.mofpi.gov.in',
         tags: { land: ['<2', '2-5'] }
       },
-
-      // 10) FPO Formation & Equity Grant (SFAC)
       {
         id: 'sfac_fpo_equity_grant',
         title: { en: 'FPO Formation & Equity Grant (SFAC)', mr: 'FPO स्थापन व इक्विटी ग्रँट (SFAC)' },
@@ -1135,8 +1109,13 @@ const FINAL_SCHEMES = [
         apply: 'https://sfacindia.com',
         tags: { land: ['<2', '2-5', '>5'] }
       }
-    ];
-
-export const SCHEMES = [...BASE_SCHEMES, ...MORE_SCHEMES, ...FINAL_SCHEMES];
-
-    
+];
+const uniqueIds = new Set();
+export const SCHEMES = allSchemes.filter(scheme => {
+  if (uniqueIds.has(scheme.id)) {
+    return false;
+  } else {
+    uniqueIds.add(scheme.id);
+    return true;
+  }
+});
