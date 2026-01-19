@@ -20,8 +20,8 @@ export default function YojanaMitraPage() {
     const { language, t } = useLanguage();
     const [filters, setFilters] = useState({
         search: '',
-        state: '',
-        category: '',
+        state: 'all',
+        category: 'all',
         level: 'all', // 'all', 'central', 'state'
         aadhaar: 'all', // 'all', 'yes', 'no'
     });
@@ -34,9 +34,9 @@ export default function YojanaMitraPage() {
         return SCHEMES.filter(scheme => {
             const title = (scheme.title as any)[language] || scheme.title.en || '';
             const searchMatch = !filters.search || title.toLowerCase().includes(filters.search.toLowerCase());
-            const stateMatch = !filters.state || scheme.state === filters.state;
+            const stateMatch = filters.state === 'all' || scheme.state === filters.state;
             const levelMatch = filters.level === 'all' || scheme.level === filters.level;
-            const categoryMatch = !filters.category || scheme.categories.includes(filters.category);
+            const categoryMatch = filters.category === 'all' || scheme.categories.includes(filters.category);
             
             const aadhaarDocs = ((scheme.docs as any).en || []).join(' ').toLowerCase();
             const isAadhaarRequired = aadhaarDocs.includes('aadhaar');
@@ -113,7 +113,7 @@ export default function YojanaMitraPage() {
                                             <SelectValue placeholder={t('lblAllStates')} />
                                         </SelectTrigger>
                                         <SelectContent>
-                                            <SelectItem value="">{t('lblAllStates')}</SelectItem>
+                                            <SelectItem value="all">{t('lblAllStates')}</SelectItem>
                                             {INDIAN_STATES.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}
                                         </SelectContent>
                                     </Select>
@@ -125,7 +125,7 @@ export default function YojanaMitraPage() {
                                             <SelectValue placeholder={t('lblAllCats')} />
                                         </SelectTrigger>
                                         <SelectContent>
-                                            <SelectItem value="">{t('lblAllCats')}</SelectItem>
+                                            <SelectItem value="all">{t('lblAllCats')}</SelectItem>
                                             {allCategories.map(c => <SelectItem key={c} value={c} className="capitalize">{c.replace(/-/g, ' ')}</SelectItem>)}
                                         </SelectContent>
                                     </Select>
