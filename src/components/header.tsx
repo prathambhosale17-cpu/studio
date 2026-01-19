@@ -19,18 +19,18 @@ export function Header() {
 
   return (
     <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b bg-background/80 px-4 backdrop-blur-md sm:px-6">
-      <div className="flex items-center gap-2">
+      <Link href="/" className="flex items-center gap-2">
         <UserSquare className="h-7 w-7 text-primary" />
         <h1 className="text-xl font-semibold tracking-tight text-foreground">
           ID Card Pro
         </h1>
-      </div>
+      </Link>
       <nav className="flex items-center gap-6 ml-auto">
         <Link
-          href="/"
+          href="/manage-ids"
           className={cn(
             'text-sm font-medium transition-colors hover:text-primary',
-            pathname === '/' ? 'text-primary' : 'text-muted-foreground'
+            pathname === '/manage-ids' ? 'text-primary' : 'text-muted-foreground'
           )}
         >
           {t('Manage IDs')}
