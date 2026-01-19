@@ -6,7 +6,7 @@ import { AuthProvider } from '@/firebase/auth/auth-provider';
 import { LanguageProvider } from '@/context/language-context';
 
 export const metadata: Metadata = {
-  title: 'ID Card Pro',
+  title: 'AI-Based Identity Verification & Smart Government Scheme Platform',
   description: 'Create and verify digital ID cards with AI-powered face matching.',
 };
 

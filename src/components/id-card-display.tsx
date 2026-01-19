@@ -59,7 +59,7 @@ export function IdCardDisplay({ card, onDelete }: IdCardDisplayProps) {
           <UserSquare className="w-8 h-8 text-primary" />
           <div>
             <h2 className="text-lg font-bold text-primary">Digital Identity Card</h2>
-            <p className="text-xs text-primary/80">Issued by ID Card Pro</p>
+            <p className="text-xs text-primary/80">Issued by AI-Based Identity Verification & Smart Government Scheme Platform</p>
           </div>
         </div>
         <div className="p-5 grid grid-cols-3 gap-5 items-start">

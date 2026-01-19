@@ -21,8 +21,8 @@ export function Header() {
     <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b bg-background/80 px-4 backdrop-blur-md sm:px-6">
       <Link href="/" className="flex items-center gap-2">
         <UserSquare className="h-7 w-7 text-primary" />
-        <h1 className="text-xl font-semibold tracking-tight text-foreground">
-          ID Card Pro
+        <h1 className="text-base font-semibold tracking-tight text-foreground">
+          AI-Based Identity Verification<br />& Smart Government Scheme Platform
         </h1>
       </Link>
       <nav className="flex items-center gap-6 ml-auto">
