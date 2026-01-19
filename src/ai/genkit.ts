@@ -11,5 +11,5 @@ if (!process.env.GEMINI_API_KEY || process.env.GEMINI_API_KEY === 'YOUR_API_KEY_
 
 export const ai = genkit({
   plugins: [googleAI({apiKey: process.env.GEMINI_API_KEY})],
-  model: 'googleai/gemini-pro-vision',
+  model: 'googleai/gemini-1.5-flash-latest',
 });
