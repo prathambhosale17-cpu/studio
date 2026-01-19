@@ -64,6 +64,11 @@ const en = {
   'postReported': 'Reported. Post hidden.',
   'markSolved': 'Mark Solved',
   'report': 'Report',
+  'labelLevel': 'Scheme Level',
+  'lblAll': 'All',
+  'lblCentral': 'Central',
+  'lblState': 'State',
+  'lblAllStates': 'All States',
 };
 
 const hi = {
@@ -131,6 +136,11 @@ const hi = {
   'postReported': 'रिपोर्ट किया गया। पोस्ट छिपी हुई है।',
   'markSolved': 'हल के रूप में चिह्नित करें',
   'report': 'रिपोर्ट करें',
+  'labelLevel': 'योजना स्तर',
+  'lblAll': 'सभी',
+  'lblCentral': 'केंद्रीय',
+  'lblState': 'राज्य',
+  'lblAllStates': 'सभी राज्य',
 };
 
 const bn = {
@@ -198,6 +208,11 @@ const bn = {
     'postReported': 'রিপোর্ট করা হয়েছে। পোস্ট লুকানো হয়েছে।',
     'markSolved': 'সমাধান হিসাবে চিহ্নিত করুন',
     'report': 'রিপোর্ট',
+    'labelLevel': 'স্কিম স্তর',
+    'lblAll': 'সব',
+    'lblCentral': 'কেন্দ্রীয়',
+    'lblState': 'রাজ্য',
+    'lblAllStates': 'সব রাজ্য',
 };
 
 const te = {
@@ -265,6 +280,11 @@ const te = {
     'postReported': 'నివేదించబడింది. పోస్ట్ దాచబడింది.',
     'markSolved': 'పరిష్కరించబడినట్లుగా గుర్తించండి',
     'report': 'నివేదిక',
+    'labelLevel': 'పథకం స్థాయి',
+    'lblAll': 'అన్నీ',
+    'lblCentral': 'కేంద్ర',
+    'lblState': 'రాష్ట్ర',
+    'lblAllStates': 'అన్ని రాష్ట్రాలు',
 };
 
 const mr = {
@@ -332,6 +352,11 @@ const mr = {
     'postReported': 'रिपोर्ट केले. पोस्ट लपवली आहे.',
     'markSolved': 'सोडवले म्हणून चिन्हांकित करा',
     'report': 'रिपोर्ट करा',
+    'labelLevel': 'योजना स्तर',
+    'lblAll': 'सर्व',
+    'lblCentral': 'केंद्र',
+    'lblState': 'राज्य',
+    'lblAllStates': 'सर्व राज्य',
 };
 
 const ta = {
@@ -399,6 +424,11 @@ const ta = {
     'postReported': 'புகாரளிக்கப்பட்டது. இடுகை மறைக்கப்பட்டது.',
     'markSolved': 'தீர்க்கப்பட்டதாகக் குறிக்கவும்',
     'report': 'புகாரளி',
+    'labelLevel': 'திட்ட நிலை',
+    'lblAll': 'அனைத்தும்',
+    'lblCentral': 'மத்திய',
+    'lblState': 'மாநிலம்',
+    'lblAllStates': 'அனைத்து மாநிலங்கள்',
 };
 
 const gu = {
@@ -466,6 +496,11 @@ const gu = {
     'postReported': ' જાણ કરાઈ. પોસ્ટ છુપાવેલ છે.',
     'markSolved': 'ઉકેલાયેલ તરીકે ચિહ્નિત કરો',
     'report': 'જાણ કરો',
+    'labelLevel': 'યોજના સ્તર',
+    'lblAll': 'બધા',
+    'lblCentral': 'કેન્દ્રીય',
+    'lblState': 'રાજ્ય',
+    'lblAllStates': 'બધા રાજ્યો',
 };
 
 const kn = {
@@ -533,6 +568,11 @@ const kn = {
     'postReported': 'ವರದಿ ಮಾಡಲಾಗಿದೆ. ಪೋಸ್ಟ್ ಮರೆಮಾಡಲಾಗಿದೆ.',
     'markSolved': 'ಪರಿಹರಿಸಲಾಗಿದೆ ಎಂದು ಗುರುತಿಸಿ',
     'report': 'ವರದಿ ಮಾಡಿ',
+    'labelLevel': 'ಯೋಜನೆಯ ಮಟ್ಟ',
+    'lblAll': 'ಎಲ್ಲಾ',
+    'lblCentral': 'ಕೇಂದ್ರ',
+    'lblState': 'ರಾಜ್ಯ',
+    'lblAllStates': 'ಎಲ್ಲಾ ರಾಜ್ಯಗಳು',
 };
 
 export const translations = {

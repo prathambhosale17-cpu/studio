@@ -10,7 +10,7 @@ type Scheme = typeof SCHEMES[0];
 
 export default function YojanaMitraPage() {
     const { language, setLanguage, t } = useLanguage();
-    const [finderData, setFinderData] = useState({ state: '' });
+    const [finderData, setFinderData] = useState({ state: '', level: 'all' });
     const [results, setResults] = useState<Scheme[]>(SCHEMES);
     const [qaPosts, setQaPosts] = useState<any[]>([]);
     const [qaFilters, setQaFilters] = useState({ district: '', category: '', unanswered: false });
@@ -50,16 +50,16 @@ export default function YojanaMitraPage() {
 
     const handleFinderSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        if (!finderData.state) {
-            setResults(SCHEMES);
-            return;
-        }
-        const filteredSchemes = SCHEMES.filter(s => s.state === finderData.state);
+        const filteredSchemes = SCHEMES.filter(scheme => {
+            const stateMatch = !finderData.state || scheme.state === finderData.state;
+            const levelMatch = finderData.level === 'all' || scheme.level === finderData.level;
+            return stateMatch && levelMatch;
+        });
         setResults(filteredSchemes);
     };
 
     const clearFinder = () => {
-        setFinderData({ state: '' });
+        setFinderData({ state: '', level: 'all' });
         setResults(SCHEMES);
     };
 
@@ -201,14 +201,32 @@ export default function YojanaMitraPage() {
                 <section id="finder" className="card p-6">
                     <h3 className="text-xl font-bold text-foreground mb-4">{t('finderTitle')}</h3>
                     <form onSubmit={handleFinderSubmit} className="grid md:grid-cols-3 gap-4">
-                        <div className='md:col-span-2'>
+                        <div>
                             <label className="font-semibold text-slate-700">{t('labelState')}</label>
-                            <select value={finderData.state} onChange={e => handleFinderChange('state', e.target.value)} className="input" required>
-                                <option value="">{t('selectState')}</option>
+                            <select value={finderData.state} onChange={e => handleFinderChange('state', e.target.value)} className="input">
+                                <option value="">{t('lblAllStates')}</option>
                                 {INDIAN_STATES.map(s => <option key={s} value={s}>{s}</option>)}
                             </select>
                         </div>
                         
+                        <div className="md:col-span-2">
+                            <label className="font-semibold text-slate-700">{t('labelLevel')}</label>
+                            <div className="flex items-center gap-4 pt-2">
+                                <label className="inline-flex items-center gap-2 text-sm text-slate-600">
+                                    <input type="radio" name="level" value="all" checked={finderData.level === 'all'} onChange={e => handleFinderChange('level', e.target.value)} />
+                                    <span>{t('lblAll')}</span>
+                                </label>
+                                <label className="inline-flex items-center gap-2 text-sm text-slate-600">
+                                    <input type="radio" name="level" value="central" checked={finderData.level === 'central'} onChange={e => handleFinderChange('level', e.target.value)} />
+                                    <span>{t('lblCentral')}</span>
+                                </label>
+                                <label className="inline-flex items-center gap-2 text-sm text-slate-600">
+                                    <input type="radio" name="level" value="state" checked={finderData.level === 'state'} onChange={e => handleFinderChange('level', e.target.value)} />
+                                    <span>{t('lblState')}</span>
+                                </label>
+                            </div>
+                        </div>
+
                         <div className="md:col-span-3 flex gap-3 pt-2">
                             <button type="submit" className="btn btn-primary">{t('btnShowEligible')}</button>
                             <button type="button" onClick={clearFinder} className="btn btn-ghost">{t('btnClear')}</button>
