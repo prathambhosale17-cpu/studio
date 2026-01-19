@@ -25,7 +25,7 @@ import {
   Database,
 } from 'lucide-react';
 import { useFirestore } from '@/firebase';
-import { collectionGroup, query, where, getDocs } from 'firebase/firestore';
+import { doc, getDoc } from 'firebase/firestore';
 import type { IDCard } from '@/lib/types';
 import { IdCardDisplay } from './id-card-display';
 import { useToast } from '@/hooks/use-toast';
@@ -147,17 +147,27 @@ export function IdVerification() {
       }
       
       setStep('fetching');
-      const idNumber = idResult.idNumber;
-      const q = query(collectionGroup(firestore, 'idCards'), where('idNumber', '==', idNumber.trim()));
+      const idNumber = idResult.idNumber.trim();
       
-      const querySnapshot = await getDocs(q);
+      const lookupDocRef = doc(firestore, 'idNumberLookups', idNumber);
+      const lookupSnapshot = await getDoc(lookupDocRef);
 
-      if (querySnapshot.empty) {
+      if (!lookupSnapshot.exists()) {
         setError(`No ID card found in the system with number: ${idNumber}`);
         setStep('scan');
         setScannedIdImage(null);
       } else {
-        const cardDoc = querySnapshot.docs[0];
+        const cardPath = lookupSnapshot.data().cardPath;
+        const cardDocRef = doc(firestore, cardPath);
+        const cardDoc = await getDoc(cardDocRef);
+
+        if (!cardDoc.exists()) {
+            setError(`ID card record is broken for number: ${idNumber}. Please contact support.`);
+            setStep('scan');
+            setScannedIdImage(null);
+            return;
+        }
+
         const cardData = {
           ...cardDoc.data(),
           id: cardDoc.id,
@@ -201,10 +211,10 @@ export function IdVerification() {
 
     } catch (e: any) {
       console.error("ID Scan/Fetch Error:", e);
-      if (e.name === 'FirebaseError') {
+      if (e.code === 'permission-denied') {
          const permissionError = new FirestorePermissionError({
-            path: 'idCards (collection group)',
-            operation: 'list',
+            path: 'idNumberLookups or a specific idCard document',
+            operation: 'get',
         });
         errorEmitter.emit('permission-error', permissionError);
         setError('An error occurred while fetching the ID card. Check permissions.');
