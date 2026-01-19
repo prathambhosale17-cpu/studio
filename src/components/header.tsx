@@ -45,7 +45,7 @@ export function Header() {
           {t('Verify ID')}
         </Link>
         <a
-          href="https://eaadhaar.uidai.gov.in/"
+          href="https://uidai.gov.in/en/"
           target="_blank"
           rel="noopener noreferrer"
           className={cn(
