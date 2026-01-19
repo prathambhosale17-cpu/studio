@@ -1,9 +1,12 @@
 
 export const DISTRICTS = ["Ahmednagar", "Akola", "Amravati", "Beed", "Bhandara", "Buldhana", "Chandrapur", "Chatrapati Sambhajinagar", "Dhule", "Gadchiroli", "Gondia", "Hingoli", "Jalgaon", "Jalna", "Kolhapur", "Latur", "Mumbai City", "Mumbai Suburban", "Nagpur", "Nanded", "Nandurbar", "Nashik", "Osmanabad (Dharashiv)", "Palghar", "Parbhani", "Pune", "Raigad", "Ratnagiri", "Sangli", "Satara", "Sindhudurg", "Solapur", "Thane", "Wardha", "Washim", "Yavatmal"];
 
+export const INDIAN_STATES = [ "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh", "Goa", "Gujarat", "Haryana", "Himachal Pradesh", "Jharkhand", "Karnataka", "Kerala", "Madhya Pradesh", "Maharashtra", "Manipur", "Meghalaya", "Mizoram", "Nagaland", "Odisha", "Punjab", "Rajasthan", "Sikkim", "Tamil Nadu", "Telangana", "Tripura", "Uttar Pradesh", "Uttarakhand", "West Bengal" ];
+
 const allSchemes = [
       {
         id: 'pmkisan',
+        state: 'Maharashtra',
         title: { 
           en: 'PM-KISAN Income Support', 
           mr: 'पीएम-किसान उत्पन्न सहाय्य' },
@@ -28,6 +31,7 @@ const allSchemes = [
       },
       {
         id: 'pmfby',
+        state: 'Maharashtra',
         title: { en: 'PM Fasal Bima Yojana (PMFBY)',
         mr: 'पीएम फसल विमा योजना' },
         dept: 'MoA&FW',
@@ -51,6 +55,7 @@ const allSchemes = [
       },
       {
         id: 'microirrigation',
+        state: 'Maharashtra',
         title: { 
           en: 'Micro-Irrigation Subsidy (Drip/Sprinkler)', 
           mr: 'सूक्ष्म सिंचन अनुदान (ड्रिप/स्प्रिंकलर)' },
@@ -75,6 +80,7 @@ const allSchemes = [
       },
       {
         id: 'kcc',
+        state: 'Maharashtra',
         title: { 
           en: 'Kisan Credit Card (KCC)', 
           mr: 'किसान क्रेडिट कार्ड (KCC)' },
@@ -99,6 +105,7 @@ const allSchemes = [
       },
       {
         id: 'namo_shetkari_mhasamman',
+        state: 'Maharashtra',
         title: { en: 'Namo Shetkari Maha Samman Nidhi (State Top-Up)', mr: 'नमो शेतकरी महासम्मान निधी (राज्य टॉप-अप)' },
         dept: 'Dept. of Agriculture, Govt. of Maharashtra',
         level: 'state',
@@ -141,6 +148,7 @@ const allSchemes = [
       },
       {
         id: 'pm_kisan_maandhan',
+        state: 'Maharashtra',
         title: { en: 'PM Kisan Maandhan (Pension Scheme)', mr: 'पीएम किसान मानधन (पेन्शन योजना)' },
         dept: 'MoA&FW (GoI) / LIC (Pension)',
         level: 'central',
@@ -183,6 +191,7 @@ const allSchemes = [
       },
       {
         id: 'wbcis',
+        state: 'Maharashtra',
         title: { en: 'Weather Based Crop Insurance Scheme (WBCIS)', mr: 'हवामानाधारित पिक विमा योजना (WBCIS)' },
         dept: 'MoA&FW (GoI) / State Agriculture',
         level: 'central',
@@ -225,6 +234,7 @@ const allSchemes = [
       },
       {
         id: 'kcc_interest_subvention',
+        state: 'Maharashtra',
         title: { en: 'KCC Interest Subvention (Prompt Repayment Incentive)', mr: 'KCC व्याज अनुदान (वेळेत परतफेड सवलत)' },
         dept: 'MoF / NABARD / Banks',
         level: 'central',
@@ -267,6 +277,7 @@ const allSchemes = [
       },
       {
         id: 'aif',
+        state: 'Maharashtra',
         title: { en: 'Agriculture Infrastructure Fund (AIF)', mr: 'कृषि पायाभूत सुविधा निधी (AIF)' },
         dept: 'MoA&FW (GoI)',
         level: 'central',
@@ -307,6 +318,7 @@ const allSchemes = [
       },
       {
         id: 'pmfme',
+        state: 'Maharashtra',
         title: { en: 'PMFME (Micro Food Processing) – Credit Linked Subsidy', mr: 'PMFME (सूक्ष्म अन्न प्रक्रिया) – कर्जसह अनुदान' },
         dept: 'MoFPI (GoI)',
         level: 'central',
@@ -347,6 +359,7 @@ const allSchemes = [
       },
       {
         id: 'stand_up_india',
+        state: 'Maharashtra',
         title: { en: 'Stand-Up India (Women / SC / ST Entrepreneurs)', mr: 'स्टँड-अप इंडिया (महिला / SC / ST उद्योजक)' },
         dept: 'DFS (MoF) / Banks',
         level: 'central',
@@ -389,6 +402,7 @@ const allSchemes = [
       },
       {
         id: 'pm_mudra',
+        state: 'Maharashtra',
         title: { en: 'PM MUDRA Yojana (Shishu/Kishore/Tarun)', mr: 'प्रधान मंत्री मुद्रा योजना (शिशु/किशोर/तरुण)' },
         dept: 'MoF / Banks',
         level: 'central',
@@ -423,6 +437,7 @@ const allSchemes = [
       },
       {
         id: 'smam_mechanization',
+        state: 'Maharashtra',
         title: { en: 'SMAM – Farm Mechanization Subsidy', mr: 'SMAM – शेती यांत्रिकीकरण अनुदान' },
         dept: 'DoAC&FW (GoI) / State Agriculture',
         level: 'central',
@@ -457,6 +472,7 @@ const allSchemes = [
       },
       {
         id: 'smam_drones',
+        state: 'Maharashtra',
         title: { en: 'Drone Assistance for Agriculture (SMAM/State)', mr: 'कृषि ड्रोन सहाय्य (SMAM/राज्य)' },
         dept: 'DoAC&FW / State Agriculture',
         level: 'central',
@@ -491,6 +507,7 @@ const allSchemes = [
       },
       {
         id: 'custom_hiring_centre',
+        state: 'Maharashtra',
         title: { en: 'Custom Hiring Centre (CHC) Support', mr: 'कस्टम हायरिंग सेंटर (CHC) सहाय्य' },
         dept: 'State Agriculture / SMAM',
         level: 'state',
@@ -525,6 +542,7 @@ const allSchemes = [
       },
       {
         id: 'nrlm_rf',
+        state: 'Maharashtra',
         title: { en: 'NRLM – Revolving Fund for SHGs', mr: 'NRLM – स्वयं सहायता गटांसाठी रिव्हॉल्व्हिंग फंड' },
         dept: 'MoRD / MSRLM (UMED)',
         level: 'central',
@@ -559,6 +577,7 @@ const allSchemes = [
       },
       {
         id: 'mksp',
+        state: 'Maharashtra',
         title: { en: 'MKSP – Mahila Kisan Sashaktikaran Pariyojana', mr: 'MKSP – महिला किसान सशक्तिकरण परियोजना' },
         dept: 'MoRD / MSRLM (UMED)',
         level: 'central',
@@ -593,6 +612,7 @@ const allSchemes = [
       },
       {
         id: 'nrlm_cif',
+        state: 'Maharashtra',
         title: { en: 'NRLM – Community Investment Fund (CIF)', mr: 'NRLM – कम्युनिटी इन्व्हेस्टमेंट फंड (CIF)' },
         dept: 'MoRD / MSRLM (UMED)',
         level: 'central',
@@ -627,6 +647,7 @@ const allSchemes = [
       },
       {
         id: 'state_tractor_subsidy',
+        state: 'Maharashtra',
         title: { en: 'State Subsidy – Tractor / Power Tiller (MahaDBT)', mr: 'राज्य अनुदान – ट्रॅक्टर / पॉवर टिलर (महाडिबीटी)' },
         dept: 'Dept. of Agriculture, Maharashtra',
         level: 'state',
@@ -661,6 +682,7 @@ const allSchemes = [
       },
       {
         id: 'new_local_scheme',
+        state: 'Maharashtra',
         title: { en: 'Local Irrigation Support', mr: 'स्थानिक सिंचन सहाय्य' },
         dept: 'State Agriculture',
         level: 'state',
@@ -675,6 +697,7 @@ const allSchemes = [
       },
       {
         id: 'rotavator_cultivator_subsidy',
+        state: 'Maharashtra',
         title: { en: 'Rotavator / Cultivator Subsidy', mr: 'रोटावेटर / कल्टिव्हेटर अनुदान' },
         dept: 'Dept. of Agriculture, Maharashtra (SMAM/State)',
         level: 'state',
@@ -720,6 +743,7 @@ const allSchemes = [
       },
       {
         id: 'seed_drill_zero_till_subsidy',
+        state: 'Maharashtra',
         title: { en: 'Seed Drill / Zero Till Seed Drill Subsidy', mr: 'सीड ड्रिल / झिरो टिल सीड ड्रिल अनुदान' },
         dept: 'DoAC&FW (SMAM) / State Agriculture',
         level: 'central',
@@ -765,6 +789,7 @@ const allSchemes = [
       },
       {
         id: 'mulcher_shredder_subsidy',
+        state: 'Maharashtra',
         title: { en: 'Mulcher / Shredder Subsidy (Crop Residue)', mr: 'मल्चर / श्रेडर अनुदान (पीक अवशेष)' },
         dept: 'State Agriculture / SMAM',
         level: 'state',
@@ -808,6 +833,7 @@ const allSchemes = [
       },
       {
         id: 'solar_sprayer_subsidy',
+        state: 'Maharashtra',
         title: { en: 'Solar Agriculture Sprayer Subsidy', mr: 'सोलर कृषी स्प्रेयर अनुदान' },
         dept: 'State Agriculture (Renewables convergence)',
         level: 'state',
@@ -853,6 +879,7 @@ const allSchemes = [
       },
       {
         id: 'drone_chc_usage_support',
+        state: 'Maharashtra',
         title: { en: 'Drone Spray – CHC Usage Support', mr: 'ड्रोन फवारणी – CHC वापर सहाय्य' },
         dept: 'DoAC&FW / State Agriculture',
         level: 'central',
@@ -896,6 +923,7 @@ const allSchemes = [
       },
       {
         id: 'power_weeder_brush_cutter_subsidy',
+        state: 'Maharashtra',
         title: { en: 'Power Weeder / Brush Cutter Subsidy', mr: 'पॉवर वीडर / ब्रश कटर अनुदान' },
         dept: 'State Agriculture / SMAM',
         level: 'state',
@@ -939,6 +967,7 @@ const allSchemes = [
       },
       {
         id: 'pack_house_midh_nhb',
+        state: 'Maharashtra',
         title: { en: 'Pack House Assistance (MIDH/NHB)', mr: 'पॅक हाऊस सहाय्य (MIDH/NHB)' },
         dept: 'MIDH/NHB with State Horticulture',
         level: 'central',
@@ -982,6 +1011,7 @@ const allSchemes = [
       },
       {
         id: 'cold_storage_aif',
+        state: 'Maharashtra',
         title: { en: 'Cold Storage / CA Storage Assistance (AIF Linked)', mr: 'कोल्ड स्टोरेज / CA स्टोरेज सहाय्य (AIF लिंक)' },
         dept: 'MoA&FW (AIF) / State Horticulture',
         level: 'central',
@@ -1025,6 +1055,7 @@ const allSchemes = [
       },
       {
         id: 'primary_processing_unit',
+        state: 'Maharashtra',
         title: { en: 'Primary Processing Unit Subsidy', mr: 'प्राथमिक प्रक्रिया युनिट अनुदान' },
         dept: 'State Agriculture/Horticulture; PMFME convergence',
         level: 'state',
@@ -1068,6 +1099,7 @@ const allSchemes = [
       },
       {
         id: 'sfac_fpo_equity_grant',
+        state: 'Maharashtra',
         title: { en: 'FPO Formation & Equity Grant (SFAC)', mr: 'FPO स्थापन व इक्विटी ग्रँट (SFAC)' },
         dept: 'SFAC (GoI) / State Agriculture',
         level: 'central',
@@ -1108,7 +1140,132 @@ const allSchemes = [
         },
         apply: 'https://sfacindia.com',
         tags: { land: ['<2', '2-5', '>5'] }
-      }
+      },
+      // Uttar Pradesh Schemes
+    {
+        id: 'up_kanya_sumangala',
+        state: 'Uttar Pradesh',
+        title: { en: 'Kanya Sumangala Yojana', mr: 'कन्या सुमंगला योजना' },
+        dept: 'Women & Child Dev, UP',
+        level: 'state',
+        categories: ['women-shg', 'income-support'],
+        what: { en: 'Financial aid to families for the education and health of girl children, provided in six installments.', mr: 'मुलींच्या शिक्षण आणि आरोग्यासाठी कुटुंबांना आर्थिक मदत, सहा हप्त्यांमध्ये दिली जाते.' },
+        eligibility: { en: ['Resident of UP', 'Family income up to ₹3 lakh/year', 'Up to two daughters per family'], mr: ['उत्तर प्रदेशचे रहिवासी', 'कौटुंबिक उत्पन्न ₹३ लाख/वर्षापर्यंत', 'प्रति कुटुंब दोन मुलींपर्यंत'] },
+        docs: { en: ['Aadhaar Card', 'Income Certificate', 'Birth Certificate of girl child', 'Domicile Certificate'], mr: ['आधार कार्ड', 'उत्पन्न प्रमाणपत्र', 'मुलीचा जन्म प्रमाणपत्र', 'अधिवास प्रमाणपत्र'] },
+        steps: { en: ['Register on the official portal', 'Fill the application form', 'Upload required documents'], mr: ['अधिकृत पोर्टलवर नोंदणी करा', 'अर्ज भरा', 'आवश्यक कागदपत्रे अपलोड करा'] },
+        apply: 'https://mksy.up.gov.in',
+    },
+    {
+        id: 'up_free_boring_yojana',
+        state: 'Uttar Pradesh',
+        title: { en: 'Free Boring Yojana', mr: 'विनामूल्य बोरिंग योजना' },
+        dept: 'Dept. of Minor Irrigation, UP',
+        level: 'state',
+        categories: ['irrigation'],
+        what: { en: 'Provides free boring facilities to small and marginal farmers for irrigation.', mr: 'लहान आणि अत्यल्प भूधारक शेतकऱ्यांना सिंचनासाठी विनामूल्य बोरिंग सुविधा पुरवते.' },
+        eligibility: { en: ['Small and marginal farmers of UP', 'Minimum cultivable land of 0.2 hectares'], mr: ['उत्तर प्रदेशातील लहान आणि अत्यल्प भूधारक शेतकरी', 'किमान ०.२ हेक्टर लागवडीयोग्य जमीन'] },
+        docs: { en: ['Aadhaar Card', 'Land papers (Khasra/Khatauni)', 'Domicile Certificate'], mr: ['आधार कार्ड', 'जमिनीची कागदपत्रे (खसरा/खतौनी)', 'अधिवास प्रमाणपत्र'] },
+        steps: { en: ['Apply through the Minor Irrigation Department portal', 'Application verification by officials', 'Boring work execution'], mr: ['लघु सिंचन विभागाच्या पोर्टलद्वारे अर्ज करा', 'अधिकाऱ्यांकडून अर्जाची पडताळणी', 'बोरिंग कामाची अंमलबजावणी'] },
+        apply: 'http://minorirrigationup.gov.in',
+    },
+    // Karnataka Schemes
+    {
+        id: 'ktk_raitha_vidya_nidhi',
+        state: 'Karnataka',
+        title: { en: 'Raitha Vidya Nidhi', mr: 'रैथ विद्या निधी' },
+        dept: 'Dept. of Agriculture, Karnataka',
+        level: 'state',
+        categories: ['income-support'],
+        what: { en: 'Scholarship for children of farmers pursuing higher education (post 10th grade).', mr: 'उच्च शिक्षण (१०वी नंतर) घेत असलेल्या शेतकऱ्यांच्या मुलांसाठी शिष्यवृत्ती.' },
+        eligibility: { en: ["Children of farmers registered in state's Farmer Database", 'Studying in post-matric courses'], mr: ['राज्याच्या शेतकरी डेटाबेसमध्ये नोंदणीकृत शेतकऱ्यांची मुले', 'मॅट्रिकोत्तर अभ्यासक्रमांमध्ये शिकत असलेले'] },
+        docs: { en: ["Farmer's ID card", "Student's Aadhaar card", "Admission proof", "Previous year marks card"], mr: ['शेतकऱ्याचे ओळखपत्र', 'विद्यार्थ्याचे आधार कार्ड', 'प्रवेशाचा पुरावा', 'मागील वर्षाचे गुणपत्रक'] },
+        steps: { en: ['Apply through the State Scholarship Portal (SSP)', 'Link farmer ID and student details', 'Submit application'], mr: ['राज्य शिष्यवृत्ती पोर्टल (SSP) द्वारे अर्ज करा', 'शेतकरी आयडी आणि विद्यार्थ्यांचे तपशील लिंक करा', 'अर्ज सबमिट करा'] },
+        apply: 'https://ssp.postmatric.karnataka.gov.in',
+    },
+    // Rajasthan Schemes
+    {
+        id: 'rj_mukhya_mantri_kisan_mitra_urja',
+        state: 'Rajasthan',
+        title: { en: 'Mukhyamantri Kisan Mitra Urja Yojana', mr: 'मुख्यमंत्री किसान मित्र ऊर्जा योजना' },
+        dept: 'Energy Dept, Rajasthan',
+        level: 'state',
+        categories: ['income-support'],
+        what: { en: 'Grant of ₹1000/month (max ₹12,000/year) on electricity bills for metered agricultural connections.', mr: 'मीटर असलेल्या कृषी कनेक्शनसाठी वीज बिलावर ₹१०००/महिना (जास्तीत जास्त ₹१२०००/वर्ष) अनुदान.' },
+        eligibility: { en: ['Metered domestic agricultural consumers', 'No outstanding electricity dues'], mr: ['मीटर असलेले घरगुती कृषी ग्राहक', 'कोणतीही वीज थकबाकी नाही'] },
+        docs: { en: ['Aadhaar card linked to bank account', 'Jan Aadhar card', 'Electricity bill'], mr: ['बँक खात्याशी लिंक केलेले आधार कार्ड', 'जन आधार कार्ड', 'वीज बिल'] },
+        steps: { en: ['Ensure Aadhaar/bank account is linked with electricity connection consumer number', 'Benefit is automatically credited'], mr: ['आधार/बँक खाते वीज कनेक्शन ग्राहक क्रमांकाशी लिंक असल्याची खात्री करा', 'लाभ आपोआप जमा होतो'] },
+        apply: 'https://energy.rajasthan.gov.in',
+    },
+    // West Bengal Schemes
+    {
+        id: 'wb_krishak_bandhu',
+        state: 'West Bengal',
+        title: { en: 'Krishak Bandhu', mr: 'कृषक बंधू' },
+        dept: 'Dept. of Agriculture, WB',
+        level: 'state',
+        categories: ['income-support', 'insurance'],
+        what: { en: 'Financial assistance of ₹10,000/year for farmers with 1 acre or more land (pro-rata for less) and a life insurance cover of ₹2 lakh.', mr: '१ एकर किंवा अधिक जमीन असलेल्या शेतकऱ्यांसाठी ₹१०,०००/वर्षाची आर्थिक मदत (कमी जमिनीसाठी प्रमाणानुसार) आणि ₹२ लाखांचे जीवन विमा संरक्षण.' },
+        eligibility: { en: ['Farmers and share-croppers', 'Age 18-60 years for death benefit'], mr: ['शेतकरी आणि भाग-शेती करणारे', 'मृत्यू लाभासाठी वय १८-६० वर्षे'] },
+        docs: { en: ['Land records (ROR)', 'Aadhaar Card', 'Voter ID', 'Bank Passbook'], mr: ['जमिनीची कागदपत्रे (ROR)', 'आधार कार्ड', 'मतदार ओळखपत्र', 'बँक पासबुक'] },
+        steps: { en: ['Apply online through the Krishak Bandhu portal or at Duare Sarkar camps', 'Submit documents for verification'], mr: ['कृषक बंधू पोर्टलद्वारे ऑनलाइन अर्ज करा किंवा दुआरे सरकार शिबिरात अर्ज करा', 'पडताळणीसाठी कागदपत्रे सादर करा'] },
+        apply: 'https://krishakbandhu.net',
+    },
+    // Gujarat Schemes
+    {
+        id: 'guj_kisan_parivahan_yojana',
+        state: 'Gujarat',
+        title: { en: 'Kisan Parivahan Yojana', mr: 'किसान परिवहन योजना' },
+        dept: 'Agriculture, Farmers Welfare & Co-operation Dept, Gujarat',
+        level: 'state',
+        categories: ['machinery'],
+        what: { en: 'Subsidy for purchasing light load-bearing vehicles to transport produce.', mr: 'उत्पादन वाहतुकीसाठी हलके भार वाहून नेणारी वाहने खरेदी करण्यासाठी अनुदान.' },
+        eligibility: { en: ['Small, marginal, and tribal farmers of Gujarat'], mr: ['गुजरातचे लहान, अत्यल्प भूधारक आणि आदिवासी शेतकरी'] },
+        docs: { en: ['Aadhaar card', 'Land record (7/12 & 8-A)', 'Caste certificate (if applicable)', 'Bank details'], mr: ['आधार कार्ड', 'जमिनीचा रेकॉर्ड (७/१२ आणि ८-अ)', 'जातीचा दाखला (लागू असल्यास)', 'बँक तपशील'] },
+        steps: { en: ['Apply on i-Khedut portal when the scheme is open', 'Selection via lottery system', 'Purchase vehicle and submit bills for subsidy'], mr: ['योजना खुली असताना i-Khedut पोर्टलवर अर्ज करा', 'लॉटरी प्रणालीद्वारे निवड', 'वाहन खरेदी करा आणि अनुदानासाठी बिले सादर करा'] },
+        apply: 'https://ikhedut.gujarat.gov.in',
+    },
+    // Bihar Schemes
+    {
+        id: 'bihar_jal_jeevan_hariyali',
+        state: 'Bihar',
+        title: { en: 'Jal-Jeevan-Hariyali Abhiyan', mr: 'जल-जीवन-हरियाली अभियान' },
+        dept: 'Rural Development Dept, Bihar',
+        level: 'state',
+        categories: ['irrigation'],
+        what: { en: 'Subsidy for farmers to construct ponds, check dams, and other water conservation structures.', mr: 'शेतकऱ्यांना तलाव, चेक डॅम आणि इतर जलसंधारण संरचना बांधण्यासाठी अनुदान.' },
+        eligibility: { en: ['All farmers of Bihar'], mr: ['बिहारचे सर्व शेतकरी'] },
+        docs: { en: ['Aadhaar card', 'Land records', 'Photograph of the proposed site'], mr: ['आधार कार्ड', 'जमिनीची कागदपत्रे', 'प्रस्तावित जागेचा फोटो'] },
+        steps: { en: ['Apply through the agriculture department portal', 'Technical survey and approval', 'Construction and claim submission'], mr: ['कृषी विभागाच्या पोर्टलद्वारे अर्ज करा', 'तांत्रिक सर्वेक्षण आणि मंजुरी', 'बांधकाम आणि दावा सादर करणे'] },
+        apply: 'https://dbtagriculture.bihar.gov.in',
+    },
+    // Tamil Nadu Schemes
+    {
+        id: 'tn_cm_uzhavar_pathukappu_thittam',
+        state: 'Tamil Nadu',
+        title: { en: "CM's Farmers Security Scheme", mr: 'मुख्यमंत्र्यांची शेतकरी सुरक्षा योजना' },
+        dept: 'Revenue and Disaster Management Dept, TN',
+        level: 'state',
+        categories: ['income-support', 'insurance'],
+        what: { en: 'Comprehensive social security scheme providing financial assistance for education, marriage, maternity, accident relief, and pension.', mr: 'शिक्षण, विवाह, मातृत्व, अपघात मदत आणि पेन्शनसाठी आर्थिक सहाय्य पुरवणारी व्यापक सामाजिक सुरक्षा योजना.' },
+        eligibility: { en: ['Farmers and agricultural laborers aged 18-65'], mr: ['शेतकरी आणि १८-६५ वयोगटातील शेतमजूर'] },
+        docs: { en: ['Aadhaar card', 'Ration card', 'Land records (if farmer)', 'Bank passbook'], mr: ['आधार कार्ड', 'रेशन कार्ड', 'जमिनीची कागदपत्रे (शेतकरी असल्यास)', 'बँक पासबुक'] },
+        steps: { en: ['Register with the Village Administrative Officer (VAO)', 'Receive Uzhavar Pathukappu Thittam ID card', 'Apply for specific benefits as they arise'], mr: ['ग्राम प्रशासकीय अधिकाऱ्याकडे (VAO) नोंदणी करा', 'उझावर पाथुकप्पू थिट्टम ओळखपत्र मिळवा', 'विशिष्ट लाभांसाठी आवश्यकतेनुसार अर्ज करा'] },
+        apply: '#',
+    },
+    // Andhra Pradesh Schemes
+    {
+        id: 'ap_ysr_rythu_bharosa',
+        state: 'Andhra Pradesh',
+        title: { en: 'YSR Rythu Bharosa', mr: 'वायएसआर रयथु भरोसा' },
+        dept: 'Agriculture & Cooperation Dept, AP',
+        level: 'state',
+        categories: ['income-support'],
+        what: { en: 'Financial assistance of ₹13,500 per farmer family per year (including PM-KISAN component).', mr: 'प्रति शेतकरी कुटुंबाला प्रति वर्ष ₹१३,५०० आर्थिक सहाय्य (पीएम-किसान घटकासह).' },
+        eligibility: { en: ['Landowner farmer families', 'Tenant farmers belonging to SC, ST, BC, Minority categories'], mr: ['जमीन मालक शेतकरी कुटुंबे', 'एससी, एसटी, बीसी, अल्पसंख्याक प्रवर्गातील भाडेकरू शेतकरी'] },
+        docs: { en: ['Aadhaar Card', 'Land Passbook', 'Bank Account Details'], mr: ['आधार कार्ड', 'जमीन पासबुक', 'बँक खाते तपशील'] },
+        steps: { en: ['Village volunteers conduct surveys to identify beneficiaries', 'List is displayed at Village Secretariats for verification', 'Amount is credited directly to the bank account'], mr: ['ग्राम स्वयंसेवक लाभार्थ्यांना ओळखण्यासाठी सर्वेक्षण करतात', 'पडताळणीसाठी यादी ग्राम सचिवालयमध्ये प्रदर्शित केली जाते', 'रक्कम थेट बँक खात्यात जमा केली जाते'] },
+        apply: 'https://ysrrythubharosa.ap.gov.in',
+    }
 ];
 const uniqueIds = new Set();
 export const SCHEMES = allSchemes.filter(scheme => {

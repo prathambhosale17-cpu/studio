@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { jsPDF } from 'jspdf';
-import { SCHEMES, DISTRICTS } from '@/lib/yojana-mitra-data';
+import { SCHEMES, DISTRICTS, INDIAN_STATES } from '@/lib/yojana-mitra-data';
 import './styles.css';
 import { useLanguage, supportedLanguages } from '@/context/language-context';
 
@@ -10,7 +10,7 @@ type Scheme = typeof SCHEMES[0];
 
 export default function YojanaMitraPage() {
     const { language, setLanguage, t } = useLanguage();
-    const [finderData, setFinderData] = useState({ district: '', crop: '', land: '', irrig: '', age: '', kyc: '' });
+    const [finderData, setFinderData] = useState({ state: '' });
     const [results, setResults] = useState<Scheme[]>(SCHEMES);
     const [qaPosts, setQaPosts] = useState<any[]>([]);
     const [qaFilters, setQaFilters] = useState({ district: '', category: '', unanswered: false });
@@ -50,20 +50,16 @@ export default function YojanaMitraPage() {
 
     const handleFinderSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        const filteredSchemes = SCHEMES.filter(s => {
-            if (finderData.crop && s.crops && s.crops.length && !s.crops.includes(finderData.crop)) return false;
-            const tags = s.tags || {};
-            if (tags.land && finderData.land && !tags.land.includes(finderData.land)) return false;
-            if (tags.irrig && finderData.irrig && !tags.irrig.includes(finderData.irrig)) return false;
-            if (tags.age && finderData.age && !tags.age.includes(finderData.age)) return false;
-            if (tags.kyc && finderData.kyc && !tags.kyc.includes(finderData.kyc)) return false;
-            return true;
-        });
+        if (!finderData.state) {
+            setResults(SCHEMES);
+            return;
+        }
+        const filteredSchemes = SCHEMES.filter(s => s.state === finderData.state);
         setResults(filteredSchemes);
     };
 
     const clearFinder = () => {
-        setFinderData({ district: '', crop: '', land: '', irrig: '', age: '', kyc: '' });
+        setFinderData({ state: '' });
         setResults(SCHEMES);
     };
 
@@ -205,49 +201,14 @@ export default function YojanaMitraPage() {
                 <section id="finder" className="card p-6">
                     <h3 className="text-xl font-bold text-foreground mb-4">{t('finderTitle')}</h3>
                     <form onSubmit={handleFinderSubmit} className="grid md:grid-cols-3 gap-4">
-                        <div>
-                            <label className="font-semibold text-slate-700">{t('labelDistrict')}</label>
-                            <select value={finderData.district} onChange={e => handleFinderChange('district', e.target.value)} className="input" required>
-                                <option value="">Select</option>
-                                {DISTRICTS.map(d => <option key={d} value={d}>{d}</option>)}
+                        <div className='md:col-span-2'>
+                            <label className="font-semibold text-slate-700">{t('labelState')}</label>
+                            <select value={finderData.state} onChange={e => handleFinderChange('state', e.target.value)} className="input" required>
+                                <option value="">{t('selectState')}</option>
+                                {INDIAN_STATES.map(s => <option key={s} value={s}>{s}</option>)}
                             </select>
                         </div>
-                        <div>
-                            <label className="font-semibold text-slate-700">{t('labelCrop')}</label>
-                            <select value={finderData.crop} onChange={e => handleFinderChange('crop', e.target.value)} className="input">
-                                <option value="">Select</option>
-                                {allCrops.map(c => <option key={c} value={c}>{c}</option>)}
-                            </select>
-                        </div>
-                        <div>
-                            <label className="font-semibold text-slate-700">{t('labelLand')}</label>
-                            <select value={finderData.land} onChange={e => handleFinderChange('land', e.target.value)} className="input">
-                                <option value="">Select</option>
-                                <option value="<2">Below 2 ha</option>
-                                <option value="2-5">2–5 ha</option>
-                                <option value=">5">Above 5 ha</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label className="font-semibold text-slate-700">{t('labelIrr')}</label>
-                            <select value={finderData.irrig} onChange={e => handleFinderChange('irrig', e.target.value)} className="input">
-                                <option value="">Select</option>
-                                <option>Rainfed</option><option>Well/Bore</option><option>Canal</option><option>Drip/Sprinkler</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label className="font-semibold text-slate-700">{t('labelAge')}</label>
-                            <select value={finderData.age} onChange={e => handleFinderChange('age', e.target.value)} className="input">
-                                <option value="">Select</option>
-                                <option value="<35">18–35</option><option value="35-60">35–60</option><option value=">60">60+</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label className="font-semibold text-slate-700">{t('labelKyc')}</label>
-                            <select value={finderData.kyc} onChange={e => handleFinderChange('kyc', e.target.value)} className="input">
-                                <option value="">Select</option><option>Yes</option><option>No</option>
-                            </select>
-                        </div>
+                        
                         <div className="md:col-span-3 flex gap-3 pt-2">
                             <button type="submit" className="btn btn-primary">{t('btnShowEligible')}</button>
                             <button type="button" onClick={clearFinder} className="btn btn-ghost">{t('btnClear')}</button>
