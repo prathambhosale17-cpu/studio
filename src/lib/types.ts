@@ -11,6 +11,7 @@ export type IDCard = {
   gender: 'Male' | 'Female' | 'Other';
   address: string;
   qrCodeDataUri: string;
+  aadhaarNumber?: string | null;
 };
 
 export type FirestoreIDCard = Omit<IDCard, 'createdAt'> & {
@@ -18,6 +19,12 @@ export type FirestoreIDCard = Omit<IDCard, 'createdAt'> & {
 };
 
 export type VerificationStatus = 'idle' | 'pending' | 'verified' | 'failed' | 'error';
+
+export type DataMatchResult = {
+  status: 'matched' | 'mismatched' | 'not_found' | 'error' | 'loading';
+  details?: { field: string; dbValue: any; ocrValue: any }[];
+};
+
 
 export type VerificationResult = {
   id: string;
@@ -31,4 +38,5 @@ export type VerificationResult = {
   gender?: string | null;
   address?: string | null;
   aadhaarNumber?: string | null;
+  dataMatch?: DataMatchResult | null;
 };

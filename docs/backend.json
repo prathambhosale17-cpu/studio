@@ -47,6 +47,10 @@
         "qrCodeDataUri": {
           "type": "string",
           "description": "A data URI for the QR code image."
+        },
+        "aadhaarNumber": {
+            "type": ["string", "null"],
+            "description": "The 12-digit Aadhaar number associated with the card, if any."
         }
       },
       "required": [

@@ -3,6 +3,7 @@
 import {
   AlertCircle,
   CheckCircle2,
+  Database,
   HelpCircle,
   Loader2,
   XCircle,
@@ -16,10 +17,11 @@ import {
 } from '@/components/ui/card';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
-import type { VerificationResult, VerificationStatus } from '@/lib/types';
+import type { VerificationResult, VerificationStatus, DataMatchResult } from '@/lib/types';
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
 import { Separator } from './ui/separator';
+import { Skeleton } from './ui/skeleton';
 
 interface VerificationResultProps {
   result: VerificationResult | null;
@@ -89,6 +91,67 @@ const DataItem = ({ label, value, isFullWidth = false }: { label: string, value?
     )
 }
 
+const DataMatchResultDisplay = ({ dataMatch }: { dataMatch: DataMatchResult | null | undefined }) => {
+    if (!dataMatch) return null;
+
+    const renderContent = () => {
+        switch(dataMatch.status) {
+            case 'loading':
+                return (
+                    <div className="flex items-center gap-2 text-muted-foreground">
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                        <span>Searching database...</span>
+                    </div>
+                );
+            case 'matched':
+                return <p>All data points from the image match the database record.</p>;
+            case 'mismatched':
+                return (
+                    <div>
+                        <p className="font-semibold mb-2">The following fields do not match the database record:</p>
+                        <ul className="list-disc pl-5 space-y-1">
+                            {dataMatch.details?.map(item => (
+                                <li key={item.field}>
+                                    <strong>{item.field}:</strong> Image shows "{item.ocrValue}", database has "{item.dbValue}".
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+                );
+            case 'not_found':
+                return <p>No matching record was found in the database for the extracted Aadhaar number.</p>;
+            case 'error':
+                return <p>An error occurred while trying to match data with the database.</p>;
+            default:
+                return null;
+        }
+    }
+    
+    const isSuccess = dataMatch.status === 'matched';
+    const isFailure = dataMatch.status === 'mismatched' || dataMatch.status === 'not_found';
+
+    return (
+        <Card>
+            <CardHeader className="flex-row items-center justify-between pb-2">
+                 <CardTitle className="text-lg">Database Match</CardTitle>
+                 {dataMatch.status !== 'loading' && (
+                    <Badge variant={isSuccess ? 'default' : isFailure ? 'destructive' : 'secondary'}>
+                        {dataMatch.status === 'matched' && 'Match'}
+                        {dataMatch.status === 'mismatched' && 'Mismatch'}
+                        {dataMatch.status === 'not_found' && 'Not Found'}
+                        {dataMatch.status === 'error' && 'Error'}
+                    </Badge>
+                 )}
+            </CardHeader>
+            <CardContent>
+                <div className="text-sm text-muted-foreground">
+                    {renderContent()}
+                </div>
+            </CardContent>
+        </Card>
+    );
+};
+
 export function VerificationResult({ result, isVerifying }: VerificationResultProps) {
   const status = isVerifying ? 'pending' : result?.status ?? 'idle';
   const config = statusConfig[status];
@@ -123,6 +186,8 @@ export function VerificationResult({ result, isVerifying }: VerificationResultPr
           <h3 className="text-xl font-bold mt-2">{config.title}</h3>
           <p className="text-sm text-muted-foreground">{config.description}</p>
         </div>
+        
+        <DataMatchResultDisplay dataMatch={result?.dataMatch} />
 
         {showExtractedData && (
           <div className="space-y-4 rounded-lg border bg-card p-4">
@@ -148,7 +213,7 @@ export function VerificationResult({ result, isVerifying }: VerificationResultPr
         {(status === 'failed' || status === 'error') && result?.indicators && (
           <div className="space-y-2">
             <h4 className="font-semibold text-foreground">
-              {status === 'failed' ? 'Fraud Indicators' : 'Error Details'}
+              {status === 'failed' ? 'Forgery Indicators' : 'Error Details'}
             </h4>
             <Alert variant="destructive">
               <AlertCircle className="h-4 w-4" />

@@ -37,6 +37,7 @@ const formSchema = z.object({
   photo: z.any().refine(file => file instanceof File, 'Photo is required'),
   gender: z.enum(['Male', 'Female', 'Other'], { required_error: 'Gender is required' }),
   address: z.string().min(10, 'Address must be at least 10 characters'),
+  aadhaarNumber: z.string().regex(/^\d{12}$/, 'Must be a valid 12-digit number').optional().or(z.literal('')),
 });
 
 interface IdCardFormProps {
@@ -51,7 +52,7 @@ export function IdCardForm({ onAddCard }: IdCardFormProps) {
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: { name: '', dateOfBirth: '', address: '' },
+    defaultValues: { name: '', dateOfBirth: '', address: '', aadhaarNumber: '' },
   });
 
   const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -64,7 +65,7 @@ export function IdCardForm({ onAddCard }: IdCardFormProps) {
     }
   };
 
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+  const onSubmit = async (values: z.infer<typeof formSchema>>) => {
     setIsSubmitting(true);
 
     const reader = new FileReader();
@@ -91,6 +92,7 @@ export function IdCardForm({ onAddCard }: IdCardFormProps) {
           gender: values.gender,
           address: values.address,
           qrCodeDataUri,
+          aadhaarNumber: values.aadhaarNumber || null,
         };
 
         onAddCard(newCard);
@@ -139,6 +141,20 @@ export function IdCardForm({ onAddCard }: IdCardFormProps) {
                   <FormControl>
                     <Input placeholder="John Doe" {...field} />
                   </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+             <FormField
+              control={form.control}
+              name="aadhaarNumber"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Aadhaar Number (Optional)</FormLabel>
+                  <FormControl>
+                    <Input placeholder="123456789012" {...field} />
+                  </FormControl>
+                  <FormDescription>Used for data matching during verification.</FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
