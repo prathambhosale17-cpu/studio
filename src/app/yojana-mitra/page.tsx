@@ -1,39 +1,55 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { jsPDF } from 'jspdf';
-import { SCHEMES, DISTRICTS, INDIAN_STATES } from '@/lib/yojana-mitra-data';
+import { SCHEMES, INDIAN_STATES } from '@/lib/yojana-mitra-data';
+import { useLanguage } from '@/context/language-context';
+import { Header } from '@/components/header';
+import { Input } from '@/components/ui/input';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Label } from '@/components/ui/label';
+import { Badge } from '@/components/ui/badge';
+import { Search, X } from 'lucide-react';
 import './styles.css';
-import { useLanguage, supportedLanguages } from '@/context/language-context';
 
 type Scheme = typeof SCHEMES[0];
 
 export default function YojanaMitraPage() {
-    const { language, setLanguage, t } = useLanguage();
-    const [finderData, setFinderData] = useState({ state: '', level: 'all' });
-    const [results, setResults] = useState<Scheme[]>(SCHEMES);
-    const [qaPosts, setQaPosts] = useState<any[]>([]);
-    const [qaFilters, setQaFilters] = useState({ district: '', category: '', unanswered: false });
-    const [qaFormData, setQaFormData] = useState({ district: '', category: 'Pests/Diseases', title: '', body: '' });
-    const [captcha, setCaptcha] = useState({ a: 0, b: 0, answer: 0 });
-    const [captchaInput, setCaptchaInput] = useState('');
+    const { language, t } = useLanguage();
+    const [filters, setFilters] = useState({
+        search: '',
+        state: '',
+        category: '',
+        level: 'all', // 'all', 'central', 'state'
+        aadhaar: 'all', // 'all', 'yes', 'no'
+    });
     const [selectedScheme, setSelectedScheme] = useState<Scheme | null>(null);
     const dialogRef = useRef<HTMLDialogElement>(null);
 
-    useEffect(() => {
-        const savedPosts = localStorage.getItem('qa_posts_v1');
-        if (savedPosts) {
-            setQaPosts(JSON.parse(savedPosts));
-        } else {
-            const baseQA = [
-                { id: 'p1', district: 'Pune', category: 'Pests/Diseases', title: 'Leaf curling in cotton', body: 'What to spray?', up: 11, solved: false, hidden: false, ts: Date.now() - 86400000 },
-                { id: 'p2', district: 'Buldhana', category: 'Insurance/PMFBY', title: 'Claim delay', body: 'Whom to contact?', up: 6, solved: false, hidden: false, ts: Date.now() - 3600000 }
-            ];
-            localStorage.setItem('qa_posts_v1', JSON.stringify(baseQA));
-            setQaPosts(baseQA);
-        }
-        generateCaptcha();
-    }, []);
+    const allCategories = useMemo(() => Array.from(new Set(SCHEMES.flatMap(s => s.categories))).sort(), []);
+
+    const filteredSchemes = useMemo(() => {
+        return SCHEMES.filter(scheme => {
+            const title = (scheme.title as any)[language] || scheme.title.en || '';
+            const searchMatch = !filters.search || title.toLowerCase().includes(filters.search.toLowerCase());
+            const stateMatch = !filters.state || scheme.state === filters.state;
+            const levelMatch = filters.level === 'all' || scheme.level === filters.level;
+            const categoryMatch = !filters.category || scheme.categories.includes(filters.category);
+            
+            const aadhaarDocs = ((scheme.docs as any).en || []).join(' ').toLowerCase();
+            const isAadhaarRequired = aadhaarDocs.includes('aadhaar');
+            const aadhaarMatch = filters.aadhaar === 'all' || (filters.aadhaar === 'yes' && isAadhaarRequired) || (filters.aadhaar === 'no' && !isAadhaarRequired);
+            
+            return searchMatch && stateMatch && levelMatch && categoryMatch && aadhaarMatch;
+        });
+    }, [filters, language]);
+
+    const handleFilterChange = (field: keyof typeof filters, value: string) => {
+        setFilters(prev => ({ ...prev, [field]: value }));
+    };
 
     useEffect(() => {
         if (selectedScheme) {
@@ -43,29 +59,7 @@ export default function YojanaMitraPage() {
         }
     }, [selectedScheme]);
     
-
-    const handleFinderChange = (field: string, value: string) => {
-        setFinderData(prev => ({ ...prev, [field]: value }));
-    };
-
-    const handleFinderSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-        const filteredSchemes = SCHEMES.filter(scheme => {
-            const stateMatch = !finderData.state || scheme.state === finderData.state;
-            const levelMatch = finderData.level === 'all' || scheme.level === finderData.level;
-            return stateMatch && levelMatch;
-        });
-        setResults(filteredSchemes);
-    };
-
-    const clearFinder = () => {
-        setFinderData({ state: '', level: 'all' });
-        setResults(SCHEMES);
-    };
-
     const downloadDocsPDF = (scheme: Scheme) => {
-        const { jsPDF } = window as any;
-        if (!jsPDF) { alert('PDF library failed to load'); return; }
         const doc = new jsPDF({ unit: 'pt', format: 'a4' });
         const margin = 40, lineH = 18;
         let y = margin;
@@ -91,293 +85,155 @@ export default function YojanaMitraPage() {
         doc.text(t('footerTxt'), margin, y);
         doc.save(`${scheme.id}-documents.pdf`);
     };
-
-    const generateCaptcha = () => {
-        const a = 1 + Math.floor(Math.random() * 9);
-        const b = 1 + Math.floor(Math.random() * 9);
-        setCaptcha({ a, b, answer: a + b });
-    };
-
-    const savePosts = (posts: any[]) => {
-        localStorage.setItem('qa_posts_v1', JSON.stringify(posts));
-        setQaPosts(posts);
-    };
-
-    const handlePostSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-        if (parseInt(captchaInput) !== captcha.answer) {
-            alert(t('wrongCaptcha'));
-            return;
-        }
-        if (!qaFormData.title || !qaFormData.body || !qaFormData.district) {
-            alert('Please fill all fields for the question.');
-            return;
-        }
-        const maskPII = (text: string) => text.replace(/\b\d{10}\b/g, '[phone hidden]').replace(/\b\d{12}\b/g, '[aadhaar hidden]');
-        const newPost = {
-            id: 'p_' + Date.now(),
-            ...qaFormData,
-            title: maskPII(qaFormData.title),
-            body: maskPII(qaFormData.body),
-            up: 0, solved: false, hidden: false, ts: Date.now()
-        };
-        const updatedPosts = [newPost, ...qaPosts];
-        savePosts(updatedPosts);
-        setQaFormData({ district: '', category: 'Pests/Diseases', title: '', body: '' });
-        setCaptchaInput('');
-        generateCaptcha();
-    };
-
-    const vote = (id: string, d: number) => {
-        const updated = qaPosts.map(p => p.id === id ? { ...p, up: Math.max(0, (p.up || 0) + d) } : p);
-        savePosts(updated);
-    };
-
-    const markSolved = (id: string) => {
-        const updated = qaPosts.map(p => p.id === id ? { ...p, solved: !p.solved } : p);
-        savePosts(updated);
-    };
-
-    const reportPost = (id: string) => {
-        const updated = qaPosts.map(p => p.id === id ? { ...p, hidden: true } : p);
-        savePosts(updated);
-        alert(t('postReported'));
-    };
-
-    const filteredQaPosts = qaPosts
-        .filter(p => !p.hidden)
-        .filter(p => !qaFilters.district || p.district === qaFilters.district)
-        .filter(p => !qaFilters.category || p.category === qaFilters.category)
-        .filter(p => !qaFilters.unanswered || !p.solved)
-        .sort((a, b) => b.ts - a.ts);
-
-    const allCrops = Array.from(new Set(SCHEMES.flatMap(s => s.crops || [])));
-    const qaCategories = ["Pests/Diseases", "Irrigation/Water", "Loans/KCC", "Insurance/PMFBY", "Machinery/Repairs", "Organic/Inputs", "Market/Prices", "Govt Processes/Docs"];
-
+    
     return (
-        <div id="yojana-mitra-page">
-             <header className="sticky top-0 z-30 backdrop-blur bg-background/80 border-b border-border">
-                <div className="mx-auto container-narrow px-4 py-3 flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 grid place-items-center rounded-xl bg-primary/10 text-primary font-bold">🌾</div>
-                        <div>
-                            <h1 className="text-lg font-bold text-foreground">{t('siteTitle')}</h1>
-                            <p className="text-xs text-muted-foreground">{t('siteTag')}</p>
-                        </div>
-                    </div>
-                    <div className="flex items-center gap-2 flex-wrap">
-                        <span className="text-sm text-slate-500">Language:</span>
-                        {supportedLanguages.map(l => (
-                             <button key={l.code} className={`btn btn-ghost text-xs p-2 ${language === l.code ? 'font-bold text-primary bg-primary/10' : ''}`} onClick={() => setLanguage(l.code as any)}>{l.name}</button>
-                        ))}
-                    </div>
-                </div>
-            </header>
-
-            <main className="mx-auto container-narrow px-4 py-6 space-y-8">
-                <section id="actions" className="grid md:grid-cols-3 gap-4">
-                    <div className="card p-5 md:col-span-2">
-                        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
-                            <div>
-                                <h2 className="text-2xl font-bold text-foreground">{t('heroTitle')}</h2>
-                                <p className="text-slate-600">{t('heroSub')}</p>
+        <div className="flex min-h-screen w-full flex-col bg-background">
+            <Header />
+            <main className="flex-1 p-4 md:p-6 lg:p-8">
+                <div className="mx-auto grid w-full max-w-screen-xl gap-6">
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>{t('finderTitle')}</CardTitle>
+                            <CardDescription>{t('heroSub')}</CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-6">
+                            <div className="relative">
+                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                                <Input
+                                    placeholder="Search schemes by name..."
+                                    value={filters.search}
+                                    onChange={e => handleFilterChange('search', e.target.value)}
+                                    className="pl-10 w-full"
+                                />
                             </div>
-                            <div className="flex gap-3">
-                                <a href="#finder" className="btn btn-primary">{t('btnFindSchemes')}</a>
-                                <a href="#qa" className="btn btn-muted">{t('btnAsk')}</a>
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                                <div className="space-y-2">
+                                    <Label>State</Label>
+                                    <Select value={filters.state} onValueChange={value => handleFilterChange('state', value)}>
+                                        <SelectTrigger>
+                                            <SelectValue placeholder={t('lblAllStates')} />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="">{t('lblAllStates')}</SelectItem>
+                                            {INDIAN_STATES.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                                <div className="space-y-2">
+                                    <Label>Category</Label>
+                                    <Select value={filters.category} onValueChange={value => handleFilterChange('category', value)}>
+                                        <SelectTrigger>
+                                            <SelectValue placeholder={t('lblAllCats')} />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="">{t('lblAllCats')}</SelectItem>
+                                            {allCategories.map(c => <SelectItem key={c} value={c} className="capitalize">{c.replace(/-/g, ' ')}</SelectItem>)}
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                                <div className="space-y-2">
+                                    <Label>Government Type</Label>
+                                    <RadioGroup
+                                        value={filters.level}
+                                        onValueChange={value => handleFilterChange('level', value)}
+                                        className="flex pt-2 gap-4"
+                                    >
+                                        <div className="flex items-center space-x-2"><RadioGroupItem value="all" id="level-all" /><Label htmlFor="level-all">All</Label></div>
+                                        <div className="flex items-center space-x-2"><RadioGroupItem value="central" id="level-central" /><Label htmlFor="level-central">Central</Label></div>
+                                        <div className="flex items-center space-x-2"><RadioGroupItem value="state" id="level-state" /><Label htmlFor="level-state">State</Label></div>
+                                    </RadioGroup>
+                                </div>
+                                <div className="space-y-2">
+                                    <Label>Aadhaar Linked</Label>
+                                    <RadioGroup
+                                        value={filters.aadhaar}
+                                        onValueChange={value => handleFilterChange('aadhaar', value)}
+                                        className="flex pt-2 gap-4"
+                                    >
+                                        <div className="flex items-center space-x-2"><RadioGroupItem value="all" id="aadhaar-all" /><Label htmlFor="aadhaar-all">All</Label></div>
+                                        <div className="flex items-center space-x-2"><RadioGroupItem value="yes" id="aadhaar-yes" /><Label htmlFor="aadhaar-yes">Yes</Label></div>
+                                        <div className="flex items-center space-x-2"><RadioGroupItem value="no" id="aadhaar-no" /><Label htmlFor="aadhaar-no">No</Label></div>
+                                    </RadioGroup>
+                                </div>
                             </div>
-                        </div>
-                    </div>
-                    <div className="card p-5">
-                        <div className="flex items-center gap-3">
-                            <span className="chip">PWA-ready</span>
-                            <span className="chip">Bilingual</span>
-                            <span className="chip">Print-friendly</span>
-                        </div>
-                        <p className="mt-3 text-slate-600">{t('heroNote')}</p>
-                    </div>
-                </section>
+                        </CardContent>
+                    </Card>
 
-                <section id="finder" className="card p-6">
-                    <h3 className="text-xl font-bold text-foreground mb-4">{t('finderTitle')}</h3>
-                    <form onSubmit={handleFinderSubmit} className="grid md:grid-cols-3 gap-4">
-                        <div>
-                            <label className="font-semibold text-slate-700">{t('labelState')}</label>
-                            <select value={finderData.state} onChange={e => handleFinderChange('state', e.target.value)} className="input">
-                                <option value="">{t('lblAllStates')}</option>
-                                {INDIAN_STATES.map(s => <option key={s} value={s}>{s}</option>)}
-                            </select>
-                        </div>
-                        
-                        <div className="md:col-span-2">
-                            <label className="font-semibold text-slate-700">{t('labelLevel')}</label>
-                            <div className="flex items-center gap-4 pt-2">
-                                <label className="inline-flex items-center gap-2 text-sm text-slate-600">
-                                    <input type="radio" name="level" value="all" checked={finderData.level === 'all'} onChange={e => handleFinderChange('level', e.target.value)} />
-                                    <span>{t('lblAll')}</span>
-                                </label>
-                                <label className="inline-flex items-center gap-2 text-sm text-slate-600">
-                                    <input type="radio" name="level" value="central" checked={finderData.level === 'central'} onChange={e => handleFinderChange('level', e.target.value)} />
-                                    <span>{t('lblCentral')}</span>
-                                </label>
-                                <label className="inline-flex items-center gap-2 text-sm text-slate-600">
-                                    <input type="radio" name="level" value="state" checked={finderData.level === 'state'} onChange={e => handleFinderChange('level', e.target.value)} />
-                                    <span>{t('lblState')}</span>
-                                </label>
-                            </div>
-                        </div>
-
-                        <div className="md:col-span-3 flex gap-3 pt-2">
-                            <button type="submit" className="btn btn-primary">{t('btnShowEligible')}</button>
-                            <button type="button" onClick={clearFinder} className="btn btn-ghost">{t('btnClear')}</button>
-                        </div>
-                    </form>
-                    <div id="results" className="mt-6 grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                        {results.map(s => {
+                    <section id="results" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {filteredSchemes.map(s => {
                             const title = (s.title as any)[language] || s.title.en;
                             const what = (s.what as any)[language] || s.what.en;
                             return (
-                            <article key={s.id} className="p-4 card flex flex-col justify-between h-full">
-                                <div>
-                                    <div className="flex items-center justify-between gap-2">
-                                        <h4 className="font-semibold text-foreground">{title}</h4>
-                                        <span className="badge">{s.level}</span>
+                                <Card key={s.id} className="flex flex-col">
+                                    <CardHeader>
+                                        <CardTitle>{title}</CardTitle>
+                                        <div className="flex items-center gap-2 pt-1">
+                                            <Badge variant="secondary">{s.state}</Badge>
+                                            <Badge variant={s.level === 'central' ? 'default' : 'outline'} className="capitalize">{s.level}</Badge>
+                                        </div>
+                                    </CardHeader>
+                                    <CardContent className="flex-grow">
+                                        <p className="text-sm text-muted-foreground">{what}</p>
+                                    </CardContent>
+                                    <div className="p-6 pt-0 flex gap-2">
+                                        <Button variant="outline" onClick={() => setSelectedScheme(s)}>{t('details')}</Button>
+                                        <Button asChild><a href={s.apply} target="_blank" rel="noopener noreferrer">{t('apply')}</a></Button>
                                     </div>
-                                    <p className="text-sm text-slate-600 mt-2">{what}</p>
-                                </div>
-                                <div className="mt-4 flex gap-2">
-                                    <button className="btn btn-muted" onClick={() => setSelectedScheme(s)}>{t('details')}</button>
-                                    <a className="btn btn-primary" href={s.apply} target="_blank" rel="noopener noreferrer">{t('apply')}</a>
-                                </div>
-                            </article>
-                        )})}
-                        {results.length === 0 && <div className="text-slate-600">{t('noSchemes')}</div>}
-                    </div>
-                </section>
-
-                <section id="qa" className="card p-6">
-                    <div className="flex items-center justify-between gap-3">
-                        <h3 className="text-xl font-bold text-foreground">{t('qaTitle')}</h3>
-                        <div className="flex gap-2">
-                            <select value={qaFilters.district} onChange={e => setQaFilters(f => ({...f, district: e.target.value}))} className="input">
-                                 <option value="">All Districts</option>
-                                 {DISTRICTS.map(d => <option key={d}>{d}</option>)}
-                            </select>
-                            <select value={qaFilters.category} onChange={e => setQaFilters(f => ({...f, category: e.target.value}))} className="input">
-                                <option value="">All Categories</option>
-                                {qaCategories.map(c => <option key={c}>{c}</option>)}
-                            </select>
-                            <label className="inline-flex items-center gap-2 text-sm text-slate-600">
-                                <input type="checkbox" checked={qaFilters.unanswered} onChange={e => setQaFilters(f => ({...f, unanswered: e.target.checked}))} />
-                                <span>{t('lblUnanswered')}</span>
-                            </label>
-                        </div>
-                    </div>
-
-                    <form onSubmit={handlePostSubmit} className="grid md:grid-cols-3 gap-4 mt-4">
-                        <div>
-                            <label className="font-semibold text-slate-700">{t('labelQDistrict')}</label>
-                            <select value={qaFormData.district} onChange={e => setQaFormData(f => ({ ...f, district: e.target.value }))} className="input" required>
-                                <option value="">--</option>
-                                {DISTRICTS.map(d => <option key={d}>{d}</option>)}
-                            </select>
-                        </div>
-                        <div>
-                            <label className="font-semibold text-slate-700">{t('labelQCat')}</label>
-                            <select value={qaFormData.category} onChange={e => setQaFormData(f => ({...f, category: e.target.value}))} className="input" required>
-                                {qaCategories.map(c => <option key={c}>{c}</option>)}
-                            </select>
-                        </div>
-                        <div className="md:col-span-3">
-                            <label className="font-semibold text-slate-700">{t('labelQTitle')}</label>
-                            <input value={qaFormData.title} onChange={e => setQaFormData(f => ({ ...f, title: e.target.value }))} className="input" placeholder="Short problem title" required />
-                        </div>
-                        <div className="md:col-span-3">
-                            <label className="font-semibold text-slate-700">{t('labelQBody')}</label>
-                            <textarea value={qaFormData.body} onChange={e => setQaFormData(f => ({...f, body: e.target.value}))} rows={4} className="input" placeholder="Explain briefly. Avoid phone/Aadhaar numbers." required></textarea>
-                        </div>
-                        <div className="flex items-center gap-3 md:col-span-3">
-                            <span className="text-sm text-slate-600">{t('captcha')} {captcha.a} + {captcha.b} = ?</span>
-                            <input value={captchaInput} onChange={e => setCaptchaInput(e.target.value)} className="input w-28" placeholder="?" required />
-                            <button type="submit" className="btn btn-primary">{t('postDoubt')}</button>
-                        </div>
-                    </form>
-
-                    <div id="qaList" className="mt-6 divide-y">
-                        {filteredQaPosts.length > 0 ? filteredQaPosts.map(p => (
-                             <article key={p.id} className="py-4 flex flex-col gap-2">
-                                <div className="flex items-center justify-between">
-                                    <h4 className="font-semibold text-foreground">{p.title}</h4>
-                                    <div className="flex items-center gap-2 text-sm">
-                                    <span className="badge">{p.district}</span><span className="badge">{p.category}</span>{p.solved ? <span className="chip">Solved</span> : ''}
-                                    </div>
-                                </div>
-                                <p className="text-slate-700">{p.body}</p>
-                                <div className="flex gap-2">
-                                    <button className="btn btn-muted" onClick={() => vote(p.id,1)}>▲ {p.up || 0}</button>
-                                    <button className="btn btn-ghost" onClick={() => markSolved(p.id)}>{t('markSolved')}</button>
-                                    <button className="btn btn-ghost" onClick={() => reportPost(p.id)}>{t('report')}</button>
-                                </div>
-                            </article>
-                        )) : <div className="text-slate-600">{t('noPosts')}</div>}
-                    </div>
-                </section>
+                                </Card>
+                            )
+                        })}
+                        {filteredSchemes.length === 0 && <p className="text-muted-foreground md:col-span-3 text-center py-10">{t('noSchemes')}</p>}
+                    </section>
+                </div>
             </main>
 
-            <dialog ref={dialogRef} id="schemeModal" className="w-full max-w-4xl rounded-2xl p-0" onClose={() => setSelectedScheme(null)}>
+            <dialog ref={dialogRef} className="w-full max-w-4xl rounded-2xl p-0 backdrop:bg-black/50" onClose={() => setSelectedScheme(null)}>
                 {selectedScheme && (
-                    <div className="p-0 m-0">
-                        <div className="p-5 border-b flex items-center justify-between">
-                            <h4 className="text-lg font-bold">{(selectedScheme.title as any)[language] || selectedScheme.title.en}</h4>
-                            <button className="btn btn-ghost" aria-label="Close" onClick={() => setSelectedScheme(null)}>✕</button>
-                        </div>
-                        <div className="p-5 grid gap-5 md:grid-cols-3">
+                     <Card className="m-0 border-0 shadow-none">
+                        <CardHeader className="flex-row items-start justify-between">
+                            <div className="space-y-1.5">
+                                <CardTitle>{(selectedScheme.title as any)[language] || selectedScheme.title.en}</CardTitle>
+                                <CardDescription>{selectedScheme.dept} • {selectedScheme.level.toUpperCase()}</CardDescription>
+                            </div>
+                             <Button variant="ghost" size="icon" aria-label="Close" onClick={() => setSelectedScheme(null)}>
+                                <X className="h-4 w-4" />
+                             </Button>
+                        </CardHeader>
+                        <CardContent className="grid gap-6 md:grid-cols-3">
                             <div className="md:col-span-2 space-y-4">
-                                <div className="text-sm text-slate-600">{selectedScheme.dept} • {selectedScheme.level.toUpperCase()}</div>
                                 <div>
-                                    <h5 className="font-semibold">{t('whatYouGet')}</h5>
-                                    <p>{(selectedScheme.what as any)[language] || selectedScheme.what.en}</p>
+                                    <h5 className="font-semibold text-foreground">{t('whatYouGet')}</h5>
+                                    <p className="text-muted-foreground">{(selectedScheme.what as any)[language] || selectedScheme.what.en}</p>
                                 </div>
                                 <div>
-                                    <h5 className="font-semibold">{t('eligibility')}</h5>
-                                    <ul className="list-disc pl-6 space-y-1">
+                                    <h5 className="font-semibold text-foreground">{t('eligibility')}</h5>
+                                    <ul className="list-disc pl-5 space-y-1 text-muted-foreground">
                                         {(((selectedScheme.eligibility as any)[language] || selectedScheme.eligibility.en) || []).map((e:string,i:number) => <li key={i}>{e}</li>)}
                                     </ul>
                                 </div>
                                 <div>
-                                    <h5 className="font-semibold">{t('howToApply')}</h5>
-                                    <ol className="list-decimal pl-6 space-y-1">
+                                    <h5 className="font-semibold text-foreground">{t('howToApply')}</h5>
+                                    <ol className="list-decimal pl-5 space-y-1 text-muted-foreground">
                                         {(((selectedScheme.steps as any)[language] || selectedScheme.steps.en) || []).map((s:string,i:number) => <li key={i}>{s}</li>)}
                                     </ol>
                                 </div>
                             </div>
-                            <aside className="md:sticky md:top-4 h-max">
-                                <div className="rounded-xl border border-primary/20 bg-primary/5 p-4">
-                                    <h5 className="font-semibold text-primary">{t('docsYouNeed')}</h5>
-                                    <ul className="mt-2 list-disc pl-6 space-y-1 text-primary/90">
+                            <aside>
+                                <div className="rounded-lg border bg-card p-4 space-y-3">
+                                    <h5 className="font-semibold text-foreground">{t('docsYouNeed')}</h5>
+                                    <ul className="list-disc pl-5 space-y-1 text-muted-foreground">
                                         {(((selectedScheme.docs as any)[language] || selectedScheme.docs.en) || []).map((d:string,i:number) => <li key={i}>{d}</li>)}
                                     </ul>
-                                    <div className="mt-3 flex flex-wrap gap-2">
-                                        <button type="button" className="btn btn-muted" onClick={() => {
-                                            const docsText = ((selectedScheme.docs as any)[language] || selectedScheme.docs.en).join('\n');
-                                            navigator.clipboard.writeText(docsText).then(() => alert(t('copied')));
-                                        }}>{t('copy')}</button>
-                                        <button type="button" className="btn btn-muted" onClick={() => downloadDocsPDF(selectedScheme)}>{t('downloadPdf')}</button>
-                                        <a href={selectedScheme.apply} target="_blank" rel="noopener noreferrer" className="btn btn-primary">{t('apply')}</a>
+                                    <div className="pt-2 flex flex-wrap gap-2">
+                                        <Button variant="secondary" onClick={() => downloadDocsPDF(selectedScheme)}>{t('downloadPdf')}</Button>
+                                        <Button asChild><a href={selectedScheme.apply} target="_blank" rel="noopener noreferrer">{t('apply')}</a></Button>
                                     </div>
                                 </div>
                             </aside>
-                        </div>
-                        <div className="p-5 border-t flex flex-wrap gap-2">
-                           <button type="button" onClick={() => window.print()} className="btn btn-muted">{t('print')}</button>
-                        </div>
-                    </div>
+                        </CardContent>
+                    </Card>
                 )}
             </dialog>
-
-            <footer className="mx-auto container-narrow px-4 py-10 text-center text-sm text-slate-500">
-                <p>{t('footerTxt')} © <span>{new Date().getFullYear()}</span></p>
-            </footer>
         </div>
     );
 }

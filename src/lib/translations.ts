@@ -69,6 +69,7 @@ const en = {
   'lblCentral': 'Central',
   'lblState': 'State',
   'lblAllStates': 'All States',
+  'lblAllCats': 'All Categories',
 };
 
 const hi = {
@@ -141,6 +142,7 @@ const hi = {
   'lblCentral': 'केंद्रीय',
   'lblState': 'राज्य',
   'lblAllStates': 'सभी राज्य',
+  'lblAllCats': 'सभी श्रेणियां',
 };
 
 const bn = {
@@ -213,6 +215,7 @@ const bn = {
     'lblCentral': 'কেন্দ্রীয়',
     'lblState': 'রাজ্য',
     'lblAllStates': 'সব রাজ্য',
+    'lblAllCats': 'সব বিভাগ',
 };
 
 const te = {
@@ -285,6 +288,7 @@ const te = {
     'lblCentral': 'కేంద్ర',
     'lblState': 'రాష్ట్ర',
     'lblAllStates': 'అన్ని రాష్ట్రాలు',
+    'lblAllCats': 'అన్ని వర్గాలు',
 };
 
 const mr = {
@@ -357,6 +361,7 @@ const mr = {
     'lblCentral': 'केंद्र',
     'lblState': 'राज्य',
     'lblAllStates': 'सर्व राज्य',
+    'lblAllCats': 'सर्व श्रेणी',
 };
 
 const ta = {
@@ -429,6 +434,7 @@ const ta = {
     'lblCentral': 'மத்திய',
     'lblState': 'மாநிலம்',
     'lblAllStates': 'அனைத்து மாநிலங்கள்',
+    'lblAllCats': 'அனைத்து வகைகளும்',
 };
 
 const gu = {
@@ -501,6 +507,7 @@ const gu = {
     'lblCentral': 'કેન્દ્રીય',
     'lblState': 'રાજ્ય',
     'lblAllStates': 'બધા રાજ્યો',
+    'lblAllCats': 'બધી શ્રેણીઓ',
 };
 
 const kn = {
@@ -573,6 +580,7 @@ const kn = {
     'lblCentral': 'ಕೇಂದ್ರ',
     'lblState': 'ರಾಜ್ಯ',
     'lblAllStates': 'ಎಲ್ಲಾ ರಾಜ್ಯಗಳು',
+    'lblAllCats': 'ಎಲ್ಲಾ ವರ್ಗಗಳು',
 };
 
 export const translations = {
