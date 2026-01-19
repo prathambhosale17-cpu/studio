@@ -224,7 +224,7 @@ export default function YojanaMitraPage() {
                                 const title = (s.title as any)[language] || s.title.en;
                                 const what = (s.what as any)[language] || s.what.en;
                                 return (
-                                    <Card key={s.id} className="flex flex-col">
+                                    <Card key={s.id} className="flex flex-col transform transition-all duration-300 hover:scale-105 hover:shadow-xl">
                                         <CardHeader>
                                             <CardTitle>{title}</CardTitle>
                                             <div className="flex items-center gap-2 pt-1">
