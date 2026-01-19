@@ -42,7 +42,7 @@ export default function AadhaarCheckPage() {
             if (!lookupSnapshot.exists()) {
                 dataMatchResult = { status: 'not_found' };
                 isDataMatchSuccess = false;
-                dataMatchFailureReason = "Data Match Failed: No matching Aadhaar number was found in the database.";
+                dataMatchFailureReason = "Data Match Failure (Potential Fraud): No ID card with this Aadhaar number exists in the database.";
             } else {
                 const cardPath = lookupSnapshot.data().cardPath;
                 const cardDocRef = doc(firestore, cardPath);
@@ -51,7 +51,7 @@ export default function AadhaarCheckPage() {
                 if (!cardSnapshot.exists()) {
                     dataMatchResult = { status: 'not_found' }; // This case is a dangling pointer
                     isDataMatchSuccess = false;
-                    dataMatchFailureReason = "Data Match Error: A database record exists, but the linked ID card could not be found.";
+                    dataMatchFailureReason = "Database Error (Potential Fraud): An ID card record was found, but the full card details could not be retrieved. This may indicate a data integrity issue.";
                 } else {
                     const dbCard = cardSnapshot.data() as IDCard;
                     const mismatchedFields: { field: string; dbValue: any; ocrValue: any }[] = [];
@@ -81,7 +81,7 @@ export default function AadhaarCheckPage() {
                         dataMatchResult = { status: 'mismatched', details: mismatchedFields };
                         isDataMatchSuccess = false;
                         const mismatchedFieldNames = mismatchedFields.map(f => f.field).join(', ');
-                        dataMatchFailureReason = `Data Match Failed: Information on the card does not match the database record for ${mismatchedFieldNames}.`;
+                        dataMatchFailureReason = `Data Mismatch (Potential Fraud): The following information on the card does not match the official database record: ${mismatchedFieldNames}.`;
                     } else {
                         dataMatchResult = { status: 'matched' };
                         isDataMatchSuccess = true;
@@ -92,12 +92,12 @@ export default function AadhaarCheckPage() {
             console.error("Data match error:", e);
             dataMatchResult = { status: 'error' };
             isDataMatchSuccess = false;
-            dataMatchFailureReason = "Data Match Error: An unexpected error occurred while checking the database.";
+            dataMatchFailureReason = "Database Error: An unexpected error occurred while verifying data against the database.";
         }
     } else {
         dataMatchResult = { status: 'not_found' };
         isDataMatchSuccess = false;
-        dataMatchFailureReason = "Data Match Failed: The Aadhaar number could not be read from the card image, so a database match was not performed.";
+        dataMatchFailureReason = "OCR Failure: The Aadhaar number could not be read from the card image, so a database match could not be performed.";
     }
 
     const isOcrSuccess = ocrResult.status === 'verified';
@@ -105,8 +105,8 @@ export default function AadhaarCheckPage() {
     
     let finalIndicators = ocrResult.indicators;
     if (!isDataMatchSuccess) {
-        if (finalIndicators) {
-            finalIndicators = `${finalIndicators}\n\n${dataMatchFailureReason}`;
+        if (finalIndicators && finalIndicators.toLowerCase().trim() !== 'no fraud indicators found.' && finalIndicators.trim() !== '') {
+            finalIndicators = `${dataMatchFailureReason}\n\n${finalIndicators}`;
         } else {
             finalIndicators = dataMatchFailureReason;
         }
