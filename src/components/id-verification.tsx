@@ -165,6 +165,8 @@ export function IdVerification() {
         });
         errorEmitter.emit('permission-error', permissionError);
         setError('An error occurred while fetching the ID card. Check permissions.');
+      } else if (/api key/i.test(e.message)) {
+          setError('AI Service Misconfigured: Your Gemini API key is missing or invalid. Please add a valid GEMINI_API_KEY to your .env file and restart the server.');
       } else {
         setError('An AI service error occurred. Please try again.');
       }
@@ -208,9 +210,13 @@ export function IdVerification() {
       });
       setAnalysisResults(prev => ({...prev, face: result}));
       setStep('result');
-    } catch (e) {
+    } catch (e: any) {
       console.error('Face match error:', e);
-      setError('AI face matching service failed. Please try again.');
+      if (/api key/i.test(e.message)) {
+          setError('AI Service Misconfigured: Your Gemini API key is missing or invalid. Please add a valid GEMINI_API_KEY to your .env file and restart the server.');
+      } else {
+          setError('AI face matching service failed. Please try again.');
+      }
       setStep('id_found'); // Go back to the previous step
     }
   };

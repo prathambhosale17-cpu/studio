@@ -109,7 +109,7 @@ export function VerificationForm({
         aadhaarNumber: aiResult.aadhaarNumber ?? null,
       };
       onVerificationComplete(result);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Verification Error:', error);
       const errorResult: VerificationResult = {
         id: resultId,
@@ -119,11 +119,20 @@ export function VerificationForm({
         indicators: 'An unexpected error occurred during AI analysis.',
       };
       onVerificationComplete(errorResult);
-      toast({
-        variant: 'destructive',
-        title: 'Verification Failed',
-        description: 'Could not connect to the AI service. Please try again later.',
-      });
+      
+      if (/api key/i.test(error.message)) {
+        toast({
+          variant: 'destructive',
+          title: 'AI Service Misconfigured',
+          description: 'Your Gemini API key is missing or invalid. Please add it to your .env file and restart the server.',
+        });
+      } else {
+        toast({
+          variant: 'destructive',
+          title: 'Verification Failed',
+          description: 'Could not connect to the AI service. Please try again later.',
+        });
+      }
     }
   }
 
