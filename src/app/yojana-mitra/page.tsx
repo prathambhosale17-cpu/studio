@@ -145,7 +145,7 @@ export default function YojanaMitraPage() {
                 <div className="mx-auto grid w-full max-w-screen-xl gap-12">
                     <div className="text-center space-y-2">
                         <h1 className="text-4xl font-extrabold tracking-tight lg:text-5xl">
-                            🌾 Yojana <span className="text-primary">Dost</span> • India
+                            🌾 Yojana <span className="text-primary">Mitra</span> • India
                         </h1>
                         <p className="text-xl text-muted-foreground mt-4">Your guide to Government Schemes & Community Support</p>
                     </div>

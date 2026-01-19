@@ -59,7 +59,7 @@ export function Header() {
             pathname.startsWith('/yojana-mitra') ? 'text-primary' : 'text-muted-foreground'
           )}
         >
-          Yojana Dost
+          Yojana Mitra
         </Link>
       </nav>
        <Select value={language} onValueChange={(value) => setLanguage(value as any)}>
