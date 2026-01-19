@@ -65,7 +65,7 @@ export function IdCardForm({ onAddCard }: IdCardFormProps) {
     }
   };
 
-  const onSubmit = async (values: z.infer<typeof formSchema>>) => {
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
     setIsSubmitting(true);
 
     const reader = new FileReader();
