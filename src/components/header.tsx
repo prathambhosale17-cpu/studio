@@ -27,6 +27,15 @@ export function Header() {
       </Link>
       <nav className="flex items-center gap-6 ml-auto">
         <Link
+          href="/manage-ids"
+          className={cn(
+            'text-sm font-medium transition-colors hover:text-primary',
+            pathname.startsWith('/manage-ids') ? 'text-primary' : 'text-muted-foreground'
+          )}
+        >
+          {t('Manage IDs')}
+        </Link>
+        <Link
           href="/verify"
           className={cn(
             'text-sm font-medium transition-colors hover:text-primary',
@@ -35,14 +44,15 @@ export function Header() {
         >
           {t('Verify ID')}
         </Link>
-        <a
-          href="https://myaadhaar.uidai.gov.in/"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-sm font-medium transition-colors hover:text-primary text-muted-foreground"
+        <Link
+          href="/download"
+          className={cn(
+            'text-sm font-medium transition-colors hover:text-primary',
+            pathname.startsWith('/download') ? 'text-primary' : 'text-muted-foreground'
+          )}
         >
           {t('Download Card')}
-        </a>
+        </Link>
         <Link
           href="/yojana-mitra"
           className={cn(
