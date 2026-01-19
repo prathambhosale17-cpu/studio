@@ -5,7 +5,7 @@ import { VerificationHistory } from '@/components/verification-history';
 import { VerificationResult } from '@/components/verification-result';
 import { Header } from '@/components/header';
 import { useAadhaarHistory } from '@/hooks/use-aadhaar-history';
-import type { DataMatchResult, IDCard, VerificationResult as VerificationResultType } from '@/lib/types';
+import type { DataMatchResult, IDCard, VerificationResult as VerificationResultType, VerificationStatus } from '@/lib/types';
 import { useFirestore } from '@/firebase';
 import { doc, getDoc } from 'firebase/firestore';
 
@@ -29,22 +29,29 @@ export default function AadhaarCheckPage() {
 
   const handleVerificationComplete = async (ocrResult: Omit<VerificationResultType, 'dataMatch'>) => {
     let dataMatchResult: DataMatchResult | null = null;
+    let isDataMatchSuccess = true;
+    let dataMatchFailureReason = "";
     
     // Perform Data Match if Aadhaar number was extracted
     if (ocrResult.aadhaarNumber) {
         try {
-            const lookupDocRef = doc(firestore, 'aadhaarLookups', ocrResult.aadhaarNumber);
+            // The OCR may include spaces, but the lookup ID does not have them.
+            const lookupDocRef = doc(firestore, 'aadhaarLookups', ocrResult.aadhaarNumber.replace(/\s/g, ''));
             const lookupSnapshot = await getDoc(lookupDocRef);
 
             if (!lookupSnapshot.exists()) {
                 dataMatchResult = { status: 'not_found' };
+                isDataMatchSuccess = false;
+                dataMatchFailureReason = "Data Match Failed: No matching Aadhaar number was found in the database.";
             } else {
                 const cardPath = lookupSnapshot.data().cardPath;
                 const cardDocRef = doc(firestore, cardPath);
                 const cardSnapshot = await getDoc(cardDocRef);
 
                 if (!cardSnapshot.exists()) {
-                    dataMatchResult = { status: 'not_found' };
+                    dataMatchResult = { status: 'not_found' }; // This case is a dangling pointer
+                    isDataMatchSuccess = false;
+                    dataMatchFailureReason = "Data Match Error: A database record exists, but the linked ID card could not be found.";
                 } else {
                     const dbCard = cardSnapshot.data() as IDCard;
                     const mismatchedFields: { field: string; dbValue: any; ocrValue: any }[] = [];
@@ -72,19 +79,43 @@ export default function AadhaarCheckPage() {
 
                     if (mismatchedFields.length > 0) {
                         dataMatchResult = { status: 'mismatched', details: mismatchedFields };
+                        isDataMatchSuccess = false;
+                        const mismatchedFieldNames = mismatchedFields.map(f => f.field).join(', ');
+                        dataMatchFailureReason = `Data Match Failed: Information on the card does not match the database record for ${mismatchedFieldNames}.`;
                     } else {
                         dataMatchResult = { status: 'matched' };
+                        isDataMatchSuccess = true;
                     }
                 }
             }
         } catch (e) {
             console.error("Data match error:", e);
             dataMatchResult = { status: 'error' };
+            isDataMatchSuccess = false;
+            dataMatchFailureReason = "Data Match Error: An unexpected error occurred while checking the database.";
+        }
+    } else {
+        dataMatchResult = { status: 'not_found' };
+        isDataMatchSuccess = false;
+        dataMatchFailureReason = "Data Match Failed: The Aadhaar number could not be read from the card image, so a database match was not performed.";
+    }
+
+    const isOcrSuccess = ocrResult.status === 'verified';
+    const finalStatus: VerificationStatus = (isOcrSuccess && isDataMatchSuccess) ? 'verified' : 'failed';
+    
+    let finalIndicators = ocrResult.indicators;
+    if (!isDataMatchSuccess) {
+        if (finalIndicators) {
+            finalIndicators = `${finalIndicators}\n\n${dataMatchFailureReason}`;
+        } else {
+            finalIndicators = dataMatchFailureReason;
         }
     }
 
     const finalResult: VerificationResultType = {
         ...ocrResult,
+        status: finalStatus,
+        indicators: finalIndicators,
         dataMatch: dataMatchResult
     };
 

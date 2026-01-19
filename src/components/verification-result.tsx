@@ -213,14 +213,14 @@ export function VerificationResult({ result, isVerifying }: VerificationResultPr
         {(status === 'failed' || status === 'error') && result?.indicators && (
           <div className="space-y-2">
             <h4 className="font-semibold text-foreground">
-              {status === 'failed' ? 'Forgery Indicators' : 'Error Details'}
+              {status === 'failed' ? 'Analysis Details' : 'Error Details'}
             </h4>
             <Alert variant="destructive">
               <AlertCircle className="h-4 w-4" />
               <AlertTitle>
                 {status === 'failed' ? 'Potential Issues Found' : 'System Error'}
               </AlertTitle>
-              <AlertDescription className="prose prose-sm dark:prose-invert">
+              <AlertDescription className="prose prose-sm dark:prose-invert whitespace-pre-wrap">
                 {result.indicators}
               </AlertDescription>
             </Alert>
