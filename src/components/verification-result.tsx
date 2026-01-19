@@ -79,7 +79,7 @@ const statusConfig: Record<
   },
 };
 
-const DataItem = ({ label, value, isFullWidth = false }: { label: string, value?: string, isFullWidth?: boolean }) => {
+const DataItem = ({ label, value, isFullWidth = false }: { label: string, value?: string | null, isFullWidth?: boolean }) => {
     if (!value) return null;
     return (
         <div className={cn("grid grid-cols-2", isFullWidth ? "col-span-2" : "col-span-1")}>
