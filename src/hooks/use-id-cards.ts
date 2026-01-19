@@ -63,8 +63,18 @@ export function useIdCards() {
       createdAt: Timestamp.now(),
     };
     
-    // Use a non-blocking write.
+    // Use a non-blocking write for the main document.
     setDocumentNonBlocking(docRef, newRecord, { merge: false });
+
+    // Create the ID Number lookup entry
+    const idNumberLookupDocRef = doc(firestore, 'idNumberLookups', newRecord.idNumber);
+    setDocumentNonBlocking(idNumberLookupDocRef, { cardPath: docRef.path }, { merge: false });
+
+    // Create the Aadhaar lookup entry if an Aadhaar number is provided
+    if (newRecord.aadhaarNumber) {
+        const aadhaarLookupDocRef = doc(firestore, 'aadhaarLookups', newRecord.aadhaarNumber);
+        setDocumentNonBlocking(aadhaarLookupDocRef, { cardPath: docRef.path }, { merge: false });
+    }
   };
 
   const deleteIdCard = (cardId: string) => {
@@ -72,6 +82,28 @@ export function useIdCards() {
         console.error('Cannot delete ID card: user not authenticated.');
         return;
     }
+    const cardToDelete = cards.find(card => card.id === cardId);
+
+    // If we can't find the card in the local state, we can't get the lookup keys.
+    // This is a rare edge case, but we can still attempt to delete the main document.
+    if (!cardToDelete) {
+        console.warn("Could not find card in local state to delete lookups. Deleting main document only.");
+        const docRef = doc(firestore, 'users', user.uid, 'idCards', cardId);
+        deleteDocumentNonBlocking(docRef);
+        return;
+    }
+
+    // Delete the ID Number lookup document
+    const idNumberLookupDocRef = doc(firestore, 'idNumberLookups', cardToDelete.idNumber);
+    deleteDocumentNonBlocking(idNumberLookupDocRef);
+
+    // Delete the Aadhaar lookup document if it exists
+    if (cardToDelete.aadhaarNumber) {
+        const aadhaarLookupDocRef = doc(firestore, 'aadhaarLookups', cardToDelete.aadhaarNumber);
+        deleteDocumentNonBlocking(aadhaarLookupDocRef);
+    }
+
+    // Delete the main ID card document
     const docRef = doc(firestore, 'users', user.uid, 'idCards', cardId);
     deleteDocumentNonBlocking(docRef);
   };

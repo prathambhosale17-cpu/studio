@@ -7,7 +7,7 @@ import { Header } from '@/components/header';
 import { useAadhaarHistory } from '@/hooks/use-aadhaar-history';
 import type { DataMatchResult, IDCard, VerificationResult as VerificationResultType } from '@/lib/types';
 import { useFirestore } from '@/firebase';
-import { collectionGroup, getDocs, query, where } from 'firebase/firestore';
+import { doc, getDoc } from 'firebase/firestore';
 
 export default function AadhaarCheckPage() {
   const [isVerifying, setIsVerifying] = useState(false);
@@ -33,43 +33,48 @@ export default function AadhaarCheckPage() {
     // Perform Data Match if Aadhaar number was extracted
     if (ocrResult.aadhaarNumber) {
         try {
-            const q = query(
-                collectionGroup(firestore, 'idCards'),
-                where('aadhaarNumber', '==', ocrResult.aadhaarNumber)
-            );
-            const querySnapshot = await getDocs(q);
+            const lookupDocRef = doc(firestore, 'aadhaarLookups', ocrResult.aadhaarNumber);
+            const lookupSnapshot = await getDoc(lookupDocRef);
 
-            if (querySnapshot.empty) {
+            if (!lookupSnapshot.exists()) {
                 dataMatchResult = { status: 'not_found' };
             } else {
-                const dbCard = querySnapshot.docs[0].data() as IDCard;
-                const mismatchedFields: { field: string; dbValue: any; ocrValue: any }[] = [];
-                
-                const normalize = (str: string | null | undefined) => (str || '').trim().toLowerCase();
+                const cardPath = lookupSnapshot.data().cardPath;
+                const cardDocRef = doc(firestore, cardPath);
+                const cardSnapshot = await getDoc(cardDocRef);
 
-                if (normalize(ocrResult.name) !== normalize(dbCard.name)) {
-                    mismatchedFields.push({ field: 'Name', dbValue: dbCard.name, ocrValue: ocrResult.name });
-                }
-
-                let ocrDobFormatted = ocrResult.dateOfBirth; // OCR is DD/MM/YYYY
-                if (ocrDobFormatted) {
-                    const parts = ocrDobFormatted.match(/(\d{2})\/(\d{2})\/(\d{4})/);
-                    if (parts) {
-                        ocrDobFormatted = `${parts[3]}-${parts[2]}-${parts[1]}`; // Convert to YYYY-MM-DD
-                    }
-                }
-                if (ocrDobFormatted !== dbCard.dateOfBirth) {
-                    mismatchedFields.push({ field: 'Date of Birth', dbValue: dbCard.dateOfBirth, ocrValue: ocrResult.dateOfBirth });
-                }
-
-                if (normalize(ocrResult.gender) !== normalize(dbCard.gender)) {
-                    mismatchedFields.push({ field: 'Gender', dbValue: dbCard.gender, ocrValue: ocrResult.gender });
-                }
-
-                if (mismatchedFields.length > 0) {
-                    dataMatchResult = { status: 'mismatched', details: mismatchedFields };
+                if (!cardSnapshot.exists()) {
+                    dataMatchResult = { status: 'not_found' };
                 } else {
-                    dataMatchResult = { status: 'matched' };
+                    const dbCard = cardSnapshot.data() as IDCard;
+                    const mismatchedFields: { field: string; dbValue: any; ocrValue: any }[] = [];
+                    
+                    const normalize = (str: string | null | undefined) => (str || '').trim().toLowerCase();
+
+                    if (normalize(ocrResult.name) !== normalize(dbCard.name)) {
+                        mismatchedFields.push({ field: 'Name', dbValue: dbCard.name, ocrValue: ocrResult.name });
+                    }
+
+                    let ocrDobFormatted = ocrResult.dateOfBirth; // OCR is DD/MM/YYYY
+                    if (ocrDobFormatted) {
+                        const parts = ocrDobFormatted.match(/(\d{2})\/(\d{2})\/(\d{4})/);
+                        if (parts) {
+                            ocrDobFormatted = `${parts[3]}-${parts[2]}-${parts[1]}`; // Convert to YYYY-MM-DD
+                        }
+                    }
+                    if (ocrDobFormatted !== dbCard.dateOfBirth) {
+                        mismatchedFields.push({ field: 'Date of Birth', dbValue: dbCard.dateOfBirth, ocrValue: ocrResult.dateOfBirth });
+                    }
+
+                    if (normalize(ocrResult.gender) !== normalize(dbCard.gender)) {
+                        mismatchedFields.push({ field: 'Gender', dbValue: dbCard.gender, ocrValue: ocrResult.gender });
+                    }
+
+                    if (mismatchedFields.length > 0) {
+                        dataMatchResult = { status: 'mismatched', details: mismatchedFields };
+                    } else {
+                        dataMatchResult = { status: 'matched' };
+                    }
                 }
             }
         } catch (e) {

@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useFirestore } from '@/firebase';
-import { collectionGroup, query, where, getDocs, Timestamp } from 'firebase/firestore';
+import { doc, getDoc, Timestamp } from 'firebase/firestore';
 import { Header } from '@/components/header';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -33,23 +33,27 @@ export default function DownloadCardPage() {
     setSearched(true);
 
     try {
-      const q = query(
-        collectionGroup(firestore, 'idCards'),
-        where('idNumber', '==', idNumber.trim())
-      );
-      const querySnapshot = await getDocs(q);
+      const lookupDocRef = doc(firestore, 'idNumberLookups', idNumber.trim());
+      const lookupSnapshot = await getDoc(lookupDocRef);
 
-      if (querySnapshot.empty) {
+      if (!lookupSnapshot.exists()) {
         setFoundCard(null);
       } else {
-        const cardDoc = querySnapshot.docs[0];
-        const cardData = cardDoc.data();
-        const card: IDCard = {
-            ...cardData,
-            id: cardDoc.id,
-            createdAt: (cardData.createdAt as Timestamp).toDate(),
-        } as IDCard;
-        setFoundCard(card);
+        const cardPath = lookupSnapshot.data().cardPath;
+        const cardDocRef = doc(firestore, cardPath);
+        const cardSnapshot = await getDoc(cardDocRef);
+
+        if (!cardSnapshot.exists()) {
+          setFoundCard(null); // This case is a dangling pointer, treat as not found
+        } else {
+          const cardData = cardSnapshot.data();
+          const card: IDCard = {
+              ...cardData,
+              id: cardSnapshot.id,
+              createdAt: (cardData.createdAt as Timestamp).toDate(),
+          } as IDCard;
+          setFoundCard(card);
+        }
       }
     } catch (e) {
       console.error('Error searching for ID card:', e);

@@ -149,6 +149,30 @@
         "imageDataUri",
         "status"
       ]
+    },
+    "IDNumberLookup": {
+      "title": "IDNumberLookup",
+      "description": "Maps a unique ID Number (IDC-...) to the full path of an IDCard document for fast lookups.",
+      "type": "object",
+      "properties": {
+        "cardPath": {
+          "type": "string",
+          "description": "The full Firestore document path to the IDCard document."
+        }
+      },
+      "required": ["cardPath"]
+    },
+    "AadhaarLookup": {
+      "title": "AadhaarLookup",
+      "description": "Maps an Aadhaar number to the full path of an IDCard document for fast lookups.",
+      "type": "object",
+      "properties": {
+        "cardPath": {
+          "type": "string",
+          "description": "The full Firestore document path to the IDCard document."
+        }
+      },
+      "required": ["cardPath"]
     }
   },
   "auth": {
@@ -168,6 +192,18 @@
         "$ref": "#/entities/AadhaarVerification"
       },
       "description": "Stores Aadhaar verification history for a user."
+    },
+    "/idNumberLookups/{idNumber}": {
+      "schema": {
+        "$ref": "#/entities/IDNumberLookup"
+      },
+      "description": "A collection used as an index to quickly find an ID card by its unique ID Number (IDC-...). The document ID is the ID Number."
+    },
+    "/aadhaarLookups/{aadhaarNumber}": {
+      "schema": {
+        "$ref": "#/entities/AadhaarLookup"
+      },
+      "description": "A collection used as an index to quickly find an ID card by its associated Aadhaar number. The document ID is the Aadhaar number."
     }
   }
 }

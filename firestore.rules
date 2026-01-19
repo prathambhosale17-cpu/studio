@@ -9,11 +9,38 @@ service cloud.firestore {
       allow read, write: if request.auth.uid == userId;
     }
 
-    // Rule 2: To allow the ID verification search to work, any authenticated
-    // user needs permission to query the 'idCards' collection group.
-    // 'read' permission includes 'list' (for the query) and 'get' (for the results).
-    match /{path=**}/idCards/{cardId} {
+    // REMOVED: The collection group query that required this rule is no longer used.
+    // The new lookup collections provide a more scalable way to find cards.
+    // match /{path=**}/idCards/{cardId} {
+    //   allow read: if request.auth != null;
+    // }
+
+    // Rule 2: Rules for the ID Number lookup collection.
+    match /idNumberLookups/{idNumber} {
+        // Allow any authenticated user to read for search functionality.
+        allow read: if request.auth != null;
+        // Allow creation only if the path points to the user's own card.
+        allow create: if request.auth != null
+                      && request.resource.data.cardPath.matches("^users/" + request.auth.uid + "/idCards/.+$");
+        // Allow deletion only if the path points to the user's own card.
+        allow delete: if request.auth != null
+                      && resource.data.cardPath.matches("^users/" + request.auth.uid + "/idCards/.+$");
+        // Disallow updates.
+        allow update: if false;
+    }
+
+    // Rule 3: Rules for the Aadhaar number lookup collection.
+    match /aadhaarLookups/{aadhaarNumber} {
+      // Allow any authenticated user to read for verification functionality.
       allow read: if request.auth != null;
+      // Allow creation only if the path points to the user's own card.
+      allow create: if request.auth != null
+                    && request.resource.data.cardPath.matches("^users/" + request.auth.uid + "/idCards/.+$");
+      // Allow deletion only if the path points to the user's own card.
+      allow delete: if request.auth != null
+                    && resource.data.cardPath.matches("^users/" + request.auth.uid + "/idCards/.+$");
+      // Disallow updates.
+      allow update: if false;
     }
   }
 }
