@@ -1,6 +1,6 @@
 'use client';
 
-import { Globe, UserSquare } from 'lucide-react';
+import { Globe, BadgeHelp } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
@@ -20,7 +20,7 @@ export function Header() {
   return (
     <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b bg-background/80 px-4 backdrop-blur-md sm:px-6">
       <Link href="/" className="flex items-center gap-2">
-        <UserSquare className="h-7 w-7 text-primary" />
+        <BadgeHelp className="h-7 w-7 text-primary" />
         <h1 className="text-base font-semibold tracking-tight text-foreground">
           AI-Based Identity Verification<br />& Smart Government Scheme Platform
         </h1>
