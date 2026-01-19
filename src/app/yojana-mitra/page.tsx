@@ -13,7 +13,6 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Search, X } from 'lucide-react';
-import './styles.css';
 
 type Scheme = typeof SCHEMES[0];
 
