@@ -13,9 +13,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
-import { Search, X } from 'lucide-react';
+import { Search, X, Bot } from 'lucide-react';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { useToast } from '@/hooks/use-toast';
+import { answerDoubt } from '@/ai/flows/answer-doubt-flow';
+import { Skeleton } from '@/components/ui/skeleton';
 
 
 type Scheme = typeof SCHEMES[0];
@@ -43,22 +45,14 @@ export default function YojanaMitraPage() {
     const dialogRef = useRef<HTMLDialogElement>(null);
 
     // Q&A State
-    const [posts, setPosts] = useState<Post[]>([
-        {
-          id: 1,
-          district: 'Pune',
-          category: 'Subsidy',
-          title: 'When does the onion subsidy application start?',
-          body: 'I heard there is a subsidy for onion storage (chawl). When is the application period opening on MahaDBT? What documents are needed?',
-          answer: 'The onion chawl subsidy usually opens on MahaDBT around June-July. You will need your 7/12, Aadhaar card, bank passbook, and a cost estimate for the structure. Keep an eye on the portal.'
-        }
-    ]);
+    const [posts, setPosts] = useState<Post[]>([]);
     const [doubtFields, setDoubtFields] = useState({ district: '', category: '', title: '', body: '', captcha: '' });
     const [num1, setNum1] = useState(0);
     const [num2, setNum2] = useState(0);
+    const [isAnswering, setIsAnswering] = useState<number | null>(null);
 
     const allCategories = useMemo(() => Array.from(new Set(SCHEMES.flatMap(s => s.categories))).sort(), []);
-    const qaCategories = useMemo(() => Array.from(new Set(SCHEMES.flatMap(s => s.categories).concat(['Subsidy', 'Loan', 'Other']))).sort(), [SCHEMES]);
+    const qaCategories = useMemo(() => Array.from(new Set(SCHEMES.flatMap(s => s.categories).concat(['Subsidy', 'Loan', 'Other']))).sort(), []);
 
 
     useEffect(() => {
@@ -66,21 +60,51 @@ export default function YojanaMitraPage() {
         setNum2(Math.floor(Math.random() * 10) + 1);
     }, []);
 
-    const handlePostDoubt = (e: React.FormEvent) => {
+    const handlePostDoubt = async (e: React.FormEvent) => {
         e.preventDefault();
         if (parseInt(doubtFields.captcha, 10) !== num1 + num2) {
             toast({ variant: 'destructive', title: t('wrongCaptcha') });
             return;
         }
+
         const newPost: Post = {
             id: Date.now(),
-            ...doubtFields,
+            district: doubtFields.district,
+            category: doubtFields.category,
+            title: doubtFields.title,
+            body: doubtFields.body,
         };
+
         setPosts(prev => [newPost, ...prev]);
+        setIsAnswering(newPost.id);
+        
+        const oldDoubtFields = { ...doubtFields };
         setDoubtFields({ district: '', category: '', title: '', body: '', captcha: '' });
         setNum1(Math.floor(Math.random() * 10) + 1);
         setNum2(Math.floor(Math.random() * 10) + 1);
-        toast({ title: "Doubt posted successfully!" });
+        
+        toast({ title: "Doubt posted! AI is generating an answer..." });
+
+        try {
+            const aiResult = await answerDoubt({
+                title: oldDoubtFields.title,
+                body: oldDoubtFields.body,
+                district: oldDoubtFields.district,
+                category: oldDoubtFields.category,
+            });
+
+            setPosts(prev => prev.map(p => p.id === newPost.id ? { ...p, answer: aiResult.answer } : p));
+        } catch (error: any) {
+            console.error("AI answer generation failed:", error);
+            const errorMessage = /api key/i.test(error.message)
+                ? 'AI Service Misconfigured: Your Gemini API key is missing or invalid.'
+                : 'Failed to get an answer from the AI. Please try again later.';
+
+            toast({ variant: 'destructive', title: 'AI Error', description: errorMessage });
+            setPosts(prev => prev.map(p => p.id === newPost.id ? { ...p, answer: "Sorry, the AI assistant could not generate an answer at this time." } : p));
+        } finally {
+            setIsAnswering(null);
+        }
     };
 
     const filteredSchemes = useMemo(() => {
@@ -288,7 +312,7 @@ export default function YojanaMitraPage() {
                                         </div>
                                     </CardContent>
                                     <CardFooter>
-                                        <Button type="submit">{t('postDoubt')}</Button>
+                                        <Button type="submit" disabled={isAnswering !== null}>{t('postDoubt')}</Button>
                                     </CardFooter>
                                     </form>
                                 </Card>
@@ -316,10 +340,23 @@ export default function YojanaMitraPage() {
                                                         </AccordionTrigger>
                                                         <AccordionContent className="space-y-4">
                                                             <p className="text-muted-foreground">{post.body}</p>
-                                                            {post.answer ? (
+                                                             {isAnswering === post.id ? (
+                                                                <div className="p-4 bg-primary/10 rounded-md space-y-2">
+                                                                    <div className="flex items-center gap-2 font-semibold text-primary">
+                                                                        <Bot className="h-5 w-5"/>
+                                                                        Yojana Mitra is thinking...
+                                                                    </div>
+                                                                    <Skeleton className="h-4 w-full" />
+                                                                    <Skeleton className="h-4 w-full" />
+                                                                    <Skeleton className="h-4 w-3/4" />
+                                                                </div>
+                                                            ) : post.answer ? (
                                                                 <div className="p-4 bg-primary/10 rounded-md">
-                                                                    <p className="font-semibold text-primary">Answer:</p>
-                                                                    <p className="text-primary/90">{post.answer}</p>
+                                                                    <div className="flex items-center gap-2 font-semibold text-primary">
+                                                                        <Bot className="h-5 w-5"/>
+                                                                        AI Generated Answer
+                                                                    </div>
+                                                                    <p className="text-primary/90 mt-2">{post.answer}</p>
                                                                 </div>
                                                             ) : (
                                                                 <p className="text-sm font-semibold text-destructive">{t('lblUnanswered')}</p>
