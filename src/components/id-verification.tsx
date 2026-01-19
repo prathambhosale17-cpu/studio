@@ -22,6 +22,7 @@ import {
   UploadCloud,
   ShieldCheck,
   UserCheck,
+  Database,
 } from 'lucide-react';
 import { useFirestore } from '@/firebase';
 import { collectionGroup, query, where, getDocs } from 'firebase/firestore';
@@ -38,9 +39,19 @@ import { FirestorePermissionError } from '@/firebase/errors';
 
 type VerificationStep = 'scan' | 'analyzing' | 'fetching' | 'id_found' | 'capturing' | 'verifying' | 'result';
 
+type DataMatchResult = {
+  isMatch: boolean;
+  mismatchedFields: {
+    field: string;
+    dbValue: string;
+    ocrValue: string | null;
+  }[];
+} | null;
+
 type AnalysisResults = {
   fraud?: ExtractFraudIndicatorsOutput | null;
   face?: FaceMatchOutput | null;
+  dataMatch?: DataMatchResult;
 }
 
 export function IdVerification() {
@@ -152,6 +163,38 @@ export function IdVerification() {
           id: cardDoc.id,
           createdAt: cardDoc.data().createdAt.toDate()
         } as IDCard;
+        
+        // Perform data matching
+        const ocrData = fraudResult;
+        const dbData = cardData;
+        const mismatchedFields: { field: string; dbValue: string; ocrValue: string | null }[] = [];
+        const normalize = (str: string | null | undefined) => (str || '').trim().toLowerCase();
+
+        if (normalize(ocrData.name) !== normalize(dbData.name)) {
+            mismatchedFields.push({ field: 'Name', dbValue: dbData.name, ocrValue: ocrData.name });
+        }
+
+        let ocrDobFormatted = ocrData.dateOfBirth;
+        if (ocrDobFormatted) {
+            const parts = ocrDobFormatted.match(/(\d{2})\/(\d{2})\/(\d{4})/);
+            if (parts) {
+                ocrDobFormatted = `${parts[3]}-${parts[2]}-${parts[1]}`;
+            }
+        }
+        if (ocrDobFormatted !== dbData.dateOfBirth) {
+            mismatchedFields.push({ field: 'Date of Birth', dbValue: dbData.dateOfBirth, ocrValue: ocrData.dateOfBirth });
+        }
+        
+        if (normalize(ocrData.gender) !== normalize(dbData.gender)) {
+            mismatchedFields.push({ field: 'Gender', dbValue: dbData.gender, ocrValue: ocrData.gender });
+        }
+
+        const dataMatchResult: DataMatchResult = {
+            isMatch: mismatchedFields.length === 0,
+            mismatchedFields,
+        };
+
+        setAnalysisResults(prev => ({...prev, dataMatch: dataMatchResult }));
         setFoundCard(cardData);
         setStep('id_found');
       }
@@ -281,23 +324,19 @@ export function IdVerification() {
         )
       
       case 'id_found':
-        const fraudCheck = analysisResults.fraud;
-        const hasIndicators = fraudCheck && fraudCheck.fraudIndicators.toLowerCase().trim() !== 'no fraud indicators found.' && fraudCheck.fraudIndicators.trim() !== '';
-        
         return (
           foundCard && (
             <div className="space-y-6 text-center">
-               <Alert variant={hasIndicators ? 'destructive' : 'default'}>
-                    {hasIndicators ? <AlertCircle className="h-4 w-4" /> : <ShieldCheck className="h-4 w-4 text-accent"/>}
-                    <AlertTitle>{hasIndicators ? 'Potential Fraud Indicators Found' : 'Image Analysis Passed'}</AlertTitle>
-                    <AlertDescription>
-                       {fraudCheck?.fraudIndicators}
-                    </AlertDescription>
-                </Alert>
-
+              <h3 className="text-xl font-semibold">ID Card Record Found</h3>
+              <p className="text-muted-foreground max-w-md mx-auto">The ID card has been found in the database. Please proceed to the live face match step to complete verification.</p>
               <div className="flex justify-center">
                 <IdCardDisplay card={foundCard} />
               </div>
+               {error && (
+                <Alert variant="destructive">
+                  <AlertDescription>{error}</AlertDescription>
+                </Alert>
+              )}
               <Button onClick={() => setStep('capturing')} size="lg">
                 <Camera className="mr-2" />
                 Proceed to Face Match
@@ -339,33 +378,61 @@ export function IdVerification() {
         )
 
       case 'result':
-        if (!analysisResults.face) return null;
-        const isMatch = analysisResults.face.isMatch;
-        const ResultIcon = isMatch ? CheckCircle2 : XCircle;
-        const iconColor = isMatch ? 'text-green-500' : 'text-destructive';
-        
+        const { face, dataMatch, fraud } = analysisResults;
+        if (!face || !dataMatch) return null;
+
+        const isOverallSuccess = face.isMatch && dataMatch.isMatch;
+        const ResultIcon = isOverallSuccess ? CheckCircle2 : XCircle;
+        const iconColor = isOverallSuccess ? 'text-green-500' : 'text-destructive';
+        const hasFraudIndicators = fraud && fraud.fraudIndicators.toLowerCase().trim() !== 'no fraud indicators found.' && fraud.fraudIndicators.trim() !== '';
+
         return (
             <div className="space-y-6">
-                <div className={cn("flex flex-col items-center justify-center gap-2 p-6 text-center rounded-lg", isMatch ? 'bg-green-500/10' : 'bg-destructive/10')}>
+                <div className={cn("flex flex-col items-center justify-center gap-2 p-6 text-center rounded-lg", isOverallSuccess ? 'bg-green-500/10' : 'bg-destructive/10')}>
                     <ResultIcon className={cn("h-12 w-12", iconColor)} />
-                    <h3 className="text-2xl font-bold mt-2">{isMatch ? 'Verification Successful' : 'Verification Failed'}</h3>
-                    <p className={cn("font-semibold", iconColor)}>
-                        Face Match Confidence: { (analysisResults.face.confidence * 100).toFixed(1) }%
-                    </p>
-                    <Progress value={analysisResults.face.confidence * 100} className="w-full max-w-sm h-3" />
+                    <h3 className="text-2xl font-bold mt-2">{isOverallSuccess ? 'Verification Successful' : 'Verification Failed'}</h3>
+                     <p className="text-muted-foreground">The ID has been checked against the database and live photo.</p>
                 </div>
-                <div className="grid gap-4 md:grid-cols-2">
-                    <Alert variant={isMatch ? 'default' : 'destructive'} className="bg-background">
+                
+                <div className="grid gap-4 md:grid-cols-1 lg:grid-cols-3">
+                    <Alert variant={face.isMatch ? 'default' : 'destructive'} className="bg-background">
                         <UserCheck className="h-4 w-4" />
-                        <AlertTitle>Face Match AI Analysis</AlertTitle>
-                        <AlertDescription>{analysisResults.face.reasoning}</AlertDescription>
+                        <AlertTitle>Face Match</AlertTitle>
+                        <AlertDescription>{face.reasoning} ({(face.confidence * 100).toFixed(1)}% confidence)</AlertDescription>
                     </Alert>
-                     <Alert variant={analysisResults.fraud && analysisResults.fraud.fraudIndicators.toLowerCase().trim() !== 'no fraud indicators found.' && analysisResults.fraud.fraudIndicators.trim() !== '' ? 'destructive' : 'default'} className="bg-background">
+                    <Alert variant={dataMatch.isMatch ? 'default' : 'destructive'} className="bg-background">
+                        <Database className="h-4 w-4" />
+                        <AlertTitle>Data Match</AlertTitle>
+                        <AlertDescription>
+                            {dataMatch.isMatch ? 'Card data matches database.' : `Mismatch in: ${dataMatch.mismatchedFields.map(f => f.field).join(', ')}`}
+                        </AlertDescription>
+                    </Alert>
+                    <Alert variant={hasFraudIndicators ? 'destructive' : 'default'} className="bg-background">
                         <ShieldCheck className="h-4 w-4" />
-                        <AlertTitle>Image Forgery Analysis</AlertTitle>
-                        <AlertDescription>{analysisResults.fraud?.fraudIndicators}</AlertDescription>
+                        <AlertTitle>Forgery Analysis</AlertTitle>
+                        <AlertDescription>{fraud?.fraudIndicators}</AlertDescription>
                     </Alert>
                 </div>
+
+                {!dataMatch.isMatch && (
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Data Mismatch Details</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                             <ul className="space-y-2 text-sm">
+                                {dataMatch.mismatchedFields.map(({ field, dbValue, ocrValue }) => (
+                                    <li key={field} className="grid grid-cols-1 md:grid-cols-3 gap-2 border-b pb-2 last:border-b-0 last:pb-0">
+                                        <span className="font-semibold">{field}</span>
+                                        <span className="text-muted-foreground">Database: <span className="text-foreground font-medium">{dbValue}</span></span>
+                                        <span className="text-muted-foreground">On Card: <span className="text-foreground font-medium">{ocrValue || 'Not Found'}</span></span>
+                                    </li>
+                                ))}
+                            </ul>
+                        </CardContent>
+                    </Card>
+                )}
+
                 <div className="text-center">
                     <Button onClick={() => resetVerification()} variant="outline">Start New Verification</Button>
                 </div>
