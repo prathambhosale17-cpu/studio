@@ -144,8 +144,10 @@ export default function YojanaMitraPage() {
             <main className="flex-1 p-4 md:p-6 lg:p-8 animate-fade-in-up">
                 <div className="mx-auto grid w-full max-w-screen-xl gap-12">
                     <div className="text-center space-y-2">
-                        <h1 className="text-4xl font-bold tracking-tight">🌾 Yojana Mitra • Maharashtra</h1>
-                        <p className="text-lg text-muted-foreground">Schemes & Community Help</p>
+                        <h1 className="text-4xl font-extrabold tracking-tight lg:text-5xl">
+                            🌾 Yojana <span className="text-primary">Dost</span> • India
+                        </h1>
+                        <p className="text-xl text-muted-foreground mt-4">Your guide to Government Schemes & Community Support</p>
                     </div>
 
                     <div>
