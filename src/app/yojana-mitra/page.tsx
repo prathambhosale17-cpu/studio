@@ -88,7 +88,7 @@ export default function YojanaMitraPage() {
     return (
         <div className="flex min-h-screen w-full flex-col bg-background">
             <Header />
-            <main className="flex-1 p-4 md:p-6 lg:p-8">
+            <main className="flex-1 p-4 md:p-6 lg:p-8 animate-fade-in-up">
                 <div className="mx-auto grid w-full max-w-screen-xl gap-6">
                     <Card>
                         <CardHeader>

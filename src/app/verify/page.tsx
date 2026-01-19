@@ -9,7 +9,7 @@ export default function VerifyHubPage() {
   return (
     <div className="flex min-h-screen w-full flex-col bg-background">
       <Header />
-      <main className="flex-1 p-4 md:p-6 lg:p-8">
+      <main className="flex-1 p-4 md:p-6 lg:p-8 animate-fade-in-up">
         <div className="mx-auto max-w-4xl space-y-8">
             <div className="text-center">
                 <h1 className="text-3xl font-bold tracking-tight">ID Verification Center</h1>
@@ -17,7 +17,7 @@ export default function VerifyHubPage() {
             </div>
             <div className="grid gap-6 md:grid-cols-2">
                 <Link href="/verify/face-match" className="group">
-                    <Card className="h-full hover:border-primary transition-colors">
+                    <Card className="h-full hover:border-primary transition-all duration-200 transform hover:-translate-y-1">
                         <CardHeader className="flex-row items-center gap-4">
                             <div className="bg-primary/10 p-3 rounded-lg">
                                 <Camera className="h-6 w-6 text-primary" />
@@ -35,7 +35,7 @@ export default function VerifyHubPage() {
                     </Card>
                 </Link>
                 <Link href="/verify/aadhaar-check" className="group">
-                    <Card className="h-full hover:border-primary transition-colors">
+                    <Card className="h-full hover:border-primary transition-all duration-200 transform hover:-translate-y-1">
                         <CardHeader className="flex-row items-center gap-4">
                             <div className="bg-primary/10 p-3 rounded-lg">
                                 <ShieldCheck className="h-6 w-6 text-primary" />
