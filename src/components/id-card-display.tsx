@@ -83,6 +83,12 @@ export function IdCardDisplay({ card, onDelete }: IdCardDisplayProps) {
               <p className="text-muted-foreground text-xs">ID Number (UID)</p>
               <p className="font-mono text-primary font-bold text-base">{card.idNumber}</p>
             </div>
+            {card.aadhaarNumber && (
+              <div>
+                <p className="text-muted-foreground text-xs">Aadhaar Number</p>
+                <p className="font-mono text-base">{card.aadhaarNumber.replace(/(\d{4})(?=\d)/g, '$1 ')}</p>
+              </div>
+            )}
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <p className="text-muted-foreground text-xs">Date of Birth</p>
