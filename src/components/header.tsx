@@ -44,15 +44,16 @@ export function Header() {
         >
           {t('Verify ID')}
         </Link>
-        <Link
-          href="/download"
+        <a
+          href="https://eaadhaar.uidai.gov.in/"
+          target="_blank"
+          rel="noopener noreferrer"
           className={cn(
-            'text-sm font-medium transition-colors hover:text-primary',
-            pathname.startsWith('/download') ? 'text-primary' : 'text-muted-foreground'
+            'text-sm font-medium transition-colors hover:text-primary text-muted-foreground'
           )}
         >
           {t('Download Card')}
-        </Link>
+        </a>
         <Link
           href="/yojana-mitra"
           className={cn(
