@@ -27,15 +27,6 @@ export function Header() {
       </Link>
       <nav className="flex items-center gap-6 ml-auto">
         <Link
-          href="/manage-ids"
-          className={cn(
-            'text-sm font-medium transition-colors hover:text-primary',
-            pathname === '/manage-ids' ? 'text-primary' : 'text-muted-foreground'
-          )}
-        >
-          {t('Manage IDs')}
-        </Link>
-        <Link
           href="/verify"
           className={cn(
             'text-sm font-medium transition-colors hover:text-primary',

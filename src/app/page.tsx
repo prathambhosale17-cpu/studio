@@ -3,16 +3,10 @@ import { Header } from '@/components/header';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
-import { CreditCard, ScanFace, Library, ArrowRight } from 'lucide-react';
+import { ScanFace, Library, ArrowRight } from 'lucide-react';
 
 export default function LandingPage() {
   const features = [
-    {
-      title: 'Manage ID Cards',
-      description: 'Create, view, and download your digital ID cards with ease.',
-      href: '/manage-ids',
-      icon: CreditCard,
-    },
     {
       title: 'Verify Identity',
       description: 'Use AI to perform face matching and forgery detection on identity documents.',
@@ -47,7 +41,7 @@ export default function LandingPage() {
         </section>
 
         <section className="w-full pb-12 md:pb-24 lg:pb-32">
-          <div className="container grid items-start justify-center gap-6 px-4 md:px-6 lg:grid-cols-3 lg:gap-10">
+          <div className="container grid items-start justify-center gap-6 px-4 md:px-6 lg:grid-cols-2 lg:gap-10">
             {features.map((feature) => (
               <Link key={feature.title} href={feature.href} className="group">
                 <Card className="h-full transform transition-all duration-300 hover:scale-105 hover:shadow-xl">
