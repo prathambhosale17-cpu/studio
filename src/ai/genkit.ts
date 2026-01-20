@@ -1,7 +1,7 @@
 import {genkit} from 'genkit';
 import {googleAI} from '@genkit-ai/google-genai';
 
-if (!process.env.GEMINI_API_KEY || process.env.GEMINI_API_KEY === 'AIzaSyBgVUvZ-wiLFsgQeG42qh8F34KvyUz6KZQ')  {
+if (!process.env.GEMINI_API_KEY || process.env.GEMINI_API_KEY === 'AIzaSyCK7FjxubvrKOgxVBBXE2f3586O6YCOVsM')  {
   console.warn(
     '\n🚨 AI Service Misconfigured: Your Gemini API key is missing or invalid.' +
     '\n1. Get a key from Google AI Studio: https://aistudio.google.com/app/apikey' +
